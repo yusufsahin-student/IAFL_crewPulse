@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Sleep last night: think back over the last 24 hours, add up all sleep including naps, round to the nearest half hour and record it.</title>
+  <path class="m-device" d="M30 150 Q30 124 56 124 L150 124 Q176 124 176 150 L176 176 Q176 186 166 186 L40 186 Q30 186 30 176 Z"/>
+  <ellipse class="m-body" cx="60" cy="140" rx="16" ry="10"/>
+  <path class="m-detail" d="M30 212 L300 212"/>
+  <g data-step="1">
+    <circle class="m-device" cx="262" cy="56" r="22"/>
+    <path class="m-detail" d="M262 56 L262 42 M262 56 L272 60"/>
+    <text class="m-label" x="262" y="94" text-anchor="middle">Last 24 h</text>
+    <circle class="m-marker" cx="222" cy="30" r="11"/>
+    <text class="m-num" x="222" y="30">1</text>
+  </g>
+  <g data-step="2">
+    <rect class="m-device" x="52" y="198" width="68" height="12" rx="3"/>
+    <rect class="m-device" x="140" y="198" width="60" height="12" rx="3"/>
+    <text class="m-label" x="130" y="208" text-anchor="middle">+</text>
+    <circle class="m-marker" cx="300" cy="176" r="11"/>
+    <text class="m-num" x="300" y="176">2</text>
+  </g>
+  <g data-step="3">
+    <rect class="m-device" x="196" y="130" width="100" height="44" rx="8"/>
+    <text class="m-value" x="246" y="160" text-anchor="middle">7.5 h</text>
+    <circle class="m-marker" cx="184" cy="114" r="11"/>
+    <text class="m-num" x="184" y="114">3</text>
+  </g>
+</svg>

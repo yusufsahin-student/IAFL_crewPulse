@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Body temperature: take the digital thermometer from the kit, place it in the ear or as the kit says, wait for the beep, record the reading.</title>
+  <circle class="m-body" cx="110" cy="110" r="62"/>
+  <ellipse class="m-detail" cx="108" cy="116" rx="8" ry="12"/>
+  <g data-step="1">
+    <rect class="m-device" x="150" y="40" width="22" height="90" rx="10" transform="rotate(-35 161 85)"/>
+    <path class="m-motion" d="M140 66 L122 100"/>
+    <rect class="m-device" x="226" y="140" width="80" height="50" rx="6"/>
+    <text class="m-label" x="266" y="170" text-anchor="middle">Kit</text>
+    <circle class="m-marker" cx="222" cy="118" r="11"/>
+    <text class="m-num" x="222" y="118">1</text>
+  </g>
+  <g data-step="2">
+    <path class="m-motion" d="M226 46 Q238 60 226 74 M242 36 Q262 60 242 84"/>
+    <text class="m-label" x="220" y="104">Wait for beep</text>
+    <circle class="m-marker" cx="190" cy="28" r="11"/>
+    <text class="m-num" x="190" y="28">2</text>
+  </g>
+  <g data-step="3">
+    <rect class="m-device" x="20" y="180" width="130" height="32" rx="6"/>
+    <text class="m-value" x="85" y="203" text-anchor="middle">36.5 °C</text>
+    <circle class="m-marker" cx="14" cy="172" r="11"/>
+    <text class="m-num" x="14" y="172">3</text>
+  </g>
+</svg>

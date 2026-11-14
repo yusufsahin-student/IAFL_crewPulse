@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Back pain: side view of the spine. Think about your pain today, compare it with the scale from none to very severe, pick the label and note where it hurts.</title>
+  <circle class="m-body" cx="122" cy="26" r="14"/>
+  <rect class="m-body" x="110" y="40" width="24" height="12" rx="3"/>
+  <rect class="m-body" x="110" y="58" width="24" height="12" rx="3"/>
+  <rect class="m-body" x="110" y="76" width="24" height="12" rx="3"/>
+  <rect class="m-body" x="110" y="94" width="24" height="12" rx="3"/>
+  <rect class="m-body" x="110" y="112" width="24" height="12" rx="3"/>
+  <rect class="m-body" x="110" y="130" width="24" height="12" rx="3"/>
+  <rect class="m-body" x="110" y="148" width="24" height="12" rx="3"/>
+  <rect class="m-body" x="110" y="166" width="24" height="12" rx="3"/>
+  <path class="m-body" d="M96 184 L148 184 L140 202 L104 202 Z"/>
+  <text class="m-label" x="176" y="30">Scale 1 to 5</text>
+  <g data-step="1">
+    <rect class="m-motion" x="100" y="34" width="44" height="162" rx="10"/>
+    <text class="m-label" x="20" y="112">Your back</text>
+    <circle class="m-marker" cx="60" cy="70" r="11"/>
+    <text class="m-num" x="60" y="70">1</text>
+  </g>
+  <g data-step="2">
+    <rect class="m-device" x="176" y="40" width="136" height="120" rx="8"/>
+    <text class="m-label" x="190" y="62">1  None</text>
+    <text class="m-label" x="190" y="84">2  Mild</text>
+    <text class="m-label" x="190" y="106">3  Moderate</text>
+    <text class="m-label" x="190" y="128">4  Severe</text>
+    <text class="m-label" x="190" y="150">5  Very severe</text>
+    <circle class="m-marker" cx="160" cy="106" r="11"/>
+    <text class="m-num" x="160" y="106">2</text>
+  </g>
+  <g data-step="3">
+    <circle class="m-motion" cx="146" cy="140" r="9"/>
+    <text class="m-label" x="20" y="200">Note where it hurts</text>
+    <circle class="m-marker" cx="60" cy="140" r="11"/>
+    <text class="m-num" x="60" y="140">3</text>
+  </g>
+</svg>

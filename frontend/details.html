@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Body map · Astronaut Health Monitor</title>
+  <link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/home.css"><link rel="stylesheet" href="css/measure.css"><link rel="stylesheet" href="css/orbit.css">
+  <script type="module" src="js/home.js"></script>
+</head>
+<body>
+  <header id="app-header"></header>
+  <main class="page" id="home">
+    <div id="master-alert"></div><div id="home-error"></div>
+    <div class="page-head home-head"><div><h1>Today</h1><p id="home-who" class="muted">Loading…</p><p id="home-checkin" class="muted"></p></div><a class="btn btn--primary" href="checkin.html">Start today's check-in</a></div>
+    <div class="home-top">
+      <section id="triage-panel" class="panel" aria-labelledby="triage-title"><h2 id="triage-title">What to do now</h2><div id="triage"><p class="state">Loading…</p></div></section>
+      <section class="panel" aria-labelledby="score-title"><h2 id="score-title">Health score</h2><div id="score"><p class="state">Loading…</p></div></section>
+    </div>
+    <section id="routine-panel" class="panel home-routine" aria-labelledby="routine-title"><h2 id="routine-title">Daily routine</h2><div id="routine"><p class="state">Loading…</p></div></section>
+    <div class="home-body stack">
+      <section class="panel" aria-labelledby="mission-title"><h2 id="mission-title">Where is the crew?</h2><p class="muted">Select a mission environment to review distance-aware guidance.</p><div id="mission-control" class="dist" role="group" aria-label="Mission distance"></div><p id="dist-note" class="dist-note" aria-live="polite"></p><div id="mission-label" class="mission-label" aria-live="polite"></div></section>
+      <section class="panel" aria-labelledby="body-title">
+        <h2 id="body-title">Anatomical body map</h2>
+        <p class="muted">Markers sit on the anatomical area they represent. Select the figure or the grouped controls. Caution uses diagonal hatching; danger uses cross-hatching in addition to colour and text.</p>
+        <div id="region-chips" class="region-chips" role="group" aria-label="Body parts"></div>
+        <div class="body-layout">
+          <div id="body-stage" class="body-stage">
+            <svg id="body-map" class="body-map anatomy-map" viewBox="0 0 320 560" role="group" aria-labelledby="body-title" focusable="false">
+              <title>Front-view anatomical location map. Markers identify the physical region associated with each health reading.</title>
+              <defs>
+                <pattern id="hatch-watch" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M-2 7L7-2M3 10L10 3" class="hatch-line"/></pattern>
+                <pattern id="hatch-alert" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M-2 7L7-2M3 10L10 3M-2 0L7 9M3-3L10 4" class="hatch-line"/></pattern>
+              </defs>
+              <g class="human-outline" aria-hidden="true">
+                <circle cx="160" cy="48" r="32"/><path d="M146 80L138 96Q108 100 96 126L74 228Q70 245 84 249Q98 251 103 235L122 156L120 276Q120 300 126 314L120 504Q118 528 136 530Q154 530 155 506L157 336Q160 330 163 336L165 506Q166 530 184 530Q202 528 200 504L194 314Q200 300 200 276L198 156L217 235Q222 251 236 249Q250 245 246 228L224 126Q212 100 182 96L174 80Z"/>
+              </g>
+              <g class="region whole-region" data-region="whole_body" role="button" tabindex="0"><path class="shape outline" d="M160 16A32 32 0 1 1 159.9 16M146 80L138 96Q108 100 96 126L74 228Q70 245 84 249Q98 251 103 235L122 156L120 276Q120 300 126 314L120 504Q118 528 136 530Q154 530 155 506L157 336Q160 330 163 336L165 506Q166 530 184 530Q202 528 200 504L194 314Q200 300 200 276L198 156L217 235Q222 251 236 249Q250 245 246 228L224 126Q212 100 182 96L174 80Z"/></g>
+              <g class="region" data-region="head" role="button" tabindex="0"><circle class="shape anatomy-zone" cx="160" cy="48" r="26"/></g>
+              <g class="region" data-region="eyes" role="button" tabindex="0"><rect class="shape anatomy-zone" x="142" y="38" width="36" height="10" rx="5"/></g>
+              <g class="region" data-region="ears" role="button" tabindex="0"><circle class="shape anatomy-zone" cx="126" cy="48" r="6"/><circle class="shape anatomy-zone" cx="194" cy="48" r="6"/></g>
+              <g class="region" data-region="spine" role="button" tabindex="0"><path class="shape line anatomy-zone" d="M160 94L160 266"/></g>
+              <g class="region" data-region="lungs" role="button" tabindex="0"><ellipse class="shape anatomy-zone" cx="140" cy="134" rx="13" ry="25"/><ellipse class="shape anatomy-zone" cx="180" cy="134" rx="13" ry="25"/></g>
+              <g class="region" data-region="heart" role="button" tabindex="0"><path class="shape anatomy-zone" d="M160 146C151 136 139 148 146 158L160 173L174 158C181 148 169 136 160 146Z"/></g>
+              <g class="region" data-region="arms" role="button" tabindex="0"><path class="shape anatomy-zone" d="M101 124L80 226Q78 238 87 240Q96 242 99 230L118 148Q112 132 101 124Z"/><path class="shape anatomy-zone" d="M219 124L240 226Q242 238 233 240Q224 242 221 230L202 148Q208 132 219 124Z"/></g>
+              <g class="region" data-region="abdomen" role="button" tabindex="0"><rect class="shape anatomy-zone" x="134" y="180" width="52" height="44" rx="16"/></g>
+              <g class="region" data-region="kidneys" role="button" tabindex="0"><ellipse class="shape anatomy-zone" cx="141" cy="246" rx="10" ry="15"/><ellipse class="shape anatomy-zone" cx="179" cy="246" rx="10" ry="15"/></g>
+              <g class="region" data-region="hips" role="button" tabindex="0"><path class="shape anatomy-zone" d="M126 274Q160 288 194 274L190 308Q160 322 130 308Z"/></g>
+              <g class="region" data-region="legs" role="button" tabindex="0"><path class="shape anatomy-zone" d="M131 318L153 324L150 504Q149 521 137 521Q125 520 126 502Z"/><path class="shape anatomy-zone" d="M189 318L167 324L170 504Q171 521 183 521Q195 520 194 502Z"/></g>
+            </svg>
+            <div id="body-tip" class="body-tip" aria-live="polite"><p class="tip-hint">Point at or tab to an anatomical region to see its readings.</p></div>
+          </div>
+          <div id="region-detail" class="region-detail"></div>
+        </div>
+      </section>
+      <div class="summary-grid"><section class="panel" aria-labelledby="rad-title"><h2 id="rad-title">Radiation</h2><div id="radiation"><p class="state">Loading…</p></div><p><a class="more-link" href="radiation.html">Radiation details</a></p></section><section class="panel" aria-labelledby="bone-title"><h2 id="bone-title">Bone</h2><div id="bone"><p class="state">Loading…</p></div><p><a class="more-link" href="trends.html">Bone and trend charts</a></p></section></div>
+      <section class="panel" aria-labelledby="learn-title"><h2 id="learn-title">Learn about spaceflight health risks</h2><ul id="learn"></ul></section>
+    </div>
+  </main>
+</body>
+</html>

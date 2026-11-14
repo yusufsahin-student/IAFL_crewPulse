@@ -1,0 +1,62 @@
+[
+  {
+    "class_type": null,
+    "dose_relevant": 1,
+    "end_time": "2026-11-11T10:00:00Z",
+    "event_type": "SEP",
+    "id": "sim-sep-1",
+    "link": null,
+    "note": "Simulated solar particle event for the demo. Not a real event.",
+    "severity": 0.8,
+    "source": "sim",
+    "start_time": "2026-11-10T04:00:00Z"
+  },
+  {
+    "class_type": "M2.5",
+    "dose_relevant": 0,
+    "end_time": "2026-11-07T23:00:00Z",
+    "event_type": "FLR",
+    "id": "sim-flr-3",
+    "link": null,
+    "note": "Simulated flare for the demo.",
+    "severity": 0.68,
+    "source": "sim",
+    "start_time": "2026-11-07T21:00:00Z"
+  },
+  {
+    "class_type": null,
+    "dose_relevant": 0,
+    "end_time": null,
+    "event_type": "CME",
+    "id": "sim-cme-1",
+    "link": null,
+    "note": "Simulated coronal mass ejection for the demo.",
+    "severity": 0.3,
+    "source": "sim",
+    "start_time": "2026-11-01T03:00:00Z"
+  },
+  {
+    "class_type": "C4.2",
+    "dose_relevant": 0,
+    "end_time": "2026-10-26T10:00:00Z",
+    "event_type": "FLR",
+    "id": "sim-flr-2",
+    "link": null,
+    "note": "Simulated flare for the demo.",
+    "severity": 0.52,
+    "source": "sim",
+    "start_time": "2026-10-26T09:00:00Z"
+  },
+  {
+    "class_type": "M1.8",
+    "dose_relevant": 0,
+    "end_time": "2026-10-19T16:00:00Z",
+    "event_type": "FLR",
+    "id": "sim-flr-1",
+    "link": null,
+    "note": "Simulated flare for the demo.",
+    "severity": 0.65,
+    "source": "sim",
+    "start_time": "2026-10-19T14:00:00Z"
+  }
+]

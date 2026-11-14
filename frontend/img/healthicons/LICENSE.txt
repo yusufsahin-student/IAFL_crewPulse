@@ -1,0 +1,10 @@
+These icons come from Health Icons (https://healthicons.org/), npm package healthicons@3.1.0,
+outline style. They are in the public domain under CC0 1.0 Universal
+(https://creativecommons.org/publicdomain/zero/1.0/). No attribution is required; the app credits
+the project anyway under each measurement picture.
+
+Files: heartbeat, blood-pressure_monitor, blood-pressure_2, pulse-oximeter, thermometer-digital,
+diabetes-measure, happy-sleepy, face-sad, face-not-ok, face-neutral, face-ok, face-happy,
+exercise-bicycle, running, body-mass_index, back-pain.
+
+Which picture belongs to which measurement is set in ../measure/pictures.json.

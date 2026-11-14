@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "level": 0,
+    "consult_mode": "ground_led",
+    "headline": "Routine day on {mission}",
+    "contact": "Flight surgeon, by routine message only",
+    "instructions": "No action needed today.\nKeep your usual schedule.\nYour readings are logged for the flight surgeon's review."
+  },
+  {
+    "id": 2,
+    "level": 0,
+    "consult_mode": "shared",
+    "headline": "Routine day on {mission}",
+    "contact": "Mission medical team, on the usual review schedule",
+    "instructions": "No action needed today.\nKeep your usual schedule.\nThe mission medical team reviews the log at the next message window, about {reply_minutes} minutes round trip."
+  },
+  {
+    "id": 3,
+    "level": 0,
+    "consult_mode": "crew_led",
+    "headline": "Routine day on {mission}",
+    "contact": "Crew medical officer on board",
+    "instructions": "No action needed today.\nKeep your usual schedule.\nThe crew medical officer checks the log on board. A ground reply takes about {reply_minutes} minutes, so only send a note if something changes."
+  },
+  {
+    "id": 4,
+    "level": 1,
+    "consult_mode": "ground_led",
+    "headline": "Recheck today on {mission}",
+    "contact": "Flight surgeon, by routine message (one-way delay {delay})",
+    "instructions": "Recheck the flagged reading within 2 hours.\nFollow the self-care steps in the app.\nSend a routine message to the flight surgeon with the readings and what you did.\nContinue your normal tasks unless the flight surgeon says otherwise."
+  },
+  {
+    "id": 5,
+    "level": 1,
+    "consult_mode": "shared",
+    "headline": "Recheck and tell the team on {mission}",
+    "contact": "Mission medical team and crew medical officer",
+    "instructions": "Recheck the flagged reading within 2 hours.\nFollow the self-care steps in the app.\nSend the readings to the mission medical team now. The one-way delay is {delay}, so a reply takes about {reply_minutes} minutes.\nThe crew medical officer checks on you within the next hour."
+  },
+  {
+    "id": 6,
+    "level": 1,
+    "consult_mode": "crew_led",
+    "headline": "Act first on {mission}, then tell ground",
+    "contact": "Crew medical officer on board",
+    "instructions": "Recheck the flagged reading now and again in 1 hour.\nFollow the self-care steps in the app.\nTell the crew medical officer what you found. Do not wait for ground: a reply takes about {reply_minutes} minutes.\nSend the readings to {mission} ground when the next window opens, and note what you did."
+  },
+  {
+    "id": 7,
+    "level": 2,
+    "consult_mode": "ground_led",
+    "headline": "Call the flight surgeon now",
+    "contact": "Flight surgeon on the voice loop (one-way delay {delay})",
+    "instructions": "Stop strenuous activity and rest.\nRecheck the flagged reading now.\nCall the flight surgeon on the voice loop and describe the readings.\nFollow their advice and the steps in the app."
+  },
+  {
+    "id": 8,
+    "level": 2,
+    "consult_mode": "shared",
+    "headline": "Act with the team now on {mission}",
+    "contact": "Mission medical team and crew medical officer",
+    "instructions": "Stop strenuous activity and rest.\nFollow the protocol steps in the app now.\nCall the mission medical team and the crew medical officer. The one-way delay is {delay}.\nDo not wait for the reply before following the protocol."
+  },
+  {
+    "id": 9,
+    "level": 2,
+    "consult_mode": "crew_led",
+    "headline": "Act first: a ground reply takes {reply_minutes} minutes",
+    "contact": "Crew medical officer on board (acts now)",
+    "instructions": "Stop strenuous activity and rest now.\nFollow the protocol steps in the app before anything else.\nRecheck the reading in 10 minutes and repeat if it is still out of range.\nTell the crew medical officer now and send the readings to {mission} ground. A reply takes about {reply_minutes} minutes, so the crew acts first."
+  },
+  {
+    "id": 10,
+    "level": 3,
+    "consult_mode": "ground_led",
+    "headline": "Emergency: call mission control now",
+    "contact": "Mission control and flight surgeon on the emergency loop",
+    "instructions": "Call mission control on the emergency loop now.\nSay which readings are out of range and how you feel.\nFollow their instructions. Do not wait for the app."
+  },
+  {
+    "id": 11,
+    "level": 3,
+    "consult_mode": "shared",
+    "headline": "Emergency: act now, ground is in the loop",
+    "contact": "All crew, mission medical team and mission control",
+    "instructions": "Alert the crew now.\nStart the emergency protocol in the app.\nCall mission control. The one-way delay is {delay}, so a reply takes about {reply_minutes} minutes.\nKeep recording readings until the team replies."
+  },
+  {
+    "id": 12,
+    "level": 3,
+    "consult_mode": "crew_led",
+    "headline": "Emergency: crew acts now, a ground reply takes {reply_minutes} minutes",
+    "contact": "All crew on board, using the onboard medical procedures",
+    "instructions": "Alert the crew now and start the onboard emergency medical procedure.\nDo not wait for ground: a reply takes about {reply_minutes} minutes.\nSend the readings and symptoms to {mission} ground as soon as possible.\nKeep recording readings and follow the onboard procedure until ground replies."
+  }
+]

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Blood oxygen (SpO2): clip the probe on a relaxed fingertip, keep still until the reading is steady for 30 seconds, record the number.</title>
+  <path class="m-body" d="M20 102 L168 102 Q196 102 196 116 Q196 130 168 130 L20 130 Z"/>
+  <g data-step="1">
+    <rect class="m-device" x="150" y="92" width="44" height="48" rx="8"/>
+    <path class="m-detail" d="M194 116 L236 116"/>
+    <text class="m-label" x="20" y="72">Clip on fingertip</text>
+    <circle class="m-marker" cx="176" cy="72" r="11"/>
+    <text class="m-num" x="176" y="72">1</text>
+  </g>
+  <g data-step="2">
+    <circle class="m-device" cx="60" cy="180" r="18"/>
+    <path class="m-detail" d="M60 180 L60 168 M60 180 L70 184"/>
+    <text class="m-label" x="88" y="184">Hold still 30 s</text>
+    <circle class="m-marker" cx="24" cy="160" r="11"/>
+    <text class="m-num" x="24" y="160">2</text>
+  </g>
+  <rect class="m-device" x="236" y="50" width="76" height="70" rx="8"/>
+  <g data-step="3">
+    <text class="m-value" x="274" y="92" text-anchor="middle">98 %</text>
+    <text class="m-label" x="200" y="146">Record the number</text>
+    <circle class="m-marker" cx="224" cy="36" r="11"/>
+    <text class="m-num" x="224" y="36">3</text>
+  </g>
+</svg>

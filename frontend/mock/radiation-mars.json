@@ -1,0 +1,294 @@
+{
+  "active_event": null,
+  "astronaut": {
+    "daily": [
+      {
+        "day": "2026-10-15",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-16",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-17",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-18",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-19",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-20",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-21",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-22",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-23",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-24",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-25",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-26",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-27",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-28",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-29",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-30",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-10-31",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-01",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-02",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-03",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-04",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-05",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-06",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-07",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-08",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-09",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-10",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-11",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-12",
+        "msv": 0.0
+      },
+      {
+        "day": "2026-11-13",
+        "msv": 0.0
+      }
+    ],
+    "limit_msv": 600.0,
+    "mission_dose_msv": 25.9,
+    "pct_of_limit": 4.3,
+    "today_msv": 0.0
+  },
+  "events": [
+    {
+      "class_type": null,
+      "dose_relevant": 1,
+      "end_time": "2026-11-11T10:00:00Z",
+      "event_type": "SEP",
+      "id": "sim-sep-1",
+      "link": null,
+      "note": "Simulated solar particle event for the demo. Not a real event.",
+      "severity": 0.8,
+      "source": "sim",
+      "start_time": "2026-11-10T04:00:00Z"
+    },
+    {
+      "class_type": "M2.5",
+      "dose_relevant": 0,
+      "end_time": "2026-11-07T23:00:00Z",
+      "event_type": "FLR",
+      "id": "sim-flr-3",
+      "link": null,
+      "note": "Simulated flare for the demo.",
+      "severity": 0.68,
+      "source": "sim",
+      "start_time": "2026-11-07T21:00:00Z"
+    },
+    {
+      "class_type": null,
+      "dose_relevant": 0,
+      "end_time": null,
+      "event_type": "CME",
+      "id": "sim-cme-1",
+      "link": null,
+      "note": "Simulated coronal mass ejection for the demo.",
+      "severity": 0.3,
+      "source": "sim",
+      "start_time": "2026-11-01T03:00:00Z"
+    },
+    {
+      "class_type": "C4.2",
+      "dose_relevant": 0,
+      "end_time": "2026-10-26T10:00:00Z",
+      "event_type": "FLR",
+      "id": "sim-flr-2",
+      "link": null,
+      "note": "Simulated flare for the demo.",
+      "severity": 0.52,
+      "source": "sim",
+      "start_time": "2026-10-26T09:00:00Z"
+    },
+    {
+      "class_type": "M1.8",
+      "dose_relevant": 0,
+      "end_time": "2026-10-19T16:00:00Z",
+      "event_type": "FLR",
+      "id": "sim-flr-1",
+      "link": null,
+      "note": "Simulated flare for the demo.",
+      "severity": 0.65,
+      "source": "sim",
+      "start_time": "2026-10-19T14:00:00Z"
+    }
+  ],
+  "mission_id": "mars",
+  "note": "Estimate from a simplified shielding model.",
+  "recommended_zone_id": "mars_storm_shelter",
+  "zones": [
+    {
+      "background_msv_per_day": 1.933,
+      "default_hours": 9.0,
+      "description": "Sleep and private time.",
+      "display_order": 1,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "mars_crew_quarters",
+      "is_shelter": 0,
+      "mission_id": "mars",
+      "name": "Crew quarters",
+      "shielding_g_cm2": 15.0,
+      "w": 35.0,
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "background_msv_per_day": 2.018,
+      "default_hours": 7.0,
+      "description": "Experiments and medical stores.",
+      "display_order": 2,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "mars_lab",
+      "is_shelter": 0,
+      "mission_id": "mars",
+      "name": "Lab",
+      "shielding_g_cm2": 12.0,
+      "w": 30.0,
+      "x": 35.0,
+      "y": 0.0
+    },
+    {
+      "background_msv_per_day": 2.076,
+      "default_hours": 1.5,
+      "description": "Treadmill, cycle and resistance device.",
+      "display_order": 3,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "mars_exercise",
+      "is_shelter": 0,
+      "mission_id": "mars",
+      "name": "Exercise",
+      "shielding_g_cm2": 10.0,
+      "w": 35.0,
+      "x": 65.0,
+      "y": 0.0
+    },
+    {
+      "background_msv_per_day": 1.392,
+      "default_hours": 1.0,
+      "description": "Most shielded area. Move here during a solar particle event.",
+      "display_order": 4,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "mars_storm_shelter",
+      "is_shelter": 1,
+      "mission_id": "mars",
+      "name": "Storm shelter",
+      "shielding_g_cm2": 38.0,
+      "w": 30.0,
+      "x": 0.0,
+      "y": 30.0
+    },
+    {
+      "background_msv_per_day": 2.047,
+      "default_hours": 2.0,
+      "description": "Food and water.",
+      "display_order": 5,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "mars_galley",
+      "is_shelter": 0,
+      "mission_id": "mars",
+      "name": "Galley",
+      "shielding_g_cm2": 11.0,
+      "w": 35.0,
+      "x": 30.0,
+      "y": 30.0
+    },
+    {
+      "background_msv_per_day": 2.199,
+      "default_hours": 3.5,
+      "description": "Supplies and spare parts.",
+      "display_order": 6,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "mars_cargo",
+      "is_shelter": 0,
+      "mission_id": "mars",
+      "name": "Cargo and stores",
+      "shielding_g_cm2": 6.0,
+      "w": 35.0,
+      "x": 65.0,
+      "y": 30.0
+    }
+  ]
+}

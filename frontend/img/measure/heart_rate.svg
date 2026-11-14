@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Heart rate: rest, put two fingertips on the inside of the wrist, count for 15 seconds, then multiply the count by 4.</title>
+  <path class="m-body" d="M14 108 Q14 96 28 96 L172 96 Q184 96 184 108 L184 126 Q184 138 172 138 L28 138 Q14 138 14 126 Z"/>
+  <path class="m-body" d="M184 98 L232 92 Q254 90 268 104 L276 116 Q280 128 266 132 L232 136 L184 136 Z"/>
+  <g data-step="1">
+    <circle class="m-device" cx="270" cy="50" r="22"/>
+    <path class="m-detail" d="M270 50 L270 36 M270 50 L280 55"/>
+    <text class="m-label" x="270" y="86" text-anchor="middle">Rest 2 min</text>
+    <circle class="m-marker" cx="236" cy="26" r="11"/>
+    <text class="m-num" x="236" y="26">1</text>
+  </g>
+  <g data-step="2">
+    <circle class="m-motion" cx="190" cy="117" r="30"/>
+    <circle class="m-device" cx="192" cy="106" r="7"/>
+    <circle class="m-device" cx="202" cy="128" r="7"/>
+    <path class="m-detail" d="M168 152 L188 126"/>
+    <text class="m-label" x="20" y="162">Inside of wrist, below thumb</text>
+    <circle class="m-marker" cx="150" cy="70" r="11"/>
+    <text class="m-num" x="150" y="70">2</text>
+  </g>
+  <g data-step="3">
+    <rect class="m-device" x="196" y="184" width="110" height="32" rx="6"/>
+    <text class="m-label" x="251" y="205" text-anchor="middle">Count 15 s</text>
+    <circle class="m-marker" cx="184" cy="200" r="11"/>
+    <text class="m-num" x="184" y="200">3</text>
+  </g>
+  <g data-step="4">
+    <rect class="m-device" x="30" y="184" width="140" height="32" rx="6"/>
+    <text class="m-label" x="100" y="205" text-anchor="middle">Beats × 4 = bpm</text>
+    <circle class="m-marker" cx="14" cy="200" r="11"/>
+    <text class="m-num" x="14" y="200">4</text>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Exercise today: add the minutes of treadmill, cycle and resistance sessions, then enter the total in minutes.</title>
+  <circle class="m-body" cx="120" cy="70" r="14"/>
+  <path class="m-body" d="M112 90 L128 90 L132 136 L108 136 Z"/>
+  <path class="m-detail" d="M110 136 L104 166 M128 136 L140 166 M112 96 L94 124"/>
+  <g data-step="1">
+    <rect class="m-device" x="40" y="166" width="170" height="12" rx="4"/>
+    <path class="m-detail" d="M52 166 L52 118 L196 118"/>
+    <text class="m-label" x="40" y="198">Treadmill</text>
+    <circle class="m-marker" cx="24" cy="150" r="11"/>
+    <text class="m-num" x="24" y="150">1</text>
+  </g>
+  <g data-step="2">
+    <circle class="m-device" cx="250" cy="150" r="14"/>
+    <circle class="m-device" cx="298" cy="150" r="14"/>
+    <path class="m-detail" d="M250 150 L274 118 L298 150"/>
+    <text class="m-label" x="252" y="192" text-anchor="middle">Cycle</text>
+    <rect class="m-device" x="230" y="44" width="84" height="24" rx="6"/>
+    <text class="m-label" x="272" y="61" text-anchor="middle">Resistance</text>
+    <circle class="m-marker" cx="222" cy="118" r="11"/>
+    <text class="m-num" x="222" y="118">2</text>
+  </g>
+  <g data-step="3">
+    <rect class="m-device" x="20" y="20" width="96" height="34" rx="6"/>
+    <text class="m-value" x="68" y="44" text-anchor="middle">45 min</text>
+    <circle class="m-marker" cx="134" cy="36" r="11"/>
+    <text class="m-num" x="134" y="36">3</text>
+  </g>
+</svg>

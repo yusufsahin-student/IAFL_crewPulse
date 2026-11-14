@@ -1,0 +1,75 @@
+/* Check-in page: layout only. Colours, sizes and spacing come from base.css tokens. */
+
+[hidden] { display: none !important; }
+
+.checkin-fields { display: grid; gap: var(--s-5); margin-top: var(--s-4); }
+@media (min-width: 720px) {
+  .checkin-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+.checkin-fields .field { min-width: 0; }
+.checkin-fields .field + .field { margin-top: 0; }
+
+/* Labels and scale groups */
+.req { color: var(--ink-muted); font-weight: 400; }
+fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { font-size: var(--text-sm); font-weight: 600; padding: 0; margin-bottom: var(--s-1); }
+
+.input-row { display: flex; align-items: center; gap: var(--s-2); }
+.input-row .input { flex: 1; min-width: 0; width: 100%; }
+
+/* Scale options are large targets with wide gaps, so a stray press hits none of its neighbours (HIDH p. 1015) */
+.choices { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+.choice {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  min-height: var(--target); padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface-2); cursor: pointer; font-size: var(--text-sm);
+}
+.choice:has(input:checked) { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+/* Reaction test */
+.test { display: grid; gap: var(--s-2); margin-top: var(--s-2); }
+.test .btn { justify-self: start; }
+.reaction-pad {
+  width: 100%; min-height: 200px; padding: var(--s-4);
+  border: 2px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--surface-2); color: var(--ink);
+  font: inherit; font-size: var(--text-lg); font-weight: 600; cursor: pointer;
+}
+.reaction-pad[data-phase="go"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); }
+.form-error { display: grid; gap: var(--s-2); }
+
+/* Result */
+.score-line { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); }
+.score-line p { margin: 0; }
+.normal-line { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-bottom: var(--s-4); }
+.normal-line p { margin: 0; }
+#result h2:focus { outline: none; }
+
+/* Eye tests (vision-ui.js): calibration, tumbling E and Amsler grid. Tokens only. */
+.vt-stage { display: grid; gap: var(--s-3); }
+.vt .notice { margin: 0; }
+.cal-card {
+  display: grid; place-items: center; max-width: 100%; aspect-ratio: 85.6 / 53.98;
+  border: 2px solid var(--ink); border-radius: var(--radius); background: var(--surface-2);
+  color: var(--ink); font-size: var(--text-sm);
+}
+.cal-slider { width: 100%; min-height: var(--target); }
+.vt-letter { display: grid; place-items: center; min-height: 160px; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); }
+.vt-e { display: block; }
+.vt-pad { display: grid; grid-template-columns: repeat(3, var(--target)); grid-template-areas: ". up ." "left . right" ". down ."; gap: var(--s-2); justify-content: center; }
+.vt-dir { min-width: var(--target); min-height: var(--target); padding: 0; font-size: var(--text-lg); justify-content: center; }
+.vt-dir[data-dir="up"] { grid-area: up; }
+.vt-dir[data-dir="left"] { grid-area: left; }
+.vt-dir[data-dir="right"] { grid-area: right; }
+.vt-dir[data-dir="down"] { grid-area: down; }
+.amsler { max-width: 100%; height: auto; justify-self: center; touch-action: manipulation; border: 2px solid var(--ink); }
+.amsler-bg { fill: var(--surface-2); }
+.amsler-lines line { stroke: var(--ink-faint); stroke-width: 1; }
+.amsler-dot { fill: var(--ink); }
+.amsler-mark rect { fill: var(--advisory-bg); }
+.amsler-mark line { stroke: var(--advisory); stroke-width: 2; }
+.amsler-cursor { stroke: var(--focus-ring); stroke-width: 2; pointer-events: none; }
+.amsler:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Body mass in orbit: use the body mass device, which moves you on a spring. A scale does not work without gravity. On the Moon or Mars a calibrated scale can be used.</title>
+  <path class="m-detail" d="M24 168 L296 168"/>
+  <path class="m-detail" d="M52 120 L52 176"/>
+  <circle class="m-body" cx="148" cy="72" r="16"/>
+  <rect class="m-body" x="134" y="90" width="30" height="30" rx="10"/>
+  <path class="m-body" d="M160 118 L190 118 L190 128 L160 128 Z"/>
+  <g data-step="1">
+    <circle class="m-detail" cx="46" cy="66" r="14"/>
+    <path class="m-detail" d="M36 56 L56 76"/>
+    <text class="m-label" x="24" y="40">Before eating</text>
+    <circle class="m-marker" cx="24" cy="96" r="11"/>
+    <text class="m-num" x="24" y="96">1</text>
+  </g>
+  <g data-step="2">
+    <rect class="m-device" x="110" y="116" width="76" height="40" rx="6"/>
+    <rect class="m-device" x="110" y="156" width="76" height="10" rx="2"/>
+    <path class="m-detail" d="M60 160 L68 150 L76 170 L84 150 L92 170 L100 150 L110 160"/>
+    <path class="m-detail" d="M186 160 L196 150 L204 170 L212 150 L220 160"/>
+    <path class="m-motion" d="M96 100 L72 100 M78 96 L72 100 L78 104"/>
+    <path class="m-motion" d="M200 100 L224 100 M218 96 L224 100 L218 104"/>
+    <circle class="m-marker" cx="250" cy="92" r="11"/>
+    <text class="m-num" x="250" y="92">2</text>
+  </g>
+  <g data-step="3">
+    <rect class="m-device" x="226" y="30" width="84" height="48" rx="8"/>
+    <text class="m-value" x="268" y="62" text-anchor="middle">kg</text>
+    <circle class="m-marker" cx="210" cy="36" r="11"/>
+    <text class="m-num" x="210" y="36">3</text>
+    <text class="m-label" x="200" y="192">Record to 0.1 kg</text>
+  </g>
+  <text class="m-label" x="16" y="212">On the Moon or Mars, a scale can be used.</text>
+</svg>

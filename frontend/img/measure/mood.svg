@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Mood: look at the five faces from very low to very good, pick the one that matches how you feel now. There is no wrong answer.</title>
+  <circle class="m-device" cx="40" cy="96" r="22"/>
+  <circle class="m-device" cx="100" cy="96" r="22"/>
+  <circle class="m-device" cx="160" cy="96" r="22"/>
+  <circle class="m-device" cx="220" cy="96" r="22"/>
+  <circle class="m-device" cx="280" cy="96" r="22"/>
+  <path class="m-detail" d="M28 108 Q40 96 52 108 M90 108 Q100 103 110 108 M150 106 L170 106 M210 102 Q220 112 230 102 M268 100 Q280 116 292 100"/>
+  <circle class="m-device" cx="32" cy="88" r="2.5"/>
+  <circle class="m-device" cx="48" cy="88" r="2.5"/>
+  <circle class="m-device" cx="92" cy="88" r="2.5"/>
+  <circle class="m-device" cx="108" cy="88" r="2.5"/>
+  <circle class="m-device" cx="152" cy="88" r="2.5"/>
+  <circle class="m-device" cx="168" cy="88" r="2.5"/>
+  <circle class="m-device" cx="212" cy="88" r="2.5"/>
+  <circle class="m-device" cx="228" cy="88" r="2.5"/>
+  <circle class="m-device" cx="272" cy="88" r="2.5"/>
+  <circle class="m-device" cx="288" cy="88" r="2.5"/>
+  <text class="m-label" x="40" y="140" text-anchor="middle">Very low</text>
+  <text class="m-label" x="100" y="140" text-anchor="middle">Low</text>
+  <text class="m-label" x="160" y="140" text-anchor="middle">Okay</text>
+  <text class="m-label" x="220" y="140" text-anchor="middle">Good</text>
+  <text class="m-label" x="280" y="140" text-anchor="middle">Very good</text>
+  <g data-step="1">
+    <path class="m-motion" d="M16 150 L304 150"/>
+    <text class="m-label" x="60" y="182" text-anchor="middle">Very low to very good</text>
+    <circle class="m-marker" cx="30" cy="176" r="11"/>
+    <text class="m-num" x="30" y="176">1</text>
+  </g>
+  <g data-step="2">
+    <circle class="m-motion" cx="160" cy="96" r="32"/>
+    <text class="m-label" x="152" y="44">Pick one</text>
+    <circle class="m-marker" cx="130" cy="40" r="11"/>
+    <text class="m-num" x="130" y="40">2</text>
+  </g>
+  <g data-step="3">
+    <text class="m-label" x="160" y="212" text-anchor="middle">There is no wrong answer</text>
+    <circle class="m-marker" cx="290" cy="200" r="11"/>
+    <text class="m-num" x="290" y="200">3</text>
+  </g>
+</svg>

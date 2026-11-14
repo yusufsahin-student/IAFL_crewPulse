@@ -1,0 +1,154 @@
+{
+  "credit": {
+    "text": "Pictures: Health Icons (healthicons.org), public domain (CC0)",
+    "url": "https://healthicons.org/"
+  },
+  "indicators": {
+    "heart_rate": [
+      {
+        "file": "../healthicons/heartbeat.svg",
+        "caption": "Pulse"
+      }
+    ],
+    "systolic_bp": [
+      {
+        "file": "../healthicons/blood-pressure_monitor.svg",
+        "caption": "Blood pressure cuff and monitor"
+      }
+    ],
+    "diastolic_bp": [
+      {
+        "file": "../healthicons/blood-pressure_2.svg",
+        "caption": "Blood pressure monitor"
+      }
+    ],
+    "spo2": [
+      {
+        "file": "../healthicons/pulse-oximeter.svg",
+        "caption": "Finger pulse oximeter"
+      }
+    ],
+    "body_temp": [
+      {
+        "file": "../healthicons/thermometer-digital.svg",
+        "caption": "Digital thermometer"
+      }
+    ],
+    "blood_glucose": [
+      {
+        "file": "../healthicons/diabetes-measure.svg",
+        "caption": "Glucose meter and test strip"
+      }
+    ],
+    "sleep_hours": [
+      {
+        "file": "../healthicons/happy-sleepy.svg",
+        "caption": "Sleep"
+      }
+    ],
+    "mood": [
+      {
+        "file": "../healthicons/face-sad.svg",
+        "caption": "1"
+      },
+      {
+        "file": "../healthicons/face-not-ok.svg",
+        "caption": "2"
+      },
+      {
+        "file": "../healthicons/face-neutral.svg",
+        "caption": "3"
+      },
+      {
+        "file": "../healthicons/face-ok.svg",
+        "caption": "4"
+      },
+      {
+        "file": "../healthicons/face-happy.svg",
+        "caption": "5"
+      }
+    ],
+    "exercise_minutes": [
+      {
+        "file": "../healthicons/exercise-bicycle.svg",
+        "caption": "Exercise bike"
+      },
+      {
+        "file": "../healthicons/running.svg",
+        "caption": "Treadmill run"
+      }
+    ],
+    "body_mass": [
+      {
+        "file": "../healthicons/body-mass_index.svg",
+        "caption": "Body mass"
+      }
+    ],
+    "back_pain": [
+      {
+        "file": "../healthicons/back-pain.svg",
+        "caption": "Back pain"
+      }
+    ],
+    "kcal_intake": [
+      {
+        "file": "food_plate.svg",
+        "caption": "Food log"
+      }
+    ],
+    "fluid_intake": [
+      {
+        "file": "fluid_cup.svg",
+        "caption": "Drink pouches and cups"
+      }
+    ],
+    "illness_symptoms": [
+      {
+        "file": "../healthicons/thermometer-digital.svg",
+        "caption": "Digital thermometer"
+      }
+    ],
+    "stress": [
+      {
+        "file": "../healthicons/body-neurology.svg",
+        "caption": "Stress"
+      }
+    ],
+    "social_connection": [
+      {
+        "file": "../healthicons/face-happy.svg",
+        "caption": "Connection"
+      }
+    ],
+    "near_acuity": [
+      {
+        "file": "../healthicons/body-eye.svg",
+        "caption": "Eye"
+      }
+    ],
+    "amsler_distortion": [
+      {
+        "file": "../healthicons/body-eye.svg",
+        "caption": "Eye"
+      }
+    ],
+    "balance_symptoms": [
+      {
+        "file": "../healthicons/body-ear.svg",
+        "caption": "Ear and balance"
+      }
+    ],
+    "urine_color": [
+      {
+        "file": "../healthicons/body-kidneys.svg",
+        "caption": "Kidneys"
+      }
+    ],
+    "grip_strength": [
+      {
+        "file": "../healthicons/body-arm.svg",
+        "caption": "Arm"
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Reaction time: start the test on the tablet, tap the target as soon as it changes colour, the test runs five times and keeps the median.</title>
+  <rect class="m-device" x="50" y="14" width="200" height="160" rx="14"/>
+  <rect class="m-body" x="62" y="28" width="176" height="128" rx="6"/>
+  <g data-step="1">
+    <rect class="m-device" x="110" y="40" width="100" height="30" rx="6"/>
+    <text class="m-label" x="160" y="60" text-anchor="middle">Start</text>
+    <circle class="m-marker" cx="84" cy="46" r="11"/>
+    <text class="m-num" x="84" y="46">1</text>
+  </g>
+  <g data-step="2">
+    <circle class="m-motion" cx="160" cy="96" r="22"/>
+    <circle class="m-device" cx="160" cy="96" r="8"/>
+    <path class="m-detail" d="M240 150 L172 104"/>
+    <circle class="m-device" cx="170" cy="102" r="5"/>
+    <circle class="m-marker" cx="84" cy="96" r="11"/>
+    <text class="m-num" x="84" y="96">2</text>
+  </g>
+  <g data-step="3">
+    <circle class="m-detail" cx="110" cy="190" r="6"/>
+    <circle class="m-detail" cx="130" cy="190" r="6"/>
+    <circle class="m-detail" cx="150" cy="190" r="6"/>
+    <circle class="m-detail" cx="170" cy="190" r="6"/>
+    <circle class="m-detail" cx="190" cy="190" r="6"/>
+    <text class="m-label" x="60" y="214">Five trials, keep the median</text>
+    <circle class="m-marker" cx="34" cy="190" r="11"/>
+    <text class="m-num" x="34" y="190">3</text>
+  </g>
+</svg>

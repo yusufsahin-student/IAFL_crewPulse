@@ -1,0 +1,3 @@
+[
+  {"id": 1, "indicator_id": "back_pain", "mission_id": null, "day_from": 1, "day_to": 14, "normal_low": null, "normal_high": 3, "critical_low": null, "critical_high": null, "note": "First 14 days: the spine lengthens in microgravity, so mild to moderate back ache is common. Pain up to Moderate counts as normal for this period.", "source_ref": "nasa_hrp"}
+]

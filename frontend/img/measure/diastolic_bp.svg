@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Diastolic blood pressure: same cuff measurement as the systolic reading, find and record the bottom number on the monitor.</title>
+  <circle class="m-body" cx="80" cy="34" r="18"/>
+  <path class="m-body" d="M62 58 Q56 98 62 140 L104 140 Q108 98 100 60 Z"/>
+  <path class="m-body" d="M100 74 Q120 84 118 110 L140 118 L138 132 L112 124 Q108 108 100 98 Z"/>
+  <path class="m-detail" d="M50 140 L120 140 M70 140 L62 196 M104 140 L114 196 M30 196 L300 196"/>
+  <g data-step="1">
+    <rect class="m-device" x="90" y="86" width="30" height="22" rx="9"/>
+    <path class="m-motion" d="M56 98 L88 98"/>
+    <text class="m-label" x="14" y="212">Same cuff</text>
+    <circle class="m-marker" cx="34" cy="122" r="11"/>
+    <text class="m-num" x="34" y="122">1</text>
+  </g>
+  <rect class="m-device" x="186" y="44" width="116" height="100" rx="8"/>
+  <text class="m-value" x="244" y="92" text-anchor="middle">120</text>
+  <g data-step="2">
+    <rect class="m-motion" x="200" y="104" width="88" height="30" rx="6"/>
+    <text class="m-value" x="244" y="128" text-anchor="middle">80</text>
+    <circle class="m-marker" cx="172" cy="120" r="11"/>
+    <text class="m-num" x="172" y="120">2</text>
+  </g>
+  <g data-step="3">
+    <text class="m-label" x="160" y="206" text-anchor="middle">Record bottom number</text>
+    <circle class="m-marker" cx="290" cy="206" r="11"/>
+    <text class="m-num" x="290" y="206">3</text>
+  </g>
+  <text class="m-label" x="244" y="164" text-anchor="middle">mmHg</text>
+</svg>

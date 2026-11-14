@@ -4,12 +4,12 @@ Base app for the NASA Space Apps 2026 challenge *Create Health Monitoring Softwa
 
 One daily check-in, interpreted for where the crew is in the mission:
 
-- **Check-in**: vitals, sleep, mood, a reaction-time test and an optional camera pulse estimate.
+- **Check-in**: vitals, sleep, mood and a reaction-time test.
 - **Personal anomaly model** (TensorFlow): learns each astronaut's own baseline and flags drift.
 - **Projected bone loss**: published loss rates, adjusted for gravity and logged exercise.
 - **Estimated radiation dose**: habitat zone model plus NASA DONKI solar events; shows where to shelter.
 - **Health score** with written reasons, and **distance-aware triage**: the same reading leads to "call the flight surgeon" on the ISS and to a crew-led protocol on the way to Mars.
-- **Mind Lab**: a guided Turkish-first flow with a short self-report and a three-minute vigilance test. The former emoji expression exercise is removed and its place is retained as a non-scoring development marker.
+- **Mind Lab**: a guided flow with a short self-report and a three-minute vigilance test. The former emoji expression exercise is removed and its place is retained as a non-scoring development marker.
 - **Adaptive fitness**: a local daily countermeasure plan that adjusts within guarded limits using seven-day activity, sleep, mood, stress, data freshness and safety alerts.
 - **Mission Companion**: turns the latest assessment into a local action checklist and an explicit handoff file. Nothing is sent automatically.
 - **Cabin context**: shows the latest CO₂, temperature, and humidity separately from the health score; simulated readings are labelled explicitly.

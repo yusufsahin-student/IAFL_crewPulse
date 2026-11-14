@@ -1,0 +1,14 @@
+[
+  {"id": "head", "name": "Head", "description": "Brain and sleep: alertness, reaction time and mood.", "display_order": 1},
+  {"id": "eyes", "name": "Eyes", "description": "Vision. On long missions the eye can change shape and blur near sight (spaceflight-associated neuro-ocular syndrome, SANS). Two checks are logged here, the same kinds NASA uses on the ISS: a near-vision test and an Amsler grid.", "alert": "Eyesight can change on long missions. In a NASA survey of about 300 astronauts, around 60% of those on long flights reported worse near or distance vision, and for some the changes were still there years after landing. The cause is spaceflight-associated neuro-ocular syndrome (SANS): a swollen optic nerve, a flattened back of the eye and a far-sighted shift. Astronauts do not go blind, but vision can stay blurred. Run both eye tests regularly and report any change.", "display_order": 2},
+  {"id": "ears", "name": "Ears and balance", "description": "The inner ear senses balance. In weightlessness it can cause space motion sickness, with dizziness, nausea and unsteadiness. A daily self-rating tracks it.", "display_order": 3},
+  {"id": "heart", "name": "Heart", "description": "Heart rate and blood pressure.", "display_order": 4},
+  {"id": "lungs", "name": "Lungs", "description": "Breathing and blood oxygen.", "display_order": 5},
+  {"id": "arms", "name": "Arms", "description": "Arm muscles and grip. Muscles that no longer carry weight lose strength without exercise. A handgrip reading tracks upper-body strength.", "display_order": 6},
+  {"id": "abdomen", "name": "Abdomen", "description": "Digestion, blood sugar and metabolism.", "display_order": 7},
+  {"id": "kidneys", "name": "Kidneys", "description": "Calcium released from bone in weightlessness raises the risk of kidney stones, and drinking enough water helps. Urine colour is a quick hydration check.", "display_order": 8},
+  {"id": "spine", "name": "Spine", "description": "Back and spinal column.", "display_order": 9},
+  {"id": "hips", "name": "Hips", "description": "Hip and pelvis bones.", "display_order": 10},
+  {"id": "legs", "name": "Legs", "description": "Leg bones, muscles and daily activity.", "display_order": 11},
+  {"id": "whole_body", "name": "Whole body", "description": "Temperature, body mass and general readings.", "display_order": 12}
+]

@@ -1,0 +1,7 @@
+[
+  {"id": 1, "name": "Mira Sato", "role": "Flight engineer", "sex": "F", "birth_year": 1985, "height_cm": 165, "preflight_mass_kg": 62.0, "mission_id": "iss", "mission_start": "OFFSET:-72", "avatar_color": "#2F6F9F"},
+  {"id": 2, "name": "Tomas Reyes", "role": "Science officer", "sex": "M", "birth_year": 1979, "height_cm": 180, "preflight_mass_kg": 78.0, "mission_id": "iss", "mission_start": "OFFSET:-35", "avatar_color": "#8A5A2B"},
+  {"id": 3, "name": "Priya Lind", "role": "Surface lead", "sex": "F", "birth_year": 1990, "height_cm": 162, "preflight_mass_kg": 58.0, "mission_id": "moon", "mission_start": "OFFSET:-20", "avatar_color": "#3C8D6E"},
+  {"id": 4, "name": "Owen Varga", "role": "Mission commander", "sex": "M", "birth_year": 1982, "height_cm": 176, "preflight_mass_kg": 74.0, "mission_id": "mars", "mission_start": "OFFSET:-95", "avatar_color": "#B5483B"},
+  {"id": 5, "name": "Ines Okafor", "role": "Rover geologist", "sex": "F", "birth_year": 1988, "height_cm": 170, "preflight_mass_kg": 65.0, "mission_id": "rover", "mission_start": "OFFSET:-24", "avatar_color": "#7A5FA8"}
+]

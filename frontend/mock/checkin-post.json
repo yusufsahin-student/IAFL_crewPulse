@@ -1,0 +1,659 @@
+{
+  "checkin_id": 999,
+  "status": {
+    "anomaly": {
+      "anomaly_score": 0.551,
+      "contributors": [
+        {
+          "baseline_mean": 8.475,
+          "baseline_sd": 0.295,
+          "indicator_id": "sleep_hours",
+          "value": 7.5,
+          "z": -3.308
+        },
+        {
+          "baseline_mean": 3.8,
+          "baseline_sd": 0.4,
+          "indicator_id": "mood",
+          "value": 3.0,
+          "z": -2.0
+        },
+        {
+          "baseline_mean": 1.316,
+          "baseline_sd": 0.465,
+          "indicator_id": "back_pain",
+          "value": 2.0,
+          "z": 1.472
+        }
+      ],
+      "is_anomaly": true,
+      "method": "zscore_fallback"
+    },
+    "astronaut": {
+      "avatar_color": "#2F6F9F",
+      "birth_year": 1985,
+      "height_cm": 165.0,
+      "id": 1,
+      "mission_day": 73,
+      "mission_id": "iss",
+      "mission_start": "2026-09-02",
+      "name": "Mira Sato",
+      "preflight_mass_kg": 62.0,
+      "role": "Flight engineer",
+      "sex": "F"
+    },
+    "bone": {
+      "status": "normal",
+      "worst_loss_pct": 2.4,
+      "worst_site_id": "trochanter"
+    },
+    "checkin": {
+      "id": 1,
+      "mission_day": 73,
+      "taken_at": "2026-11-13T07:06:37Z"
+    },
+    "freshness": {
+      "age_hours": 12.914166666666667,
+      "state": "current"
+    },
+    "indicators": [
+      {
+        "baseline_mean": 75.2,
+        "body_region_id": "heart",
+        "decimals": 0,
+        "delta_pct": -1.6,
+        "direction": null,
+        "indicator_id": "heart_rate",
+        "name": "Heart rate",
+        "range": {
+          "adjusted": false,
+          "critical_high": 130.0,
+          "critical_low": 40.0,
+          "normal_high": 100.0,
+          "normal_low": 50.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "bpm",
+        "value": 74.0
+      },
+      {
+        "baseline_mean": 115.9,
+        "body_region_id": "heart",
+        "decimals": 0,
+        "delta_pct": -1.6,
+        "direction": null,
+        "indicator_id": "systolic_bp",
+        "name": "Systolic blood pressure",
+        "range": {
+          "adjusted": false,
+          "critical_high": 180.0,
+          "critical_low": 90.0,
+          "normal_high": 129.0,
+          "normal_low": 100.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "mmHg",
+        "value": 114.0
+      },
+      {
+        "baseline_mean": 68.4,
+        "body_region_id": "heart",
+        "decimals": 0,
+        "delta_pct": 0.9,
+        "direction": null,
+        "indicator_id": "diastolic_bp",
+        "name": "Diastolic blood pressure",
+        "range": {
+          "adjusted": false,
+          "critical_high": 120.0,
+          "critical_low": null,
+          "normal_high": 79.0,
+          "normal_low": 60.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "mmHg",
+        "value": 69.0
+      },
+      {
+        "baseline_mean": 97.64,
+        "body_region_id": "lungs",
+        "decimals": 0,
+        "delta_pct": -0.7,
+        "direction": null,
+        "indicator_id": "spo2",
+        "name": "Blood oxygen (SpO2)",
+        "range": {
+          "adjusted": false,
+          "critical_high": null,
+          "critical_low": 92.0,
+          "normal_high": 100.0,
+          "normal_low": 95.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "%",
+        "value": 97.0
+      },
+      {
+        "baseline_mean": 36.76,
+        "body_region_id": "whole_body",
+        "decimals": 1,
+        "delta_pct": -0.7,
+        "direction": null,
+        "indicator_id": "body_temp",
+        "name": "Body temperature",
+        "range": {
+          "adjusted": false,
+          "critical_high": 38.0,
+          "critical_low": 35.0,
+          "normal_high": 37.5,
+          "normal_low": 36.1,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "°C",
+        "value": 36.5
+      },
+      {
+        "baseline_mean": 102.35,
+        "body_region_id": "abdomen",
+        "decimals": 0,
+        "delta_pct": -5.2,
+        "direction": null,
+        "indicator_id": "blood_glucose",
+        "name": "Blood glucose",
+        "range": {
+          "adjusted": false,
+          "critical_high": 250.0,
+          "critical_low": 54.0,
+          "normal_high": 140.0,
+          "normal_low": 70.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "mg/dL",
+        "value": 97.0
+      },
+      {
+        "baseline_mean": 8.48,
+        "body_region_id": "head",
+        "decimals": 1,
+        "delta_pct": -11.5,
+        "direction": null,
+        "indicator_id": "sleep_hours",
+        "name": "Sleep last night",
+        "range": {
+          "adjusted": false,
+          "critical_high": 12.0,
+          "critical_low": 4.0,
+          "normal_high": 9.5,
+          "normal_low": 7.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "h",
+        "value": 7.5
+      },
+      {
+        "baseline_mean": 3.8,
+        "body_region_id": "head",
+        "decimals": 0,
+        "delta_pct": -21.1,
+        "direction": null,
+        "indicator_id": "mood",
+        "name": "Mood",
+        "range": {
+          "adjusted": false,
+          "critical_high": null,
+          "critical_low": 2.0,
+          "normal_high": null,
+          "normal_low": 3.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "score (1-5)",
+        "value": 3.0
+      },
+      {
+        "baseline_mean": 218.05,
+        "body_region_id": "head",
+        "decimals": 0,
+        "delta_pct": null,
+        "direction": null,
+        "indicator_id": "reaction_ms",
+        "name": "Reaction time",
+        "range": {
+          "adjusted": false,
+          "critical_high": 500.0,
+          "critical_low": null,
+          "normal_high": 300.0,
+          "normal_low": 100.0,
+          "note": null
+        },
+        "status": "missing",
+        "unit": "ms",
+        "value": null
+      },
+      {
+        "baseline_mean": 101.25,
+        "body_region_id": "legs",
+        "decimals": 0,
+        "delta_pct": -21.0,
+        "direction": null,
+        "indicator_id": "exercise_minutes",
+        "name": "Exercise today",
+        "range": {
+          "adjusted": false,
+          "critical_high": null,
+          "critical_low": 10.0,
+          "normal_high": null,
+          "normal_low": 30.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "min",
+        "value": 80.0
+      },
+      {
+        "baseline_mean": 70.17,
+        "body_region_id": "whole_body",
+        "decimals": 1,
+        "delta_pct": -1.0,
+        "direction": null,
+        "indicator_id": "body_mass",
+        "name": "Body mass",
+        "range": {
+          "adjusted": false,
+          "critical_high": 108.0,
+          "critical_low": 39.0,
+          "normal_high": 90.0,
+          "normal_low": 46.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "kg",
+        "value": 69.5
+      },
+      {
+        "baseline_mean": 1.32,
+        "body_region_id": "spine",
+        "decimals": 0,
+        "delta_pct": 52.0,
+        "direction": null,
+        "indicator_id": "back_pain",
+        "name": "Back pain",
+        "range": {
+          "adjusted": false,
+          "critical_high": 4.0,
+          "critical_low": null,
+          "normal_high": 2.0,
+          "normal_low": null,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "score (1-5)",
+        "value": 2.0
+      },
+      {
+        "baseline_mean": 3041.18,
+        "body_region_id": "abdomen",
+        "decimals": 0,
+        "delta_pct": -4.6,
+        "direction": null,
+        "indicator_id": "kcal_intake",
+        "name": "Food eaten today",
+        "range": {
+          "adjusted": false,
+          "critical_high": null,
+          "critical_low": null,
+          "normal_high": null,
+          "normal_low": 2290.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "kcal",
+        "value": 2900.0
+      },
+      {
+        "baseline_mean": 3973.68,
+        "body_region_id": "abdomen",
+        "decimals": 0,
+        "delta_pct": 13.2,
+        "direction": null,
+        "indicator_id": "fluid_intake",
+        "name": "Fluids drunk today",
+        "range": {
+          "adjusted": false,
+          "critical_high": null,
+          "critical_low": null,
+          "normal_high": null,
+          "normal_low": 2000.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "mL",
+        "value": 4500.0
+      },
+      {
+        "baseline_mean": 1.44,
+        "body_region_id": "whole_body",
+        "decimals": 0,
+        "delta_pct": -30.8,
+        "direction": null,
+        "indicator_id": "illness_symptoms",
+        "name": "Illness symptoms",
+        "range": {
+          "adjusted": false,
+          "critical_high": 4.0,
+          "critical_low": null,
+          "normal_high": 2.0,
+          "normal_low": null,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "score (1-5)",
+        "value": 1.0
+      },
+      {
+        "baseline_mean": 2.63,
+        "body_region_id": "head",
+        "decimals": 0,
+        "delta_pct": 14.0,
+        "direction": null,
+        "indicator_id": "stress",
+        "name": "Stress",
+        "range": {
+          "adjusted": false,
+          "critical_high": 4.0,
+          "critical_low": null,
+          "normal_high": 3.0,
+          "normal_low": null,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "score (1-5)",
+        "value": 3.0
+      },
+      {
+        "baseline_mean": 3.5,
+        "body_region_id": "head",
+        "decimals": 0,
+        "delta_pct": -14.3,
+        "direction": null,
+        "indicator_id": "social_connection",
+        "name": "Social connection",
+        "range": {
+          "adjusted": false,
+          "critical_high": null,
+          "critical_low": 2.0,
+          "normal_high": null,
+          "normal_low": 3.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "score (1-5)",
+        "value": 3.0
+      },
+      {
+        "baseline_mean": 0.09,
+        "body_region_id": "eyes",
+        "decimals": 1,
+        "delta_pct": 11.8,
+        "direction": null,
+        "indicator_id": "near_acuity",
+        "name": "Near vision (eye chart)",
+        "range": {
+          "adjusted": false,
+          "critical_high": 0.5,
+          "critical_low": null,
+          "normal_high": 0.2,
+          "normal_low": 0.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "logMAR",
+        "value": 0.1
+      },
+      {
+        "baseline_mean": 0.0,
+        "body_region_id": "eyes",
+        "decimals": 0,
+        "delta_pct": null,
+        "direction": null,
+        "indicator_id": "amsler_distortion",
+        "name": "Amsler grid (distorted squares)",
+        "range": {
+          "adjusted": false,
+          "critical_high": 5.0,
+          "critical_low": null,
+          "normal_high": 0.0,
+          "normal_low": 0.0,
+          "note": null
+        },
+        "status": "missing",
+        "unit": "squares",
+        "value": null
+      },
+      {
+        "baseline_mean": 1.37,
+        "body_region_id": "ears",
+        "decimals": 0,
+        "delta_pct": -26.9,
+        "direction": null,
+        "indicator_id": "balance_symptoms",
+        "name": "Balance and dizziness",
+        "range": {
+          "adjusted": false,
+          "critical_high": 3.0,
+          "critical_low": null,
+          "normal_high": 2.0,
+          "normal_low": null,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "score (1-5)",
+        "value": 1.0
+      },
+      {
+        "baseline_mean": 2.06,
+        "body_region_id": "kidneys",
+        "decimals": 0,
+        "delta_pct": -2.7,
+        "direction": null,
+        "indicator_id": "urine_color",
+        "name": "Urine colour",
+        "range": {
+          "adjusted": false,
+          "critical_high": 5.0,
+          "critical_low": null,
+          "normal_high": 3.0,
+          "normal_low": null,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "score (1-8)",
+        "value": 2.0
+      },
+      {
+        "baseline_mean": 43.21,
+        "body_region_id": "arms",
+        "decimals": 1,
+        "delta_pct": -20.1,
+        "direction": null,
+        "indicator_id": "grip_strength",
+        "name": "Grip strength",
+        "range": {
+          "adjusted": false,
+          "critical_high": null,
+          "critical_low": null,
+          "normal_high": null,
+          "normal_low": 16.0,
+          "note": null
+        },
+        "status": "normal",
+        "unit": "kg",
+        "value": 34.5
+      }
+    ],
+    "mission": {
+      "comms_delay_s": 0.5,
+      "consult_mode": "ground_led",
+      "description": "Low Earth orbit, about 420 km up (approximate). Earth's magnetic field blocks most solar particles, so the solar particle factor is low. Mission control leads medical decisions and replies within seconds.",
+      "display_order": 1,
+      "distance_km": 420.0,
+      "evac_days": 1.0,
+      "gcr_msv_per_day": 0.884,
+      "gravity_g": 0.0,
+      "id": "iss",
+      "name": "International Space Station",
+      "sep_exposure_factor": 0.2,
+      "source_ref": "iss_tepc"
+    },
+    "radiation": {
+      "active_event": null,
+      "mission_dose_msv": 103.54,
+      "pct_of_limit": 17.3,
+      "recommended_zone_id": "iss_storm_shelter",
+      "today_msv": 0.85
+    },
+    "regions": [
+      {
+        "body_region_id": "head",
+        "indicator_ids": [
+          "sleep_hours",
+          "mood",
+          "reaction_ms",
+          "stress",
+          "social_connection"
+        ],
+        "name": "Head",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "eyes",
+        "indicator_ids": [
+          "near_acuity",
+          "amsler_distortion"
+        ],
+        "name": "Eyes",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "ears",
+        "indicator_ids": [
+          "balance_symptoms"
+        ],
+        "name": "Ears and balance",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "heart",
+        "indicator_ids": [
+          "heart_rate",
+          "systolic_bp",
+          "diastolic_bp"
+        ],
+        "name": "Heart",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "lungs",
+        "indicator_ids": [
+          "spo2"
+        ],
+        "name": "Lungs",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "arms",
+        "indicator_ids": [
+          "grip_strength"
+        ],
+        "name": "Arms",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "abdomen",
+        "indicator_ids": [
+          "blood_glucose",
+          "kcal_intake",
+          "fluid_intake"
+        ],
+        "name": "Abdomen",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "kidneys",
+        "indicator_ids": [
+          "urine_color"
+        ],
+        "name": "Kidneys",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "spine",
+        "indicator_ids": [
+          "back_pain"
+        ],
+        "name": "Spine",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "hips",
+        "indicator_ids": [],
+        "name": "Hips",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "legs",
+        "indicator_ids": [
+          "exercise_minutes"
+        ],
+        "name": "Legs",
+        "status": "normal"
+      },
+      {
+        "body_region_id": "whole_body",
+        "indicator_ids": [
+          "body_temp",
+          "body_mass",
+          "illness_symptoms"
+        ],
+        "name": "Whole body",
+        "status": "normal"
+      }
+    ],
+    "score": {
+      "band": "good",
+      "parts": {
+        "anomaly": 44.9,
+        "bone": 80.6,
+        "radiation": 82.7,
+        "vitals": 100.0
+      },
+      "reasons": [
+        "Today's check-in is unusual for you.",
+        "Sleep last night is 12% below your usual level."
+      ],
+      "value": 81
+    },
+    "triage": {
+      "comms_delay_s": 0.5,
+      "consult_mode": "ground_led",
+      "contact": "Flight surgeon, by routine message (one-way delay 0.5 s)",
+      "guidance": [],
+      "headline": "Recheck today on International Space Station",
+      "instructions": [
+        "Recheck the flagged reading within 2 hours.",
+        "Follow the self-care steps in the app.",
+        "Send a routine message to the flight surgeon with the readings and what you did.",
+        "Continue your normal tasks unless the flight surgeon says otherwise."
+      ],
+      "level": 1,
+      "reply_minutes": 0.0
+    }
+  }
+}

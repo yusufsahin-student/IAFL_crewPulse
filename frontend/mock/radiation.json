@@ -1,0 +1,294 @@
+{
+  "active_event": null,
+  "astronaut": {
+    "daily": [
+      {
+        "day": "2026-10-15",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-16",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-17",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-18",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-19",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-20",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-21",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-22",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-23",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-24",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-25",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-26",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-27",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-28",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-29",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-30",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-10-31",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-01",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-02",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-03",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-04",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-05",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-06",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-07",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-08",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-09",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-10",
+        "msv": 20.87
+      },
+      {
+        "day": "2026-11-11",
+        "msv": 10.83
+      },
+      {
+        "day": "2026-11-12",
+        "msv": 1.01
+      },
+      {
+        "day": "2026-11-13",
+        "msv": 0.85
+      }
+    ],
+    "limit_msv": 600.0,
+    "mission_dose_msv": 103.54,
+    "pct_of_limit": 17.3,
+    "today_msv": 0.85
+  },
+  "events": [
+    {
+      "class_type": null,
+      "dose_relevant": 1,
+      "end_time": "2026-11-11T10:00:00Z",
+      "event_type": "SEP",
+      "id": "sim-sep-1",
+      "link": null,
+      "note": "Simulated solar particle event for the demo. Not a real event.",
+      "severity": 0.8,
+      "source": "sim",
+      "start_time": "2026-11-10T04:00:00Z"
+    },
+    {
+      "class_type": "M2.5",
+      "dose_relevant": 0,
+      "end_time": "2026-11-07T23:00:00Z",
+      "event_type": "FLR",
+      "id": "sim-flr-3",
+      "link": null,
+      "note": "Simulated flare for the demo.",
+      "severity": 0.68,
+      "source": "sim",
+      "start_time": "2026-11-07T21:00:00Z"
+    },
+    {
+      "class_type": null,
+      "dose_relevant": 0,
+      "end_time": null,
+      "event_type": "CME",
+      "id": "sim-cme-1",
+      "link": null,
+      "note": "Simulated coronal mass ejection for the demo.",
+      "severity": 0.3,
+      "source": "sim",
+      "start_time": "2026-11-01T03:00:00Z"
+    },
+    {
+      "class_type": "C4.2",
+      "dose_relevant": 0,
+      "end_time": "2026-10-26T10:00:00Z",
+      "event_type": "FLR",
+      "id": "sim-flr-2",
+      "link": null,
+      "note": "Simulated flare for the demo.",
+      "severity": 0.52,
+      "source": "sim",
+      "start_time": "2026-10-26T09:00:00Z"
+    },
+    {
+      "class_type": "M1.8",
+      "dose_relevant": 0,
+      "end_time": "2026-10-19T16:00:00Z",
+      "event_type": "FLR",
+      "id": "sim-flr-1",
+      "link": null,
+      "note": "Simulated flare for the demo.",
+      "severity": 0.65,
+      "source": "sim",
+      "start_time": "2026-10-19T14:00:00Z"
+    }
+  ],
+  "mission_id": "iss",
+  "note": "Estimate from a simplified shielding model.",
+  "recommended_zone_id": "iss_storm_shelter",
+  "zones": [
+    {
+      "background_msv_per_day": 0.991,
+      "default_hours": 8.5,
+      "description": "Sleep and private time.",
+      "display_order": 1,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "iss_crew_quarters",
+      "is_shelter": 0,
+      "mission_id": "iss",
+      "name": "Crew quarters",
+      "shielding_g_cm2": 12.0,
+      "w": 30.0,
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "background_msv_per_day": 1.034,
+      "default_hours": 7.0,
+      "description": "Experiments and maintenance.",
+      "display_order": 2,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "iss_lab",
+      "is_shelter": 0,
+      "mission_id": "iss",
+      "name": "Lab",
+      "shielding_g_cm2": 9.0,
+      "w": 40.0,
+      "x": 30.0,
+      "y": 0.0
+    },
+    {
+      "background_msv_per_day": 1.049,
+      "default_hours": 1.5,
+      "description": "Treadmill, cycle and resistance device.",
+      "display_order": 3,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "iss_exercise",
+      "is_shelter": 0,
+      "mission_id": "iss",
+      "name": "Exercise",
+      "shielding_g_cm2": 8.0,
+      "w": 30.0,
+      "x": 70.0,
+      "y": 0.0
+    },
+    {
+      "background_msv_per_day": 0.745,
+      "default_hours": 1.0,
+      "description": "Most shielded area. Move here during a solar particle event.",
+      "display_order": 4,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "iss_storm_shelter",
+      "is_shelter": 1,
+      "mission_id": "iss",
+      "name": "Storm shelter",
+      "shielding_g_cm2": 32.0,
+      "w": 25.0,
+      "x": 0.0,
+      "y": 30.0
+    },
+    {
+      "background_msv_per_day": 1.02,
+      "default_hours": 2.0,
+      "description": "Food and water.",
+      "display_order": 5,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "iss_galley",
+      "is_shelter": 0,
+      "mission_id": "iss",
+      "name": "Galley",
+      "shielding_g_cm2": 10.0,
+      "w": 35.0,
+      "x": 25.0,
+      "y": 30.0
+    },
+    {
+      "background_msv_per_day": 1.08,
+      "default_hours": 4.0,
+      "description": "Passage between modules, with a window onto Earth.",
+      "display_order": 6,
+      "event_msv_per_h": 0.0,
+      "h": 30.0,
+      "id": "iss_corridor",
+      "is_shelter": 0,
+      "mission_id": "iss",
+      "name": "Corridor and cupola",
+      "shielding_g_cm2": 6.0,
+      "w": 40.0,
+      "x": 60.0,
+      "y": 30.0
+    }
+  ]
+}

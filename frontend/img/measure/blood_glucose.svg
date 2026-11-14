@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Blood glucose: wash and dry your hands, prick the side of a fingertip with the lancet, apply a drop to the test strip and read the meter.</title>
+  <path class="m-body" d="M18 110 L140 110 Q168 110 168 124 Q168 138 140 138 L18 138 Z"/>
+  <g data-step="1">
+    <path class="m-motion" d="M40 56 Q46 66 40 72 Q34 66 40 56 Z"/>
+    <text class="m-label" x="20" y="44">Wash and dry</text>
+    <circle class="m-marker" cx="120" cy="44" r="11"/>
+    <text class="m-num" x="120" y="44">1</text>
+  </g>
+  <g data-step="2">
+    <rect class="m-device" x="150" y="30" width="52" height="18" rx="4"/>
+    <path class="m-motion" d="M176 52 L162 92"/>
+    <text class="m-label" x="206" y="72">Lancet</text>
+    <circle class="m-marker" cx="120" cy="88" r="11"/>
+    <text class="m-num" x="120" y="88">2</text>
+  </g>
+  <g data-step="3">
+    <rect class="m-device" x="96" y="150" width="80" height="8" rx="2"/>
+    <path class="m-detail" d="M176 154 L214 154"/>
+    <rect class="m-device" x="214" y="84" width="96" height="96" rx="10"/>
+    <rect class="m-body" x="226" y="100" width="72" height="30" rx="4"/>
+    <text class="m-label" x="262" y="122" text-anchor="middle">mg/dL</text>
+    <text class="m-label" x="214" y="200">Read meter</text>
+    <circle class="m-marker" cx="80" cy="146" r="11"/>
+    <text class="m-num" x="80" y="146">3</text>
+  </g>
+</svg>

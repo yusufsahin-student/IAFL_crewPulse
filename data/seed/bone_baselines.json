@@ -1,0 +1,22 @@
+[
+  {"astronaut_id": 1, "bone_site_id": "lumbar_spine", "bmd_g_cm2": 1.12, "measured_on": "OFFSET:-90"},
+  {"astronaut_id": 1, "bone_site_id": "femoral_neck", "bmd_g_cm2": 0.94, "measured_on": "OFFSET:-90"},
+  {"astronaut_id": 1, "bone_site_id": "trochanter", "bmd_g_cm2": 0.84, "measured_on": "OFFSET:-90"},
+  {"astronaut_id": 1, "bone_site_id": "pelvis", "bmd_g_cm2": 1.22, "measured_on": "OFFSET:-90"},
+  {"astronaut_id": 1, "bone_site_id": "calcaneus", "bmd_g_cm2": 0.58, "measured_on": "OFFSET:-90"},
+  {"astronaut_id": 2, "bone_site_id": "lumbar_spine", "bmd_g_cm2": 1.05, "measured_on": "OFFSET:-60"},
+  {"astronaut_id": 2, "bone_site_id": "femoral_neck", "bmd_g_cm2": 0.91, "measured_on": "OFFSET:-60"},
+  {"astronaut_id": 2, "bone_site_id": "trochanter", "bmd_g_cm2": 0.80, "measured_on": "OFFSET:-60"},
+  {"astronaut_id": 2, "bone_site_id": "pelvis", "bmd_g_cm2": 1.18, "measured_on": "OFFSET:-60"},
+  {"astronaut_id": 2, "bone_site_id": "calcaneus", "bmd_g_cm2": 0.55, "measured_on": "OFFSET:-60"},
+  {"astronaut_id": 3, "bone_site_id": "lumbar_spine", "bmd_g_cm2": 1.08, "measured_on": "OFFSET:-40"},
+  {"astronaut_id": 3, "bone_site_id": "femoral_neck", "bmd_g_cm2": 0.88, "measured_on": "OFFSET:-40"},
+  {"astronaut_id": 3, "bone_site_id": "trochanter", "bmd_g_cm2": 0.79, "measured_on": "OFFSET:-40"},
+  {"astronaut_id": 3, "bone_site_id": "pelvis", "bmd_g_cm2": 1.15, "measured_on": "OFFSET:-40"},
+  {"astronaut_id": 3, "bone_site_id": "calcaneus", "bmd_g_cm2": 0.61, "measured_on": "OFFSET:-40"},
+  {"astronaut_id": 4, "bone_site_id": "lumbar_spine", "bmd_g_cm2": 1.18, "measured_on": "OFFSET:-120"},
+  {"astronaut_id": 4, "bone_site_id": "femoral_neck", "bmd_g_cm2": 0.97, "measured_on": "OFFSET:-120"},
+  {"astronaut_id": 4, "bone_site_id": "trochanter", "bmd_g_cm2": 0.87, "measured_on": "OFFSET:-120"},
+  {"astronaut_id": 4, "bone_site_id": "pelvis", "bmd_g_cm2": 1.27, "measured_on": "OFFSET:-120"},
+  {"astronaut_id": 4, "bone_site_id": "calcaneus", "bmd_g_cm2": 0.63, "measured_on": "OFFSET:-120"}
+]

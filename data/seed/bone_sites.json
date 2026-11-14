@@ -1,0 +1,7 @@
+[
+  {"id": "lumbar_spine", "name": "Lumbar spine", "body_region_id": "spine", "loss_pct_per_month": 1.06, "display_order": 1, "source_ref": "hrp_bone2017"},
+  {"id": "femoral_neck", "name": "Femoral neck", "body_region_id": "hips", "loss_pct_per_month": 1.15, "display_order": 2, "source_ref": "bone_leblanc2000"},
+  {"id": "trochanter", "name": "Trochanter", "body_region_id": "hips", "loss_pct_per_month": 1.56, "display_order": 3, "source_ref": "hrp_bone2017"},
+  {"id": "pelvis", "name": "Pelvis", "body_region_id": "hips", "loss_pct_per_month": 1.35, "display_order": 4, "source_ref": "bone_leblanc2000"},
+  {"id": "calcaneus", "name": "Heel bone (calcaneus)", "body_region_id": "legs", "loss_pct_per_month": 0.5, "display_order": 5, "source_ref": "bone_sibonga2007"}
+]

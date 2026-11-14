@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Systolic blood pressure: rest seated, put the cuff on the upper arm at heart height, start the monitor, record the top number.</title>
+  <circle class="m-body" cx="80" cy="34" r="18"/>
+  <path class="m-body" d="M62 58 Q56 98 62 140 L104 140 Q108 98 100 60 Z"/>
+  <path class="m-body" d="M100 74 Q120 84 118 110 L140 118 L138 132 L112 124 Q108 108 100 98 Z"/>
+  <path class="m-detail" d="M50 140 L120 140 M70 140 L62 196 M104 140 L114 196 M30 196 L300 196"/>
+  <g data-step="1">
+    <circle class="m-device" cx="150" cy="44" r="16"/>
+    <path class="m-detail" d="M150 44 L150 34 M150 44 L158 48"/>
+    <text class="m-label" x="150" y="82" text-anchor="middle">5 min</text>
+    <circle class="m-marker" cx="124" cy="22" r="11"/>
+    <text class="m-num" x="124" y="22">1</text>
+  </g>
+  <g data-step="2">
+    <rect class="m-device" x="90" y="86" width="30" height="22" rx="9"/>
+    <path class="m-motion" d="M56 98 L88 98"/>
+    <text class="m-label" x="14" y="212">Cuff at heart height</text>
+    <circle class="m-marker" cx="34" cy="122" r="11"/>
+    <text class="m-num" x="34" y="122">2</text>
+  </g>
+  <g data-step="3">
+    <rect class="m-device" x="186" y="44" width="116" height="100" rx="8"/>
+    <text class="m-label" x="244" y="68" text-anchor="middle">Keep still</text>
+    <circle class="m-marker" cx="172" cy="30" r="11"/>
+    <text class="m-num" x="172" y="30">3</text>
+  </g>
+  <g data-step="4">
+    <text class="m-value" x="244" y="96" text-anchor="middle">120</text>
+    <circle class="m-marker" cx="170" cy="100" r="11"/>
+    <text class="m-num" x="170" y="100">4</text>
+  </g>
+  <text class="m-label" x="244" y="164" text-anchor="middle">mmHg</text>
+</svg>
