@@ -29,18 +29,56 @@ function latestValue(status, id) {
   return value;
 }
 
-function segmentPlan(total, missionId, gentle = false) {
+function segmentPlan(total, missionId, gentle = false, gravityG = null) {
   if (gentle) return [{ id: 'mobility', label: 'Hafif hareket ve mobilite', minutes: total, intensity: 'RPE 1–2 / 10', detail: 'Ağrısız eklem hareketi, nefes ve çok hafif esneme.', steps: ['5 dk kontrollü nefes ve eklem taraması', `${Math.max(10,total-10)} dk ağrısız mobilite`, '5 dk çok hafif soğuma'] }];
-  const surface = ['moon', 'mars', 'rover'].includes(missionId);
-  const ratios = surface ? [0.35, 0.40, 0.25] : [0.35, 0.45, 0.20];
-  const aerobic = round5(total * ratios[0]);
+  const surface = ['moon', 'mars', 'rover'].includes(missionId) || (gravityG > 0 && gravityG < 0.95);
+  const ratios = gravityG !== null && gravityG < 0.05 ? [0.30, 0.50, 0.20]
+    : surface ? [0.30, 0.40, 0.30] : [0.40, 0.35, 0.25];
   const resistance = round5(total * ratios[1]);
-  const mobility = Math.max(0, total - aerobic - resistance);
+  const mobility = round5(total * ratios[2]);
+  const aerobic = Math.max(0, total - resistance - mobility);
   return [
     { id: 'aerobic', label: 'Aerobik karşı önlem', minutes: aerobic, intensity: 'RPE 3–5 / 10', detail: 'Koşu bandı veya bisiklet; konuşmayı sürdürebildiğin kontrollü tempo.', steps: ['5 dk kolay ısınma', `${Math.max(5,aerobic-10)} dk sabit kontrollü tempo`, '5 dk kolay soğuma'] },
     { id: 'resistance', label: 'Direnç ve yükleme', minutes: resistance, intensity: 'RPE 5–7 / 10', detail: 'Alt ve üst vücut büyük kas grupları; yalnızca görev ekipmanının onaylı programı.', steps: ['Onaylı 4–6 temel hareket seç', 'Her hareket 2–3 set × 8–12 tekrar', 'Setler arasında 60–90 sn dinlen'] },
     { id: 'mobility', label: surface ? 'Denge ve mobilite' : 'Mobilite ve soğuma', minutes: mobility, intensity: 'RPE 1–3 / 10', detail: surface ? 'Denge, koordinasyon ve eklem hareket açıklığı.' : 'Eklem hareket açıklığı, gövde kontrolü ve soğuma.', steps: [surface ? 'Destek yakınında denge ve koordinasyon' : 'Omuz, kalça ve omurga mobilitesi', 'Ağrısız aralıkta yavaş tekrarlar', 'Nefes normale dönene kadar soğuma'] },
   ];
+}
+
+export function buildRecommendations({ status, gravity = null, environment = null }) {
+  const items = [];
+  const add = (id, category, title, detail, priority, basis) => items.push({ id, category, title, detail, priority, basis });
+  const currentG = Number(gravity?.current_g);
+  if (Number.isFinite(currentG) && currentG < 0.67) {
+    add('gravity-load', 'Aktivite', 'Mekanik yüklemeyi koru',
+      'Bugünkü plandaki onaylı direnç-yükleme bloğunu uygula; tamamlanan yükü, setleri ve tekrarları kaydet.',
+      'advisory', `${currentG.toFixed(3)} g · modellenen yük açığı %${Number(gravity.load_deficit_pct || 0).toFixed(1)}`);
+  }
+  if (Number(gravity?.transition_count) > 0) {
+    add('gravity-transition', 'Hazırlık', 'Geçiş hazırlığını kontrol et',
+      'Araç, iniş veya yüzey görevlerinden önce onaylı denge, koordinasyon ve ayağa kalkma hazırlığı kontrollerini tamamla.',
+      'watch', `Seçili aralıkta ${gravity.transition_count} yerçekimi alanı geçişi`);
+  }
+  if (!environment?.reading || environment?.freshness?.status !== 'current') {
+    add('environment-verify', 'Çevre', 'Kabin bağlamı sensörlerini doğrula',
+      'Belirtileri çevreyle birlikte yorumlamadan önce kabin CO₂, sıcaklık ve nem gözlemlerini yenile.',
+      'watch', 'Çevresel bağlam eksik veya güncel değil');
+  } else {
+    add('environment-log', 'Çevre', 'Kabin bağlamını belirtilerle birlikte incele',
+      'En son kabin ölçümlerini yalnızca bağlam olarak kullan; bir ilişkiyi neden olarak kabul etme.',
+      'normal', `CO₂ ${environment.reading.co2_ppm} ppm · ${environment.reading.temperature_c} °C · nem %${environment.reading.humidity_pct}`);
+  }
+  add('hydration-log', 'Toparlanma', 'Sıvı alımını ve toparlanmayı kaydet',
+    'Yarının önerisinin eksiksiz geri bildirime dayanması için sıvı alımını, uykuyu, ruh hâlini, stresi ve aktivite sonrası belirtileri kaydet.',
+    'normal', 'Günlük izleme planı');
+  if (!status?.freshness || status.freshness.state !== 'current') {
+    add('health-check', 'İzleme', 'Günlük sağlık kontrolünü yenile',
+      'Hafif doğrulama planının ötesine geçmeden önce yeni bir günlük kontrol tamamla.', 'watch', 'Sağlık ölçümleri güncel değil');
+  } else {
+    add('post-activity-check', 'İzleme', 'Aktivite sonrası yanıtı kaydet',
+      'Seansın ardından tamamlanan dakikayı ve ağrı, baş dönmesi, olağandışı nefes darlığı veya diğer belirtileri kaydet.',
+      'normal', 'Güncel sağlık kontrolü mevcut');
+  }
+  return items;
 }
 
 function controllerState(recent, target) {
@@ -55,7 +93,7 @@ function controllerState(recent, target) {
   return { error: Math.round(error * 10) / 10, proportional: Math.round(proportional * 10) / 10, integral: Math.round(integral * 10) / 10, derivative: Math.round(derivative * 10) / 10, correction: Math.round(correction * 10) / 10, suggested: round5(target + correction), samples: recent.length };
 }
 
-export function buildAdaptivePlan({ status, points = [], localLogs = [], baseTarget = 60, today = localDay() }) {
+export function buildAdaptivePlan({ status, points = [], localLogs = [], baseTarget = 60, today = localDay(), gravity = null, environment = null }) {
   const target = Math.max(30, Math.min(120, Number(baseTarget) || 60));
   const recent = recentActivity(points, localLogs, today);
   const average = recent.length ? recent.reduce((sum, x) => sum + x.minutes, 0) / recent.length : null;
@@ -98,7 +136,10 @@ export function buildAdaptivePlan({ status, points = [], localLogs = [], baseTar
   const gentle = ['hold', 'verify', 'recover'].includes(mode);
   return {
     mode, minutes, base_target: target, recent, average: average === null ? null : Math.round(average * 10) / 10,
-    sleep, mood, stress, reasons, controller: { ...controller, output: minutes }, segments: segmentPlan(minutes, status.mission && status.mission.id, gentle),
+    sleep, mood, stress, reasons, controller: { ...controller, output: minutes },
+    segments: segmentPlan(minutes, status.mission && status.mission.id, gentle, Number.isFinite(Number(gravity?.current_g)) ? Number(gravity.current_g) : null),
+    recommendations: buildRecommendations({ status, gravity, environment }),
+    context: { gravity, environmentFreshness: environment?.freshness || null },
     stop_rules: ['Göğüs ağrısı, baygınlık hissi veya olağandışı nefes darlığında hemen dur.', 'Yeni ağrı veya belirgin baş dönmesinde sağlık protokolünü uygula.', 'Egzersiz sonrası ölçümü ve tamamlanan süreyi kaydet; yarının planı bunu kullanır.'],
     disclaimer: 'Prototip karar desteğidir; uçuş cerrahı veya görev egzersiz protokolünün yerini almaz.',
   };

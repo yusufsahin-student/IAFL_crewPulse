@@ -1,4 +1,4 @@
-# Astronaut Health Monitor
+# Astronaut Health & Recommendations
 
 Base app for the NASA Space Apps 2026 challenge *Create Health Monitoring Software for Astronauts on Space Missions*.
 
@@ -10,7 +10,8 @@ One daily check-in, interpreted for where the crew is in the mission:
 - **Estimated radiation dose**: habitat zone model plus NASA DONKI solar events; shows where to shelter.
 - **Health score** with written reasons, and **distance-aware triage**: the same reading leads to "call the flight surgeon" on the ISS and to a crew-led protocol on the way to Mars.
 - **Mind Lab**: a guided flow with a short self-report and a three-minute vigilance test. The former emoji expression exercise is removed and its place is retained as a non-scoring development marker.
-- **Adaptive fitness**: a local daily countermeasure plan that adjusts within guarded limits using seven-day activity, sleep, mood, stress, data freshness and safety alerts.
+- **Activity & Recommendations**: a traceable daily countermeasure and action plan that combines seven-day activity, sleep, mood, stress, health freshness, safety alerts, gravity-field transitions and cabin context within guarded limits.
+- **Gravital Tracking**: a dedicated chart view for local gravity, modeled mechanical unloading and detected gravity-field transitions. Partial-gravity uncertainty remains visible.
 - **Mission Companion**: turns the latest assessment into a local action checklist and an explicit handoff file. Nothing is sent automatically.
 - **Cabin context**: shows the latest CO₂, temperature, and humidity separately from the health score; simulated readings are labelled explicitly.
 
@@ -89,7 +90,7 @@ node tools/dev-server.mjs
 
 Then open http://127.0.0.1:5173.
 
-Mind-lab sessions and daily fitness completion logs are stored only in this browser. They are not synced to the server; clearing browser storage or moving to another device removes that local history.
+Mind-lab sessions and daily activity/recommendation completion logs are stored only in this browser. They are not synced to the server; clearing browser storage or moving to another device removes that local history.
 
 ## Changing the data
 

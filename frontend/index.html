@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Orbit · Astro Health</title><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/orbit.css">
+  <title>Home · Astronaut Health &amp; Recommendations</title><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/orbit.css">
 </head>
 <body>
   <header id="app-header"></header>
   <main class="orbit-page">
     <div id="connection" class="local-badge" role="status">MISSION SYSTEM CONNECTING</div>
     <section class="orbit-hero">
-      <div><div class="eyebrow">ASTRO HEALTH / CREW CARE</div><h1>Far away.<br><em>Stay close to yourself.</em></h1><p>Take a few minutes for yourself before moving to the next task. Listen to your body, measure your attention and know your next step.</p><p id="crew-line"></p><a class="btn btn--primary" href="mind.html">Daily mind check ↗</a></div>
+      <div><div class="eyebrow">ASTRONAUT HEALTH &amp; RECOMMENDATIONS / CREW CARE</div><h1>Far away.<br><em>Stay close to yourself.</em></h1><p>Take a few minutes for yourself before moving to the next task. Listen to your body, measure your attention and know your next step.</p><p id="crew-line"></p><a class="btn btn--primary" href="mind.html">Daily mind check ↗</a></div>
       <div class="orbit-art" aria-hidden="true"><div class="orbit-ring"></div><div class="orb"></div><div class="orbit-ring second"></div><div class="orbit-dot"></div><span class="art-label">HUMAN FIRST. MISSION READY.</span></div>
     </section>
     <div id="urgent" role="status"></div>
@@ -18,11 +18,12 @@
       <article class="orbit-card featured"><span class="card-index">01 / MIND</span><h2>How do you feel today?</h2><p>A short survey and focus test. One task at each step.</p><div class="eyebrow">ABOUT 4 MINUTES</div><a class="btn btn--primary" href="mind.html">Enter the mind lab →</a></article>
       <article class="orbit-card"><span class="card-index">02 / BODY</span><h2>What your body is telling you.</h2><p>Pulse, blood pressure, sleep and other readings. Learn how to measure each one step by step.</p><div class="eyebrow">GUIDED MEASUREMENTS</div><a class="btn" href="checkin.html">Record measurements ↗</a></article>
       <article class="orbit-card"><span class="card-index">03 / MISSION</span><h2>See the big picture.</h2><p>Your body map, personal trends and environmental estimates in one place.</p><div class="eyebrow">MEASUREMENTS + CONTEXT</div><a class="btn" href="details.html">Open health map ↗</a></article>
-      <article class="orbit-card"><span class="card-index">04 / MOVEMENT</span><h2>Adjust today's load.</h2><p>A daily exercise plan rebalanced from the last seven days, sleep and recovery data.</p><div class="eyebrow">ADAPTIVE · LOCAL</div><a class="btn" href="activity.html">Open fitness plan ↗</a></article>
+      <article class="orbit-card"><span class="card-index">04 / ACTIVITY</span><h2>Act on today's signals.</h2><p>An activity and recommendation plan built from recent health, recovery, gravity and cabin context.</p><div class="eyebrow">ADAPTIVE · TRACEABLE · LOCAL</div><a class="btn" href="activity.html">Open activity &amp; recommendations ↗</a></article>
+      <article class="orbit-card"><span class="card-index">05 / GRAVITY</span><h2>Track changing gravity.</h2><p>See local gravity, modeled mechanical unloading and gravity-field transitions on dedicated charts.</p><div class="eyebrow">CONTEXT · GRAPHS</div><a class="btn" href="gravity.html">Open Gravital Tracking ↗</a></article>
     </section>
     <section class="orbit-section"><div class="orbit-strip"><h2>Last known measurements</h2><span id="updated" class="local-badge">Loading…</span></div><div id="metrics" class="metric-grid"></div></section>
     <section class="orbit-section"><div class="eyebrow">MISSION COMPANION / TASK ASSISTANT</div><h2>From one result to the next step.</h2><p class="muted">Track the measurement, recommendation and completed action together. This flow does not diagnose.</p><div id="companion" class="mission-ticket"></div><button id="export" class="btn" type="button">Download mission summary ↓</button><p class="trust-note">The summary downloads to your device. It is not sent to ground automatically. Bone and radiation values are model estimates; the displayed demo crew history is simulated.</p></section>
-    <footer class="orbit-strip"><span class="eyebrow">ASTRO HEALTH · SPACE APPS 2026</span><a href="radiation.html">Space weather ↗</a><a href="trends.html">Personal trends ↗</a></footer>
+    <footer class="orbit-strip"><span class="eyebrow">ASTRONAUT HEALTH &amp; RECOMMENDATIONS · SPACE APPS 2026</span><a href="gravity.html">Gravital Tracking ↗</a><a href="radiation.html">Space weather ↗</a><a href="trends.html">Personal trends ↗</a></footer>
   </main>
   <script type="module" src="js/cockpit.js"></script>
 </body>

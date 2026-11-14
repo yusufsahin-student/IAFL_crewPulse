@@ -1,0 +1,23 @@
+.gravity-stack { display: flex; flex-direction: column; gap: var(--s-4); }
+.gravity-stack > * { margin: 0; }
+.gravity-picker { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--s-4); }
+.gravity-picker .field { min-width: min(100%, 320px); }
+.gravity-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--s-3); margin-top: var(--s-3); }
+.gravity-metric { display: flex; flex-direction: column; gap: var(--s-1); padding: var(--s-3); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); }
+.gravity-note { margin-top: var(--s-3); }
+.gravity-chart-slot { width: 100%; min-height: 280px; margin-top: var(--s-3); }
+.gravity-chart { width: 100%; height: auto; display: block; min-height: 280px; }
+.gravity-plot-bg { fill: var(--surface-2); }
+.gravity-grid { stroke: var(--line); stroke-width: 1; }
+.gravity-grid--vertical { stroke-opacity: .55; }
+.gravity-axis { stroke: var(--ink-muted); stroke-width: 1.25; }
+.gravity-axis-label { fill: var(--ink-muted); font: 13px var(--font); }
+.gravity-axis-title { font-weight: 700; }
+.gravity-series { fill: none; stroke: var(--advisory); stroke-width: 3; vector-effect: non-scaling-stroke; }
+.gravity-transition { stroke: var(--watch); stroke-width: 2; stroke-dasharray: 6 4; vector-effect: non-scaling-stroke; }
+.gravity-current { fill: var(--accent); stroke: var(--bg); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.gravity-method p { max-width: 78ch; }
+@media (max-width: 620px) {
+  .gravity-chart-slot, .gravity-chart { min-height: 260px; }
+  .gravity-picker { align-items: stretch; }
+}

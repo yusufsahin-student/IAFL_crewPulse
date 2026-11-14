@@ -6,10 +6,11 @@ import { initI18n } from './i18n.js';
 const PAGES = [
   { id: 'home', href: 'index.html', label: 'Home' },
   { id: 'mind', href: 'mind.html', label: 'Mind lab' },
-  { id: 'activity', href: 'activity.html', label: 'Fitness' },
+  { id: 'activity', href: 'activity.html', label: 'Activity & Recommendations' },
   { id: 'details', href: 'details.html', label: 'Body map' },
   { id: 'checkin', href: 'checkin.html', label: 'Check-in' },
   { id: 'radiation', href: 'radiation.html', label: 'Radiation' },
+  { id: 'gravity', href: 'gravity.html', label: 'Gravital Tracking' },
   { id: 'trends', href: 'trends.html', label: 'Trends' },
 ];
 
@@ -105,7 +106,7 @@ let cache = null;
 export async function initShell({ page }) {
   const header = document.getElementById('app-header');
   const current = PAGES.find((p) => p.id === page);
-  if (current) document.title = `${current.label} · Astronaut Health Monitor`;
+  if (current) document.title = `${current.label} · Astronaut Health & Recommendations`;
 
   const nav = el('nav', { class: 'app-nav', 'aria-label': 'Main' },
     PAGES.map((p) => el('a', { href: p.href, 'aria-current': p.id === page ? 'page' : null }, p.label)));
@@ -113,7 +114,7 @@ export async function initShell({ page }) {
   if (header) {
     header.className = 'app-header';
     header.replaceChildren(el('div', { class: 'app-header__inner' },
-      el('a', { class: 'app-title', href: 'index.html' }, 'Astronaut Health Monitor'),
+      el('a', { class: 'app-title', href: 'index.html' }, 'Astronaut Health & Recommendations'),
       nav, crewSlot));
   }
   initI18n(crewSlot);

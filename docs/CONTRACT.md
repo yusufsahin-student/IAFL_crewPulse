@@ -1,4 +1,4 @@
-# Astronaut Health Monitor — build contract
+# Astronaut Health & Recommendations — build contract
 
 Every part of the app is built against this file. If something here is unclear, choose the simplest reading, keep to it, and note it in your report. Never change another part's files.
 
@@ -108,9 +108,9 @@ Paths: every program takes the database path from env `ASTRO_DB`, default `db/as
 - Text: the `triage_actions` row for (level, consult_mode); replace `{mission}`, `{delay}` (human text like "22 min" or "1.3 s"), `{reply_minutes}`; split `instructions` on `\n`.
 - `guidance`: for each non-normal reading, the `guidance` row matching indicator, direction (or `any`) and severity (`watch` reading → `watch`; `alert` reading → `alert`, falling back to `watch`). Split `self_care` and `protocol` on `\n`. Include `protocol` only when consult_mode is `crew_led` or `shared`; otherwise `null`.
 
-### 4.6 Adaptive daily activity (client-side prototype)
+### 4.6 Adaptive daily activity and recommendations (client-side prototype)
 
-The Fitness view uses the configured `bone.exercise_target_min` as its base target. It combines the last seven different activity days with the latest sleep, mood, stress, freshness and safety status. Daily increases are capped at five minutes relative to the previous locally stored plan. Low recovery reduces the load; stale measurements produce a light verification plan; alert-level cardiovascular, oxygen or temperature readings produce only a safety hold. Local activity logs stay in the browser and do not replace the official check-in. This is prototype decision support, not a prescribed exercise protocol.
+The Activity & Recommendations view uses the configured `bone.exercise_target_min` as its base target. It combines the last seven different activity days with the latest sleep, mood, stress, freshness, safety status, gravity assessment and cabin-environment freshness. Daily increases are capped at five minutes relative to the previous locally stored plan. Low recovery reduces the load; stale measurements produce a light verification plan; alert-level cardiovascular, oxygen or temperature readings produce only a safety hold. Microgravity emphasizes approved resistance loading, partial-gravity profiles preserve balance/mobility work, and a detected gravity-field transition adds a readiness recommendation. Every recommendation exposes its category, priority and data basis. Local completion logs stay in the browser and do not replace the official check-in. This is prototype decision support, not a prescribed exercise protocol or diagnosis.
 
 ## 5. HTTP API (Rust backend on `http://127.0.0.1:8080`, JSON, UTF-8)
 
@@ -192,8 +192,8 @@ Mock files follow section 5 exactly. Agent 4 writes `config.json`, `astronauts.j
 
 ## 9. Frontend rules (Agents 4 and 5)
 
-- Pages: `index.html` (Home), `checkin.html` (Check-in), `radiation.html` (Radiation), `trends.html` (Trends). Each page: `<link rel="stylesheet" href="css/base.css">`, its own css, and `<script type="module" src="js/<page>.js">`.
-- Every page starts by calling `initShell({ page: 'home' | 'checkin' | 'radiation' | 'trends' })` from `js/shell.js`. It renders the header and navigation into `<header id="app-header"></header>`, loads config and the crew, and resolves `{ config, astronauts, astronautId }`. Listen for the `astronaut-change` event on `window` (`event.detail.astronautId`) and re-render.
+- Pages include `index.html` (Home), `checkin.html` (Check-in), `activity.html` (Activity & Recommendations), `radiation.html` (Radiation), `gravity.html` (Gravital Tracking), and `trends.html` (Trends). Each page links shared `css/base.css`, page/layout CSS and its JavaScript module.
+- Every page starts by calling `initShell({ page: '<page id>' })` from `js/shell.js`. It renders the header and navigation into `<header id="app-header"></header>`, loads config and the crew, and resolves `{ config, astronauts, astronautId }`. Listen for the `astronaut-change` event on `window` (`event.detail.astronautId`) and re-render.
 - Fetch only through `js/api.js` (`api.status(id, mission)`, etc.). Never hard-code indicator ids, ranges, labels or units: render from config and API data. The one allowed exception is the body-map drawing, whose shapes are keyed by `body_regions.id`; an unknown region id must still appear in the region list.
 - Use the classes and tokens in `css/base.css`. Page css may add layout only; colours, type sizes, spacing and radii come from `var(--...)` tokens. No new colours.
 - Status words and colours: always text + colour, never colour alone (`<span class="status" data-status="watch">Watch</span>`).

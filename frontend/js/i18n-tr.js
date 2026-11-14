@@ -5,7 +5,9 @@ export const UI = `
 Mind lab => Zihin laboratuvarı
 Body map => Vücut haritası
 
-Astronaut Health Monitor => Astronot Sağlık Monitörü
+Astronaut Health & Recommendations => Astronot Sağlık ve Öneri Sistemi
+Activity & Recommendations => Aktivite ve Öneriler
+Gravital Tracking => Yerçekimi Takibi
 Home => Ana sayfa
 Check-in => Günlük kontrol
 Radiation => Radyasyon
