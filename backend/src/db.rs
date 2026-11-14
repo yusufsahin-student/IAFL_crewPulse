@@ -49,7 +49,7 @@ pub fn open(path: &str) -> Result<Connection, rusqlite::Error> {
             source TEXT NOT NULL DEFAULT 'sim'
         );
         CREATE INDEX IF NOT EXISTS idx_cabin_readings_mission_time
-            ON cabin_readings(mission_id, taken_at);"
+            ON cabin_readings(mission_id, taken_at);",
     )?;
     Ok(conn)
 }
@@ -81,7 +81,11 @@ pub fn query_rows(conn: &Connection, sql: &str, args: &[&dyn ToSql]) -> Result<V
     Ok(out)
 }
 
-pub fn first_row(conn: &Connection, sql: &str, args: &[&dyn ToSql]) -> Result<Option<Row>, AppError> {
+pub fn first_row(
+    conn: &Connection,
+    sql: &str,
+    args: &[&dyn ToSql],
+) -> Result<Option<Row>, AppError> {
     Ok(query_rows(conn, sql, args)?.into_iter().next())
 }
 
@@ -136,6 +140,7 @@ fn default_for(key: &str) -> f64 {
 }
 
 const DEFAULTS: &[(&str, f64)] = &[
+    ("context.environment_fresh_h", 24.0),
     ("score.normal_points", 100.0),
     ("score.watch_points", 60.0),
     ("score.alert_points", 10.0),

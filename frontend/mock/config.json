@@ -813,6 +813,7 @@
     "kcal.eer_m_const": 622.0,
     "kcal.eer_m_height": 539.6,
     "kcal.eer_m_mass": 15.9,
+    "context.environment_fresh_h": 24.0,
     "ml.baseline_n": 20.0,
     "ml.min_history": 7.0,
     "ml.sd_floor_frac": 0.02,

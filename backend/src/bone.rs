@@ -38,9 +38,11 @@ pub struct BoneCalc {
 impl BoneCalc {
     /// The site with the largest projected loss today.
     pub fn worst(&self) -> Option<&Site> {
-        self.sites
-            .iter()
-            .max_by(|a, b| a.loss.partial_cmp(&b.loss).unwrap_or(std::cmp::Ordering::Equal))
+        self.sites.iter().max_by(|a, b| {
+            a.loss
+                .partial_cmp(&b.loss)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
     }
 
     pub fn to_json(&self) -> Value {
@@ -84,9 +86,9 @@ pub fn compute(
 ) -> Result<BoneCalc, AppError> {
     let md = mission_day.max(1);
     let months = (md - 1) as f64 / 30.44;
-    let gravity_factor = (1.0 - gravity_g).max(0.0).min(1.0);
+    let gravity_factor = (1.0 - gravity_g).clamp(0.0, 1.0);
 
-    let window = (p.get("bone.exercise_window_days") as i64).max(0).min(3650);
+    let window = (p.get("bone.exercise_window_days") as i64).clamp(0, 3650);
     let ex = query_rows(
         conn,
         "SELECT AVG(r.value) AS avg_value FROM readings r JOIN checkins c ON c.id = r.checkin_id WHERE c.astronaut_id = ?1 AND r.indicator_id = ?2 AND c.taken_at >= ?3",
@@ -95,7 +97,7 @@ pub fn compute(
     let exercise_avg = ex.first().and_then(|r| num(r, "avg_value")).unwrap_or(0.0);
     let target = p.get("bone.exercise_target_min");
     let fraction = if target > 0.0 {
-        (exercise_avg / target).max(0.0).min(1.0)
+        (exercise_avg / target).clamp(0.0, 1.0)
     } else {
         0.0
     };
@@ -103,13 +105,26 @@ pub fn compute(
 
     // Integrate each recorded day's exercise once; recent exercise never rewrites earlier loss.
     let exercise_days = query_rows(conn, "SELECT c.mission_day, AVG(r.value) AS minutes FROM checkins c JOIN readings r ON r.checkin_id=c.id WHERE c.astronaut_id=?1 AND r.indicator_id=?2 GROUP BY c.mission_day", params![astro_id, EXERCISE_INDICATOR])?;
-    let daily_ex: HashMap<i64, f64> = exercise_days.iter().filter_map(|r| Some((crate::db::int(r, "mission_day")?, num(r, "minutes")?))).collect();
+    let daily_ex: HashMap<i64, f64> = exercise_days
+        .iter()
+        .filter_map(|r| Some((crate::db::int(r, "mission_day")?, num(r, "minutes")?)))
+        .collect();
     let accumulated = |day: i64| -> f64 {
-        (1..day).map(|d| {
-            let minutes = if d < md { daily_ex.get(&d).copied().unwrap_or(0.0) } else { exercise_avg };
-            let fraction = if target > 0.0 { (minutes / target).max(0.0).min(1.0) } else { 0.0 };
-            (1.0 - p.get("bone.exercise_max_reduction") * fraction).max(0.0) / 30.44
-        }).sum()
+        (1..day)
+            .map(|d| {
+                let minutes = if d < md {
+                    daily_ex.get(&d).copied().unwrap_or(0.0)
+                } else {
+                    exercise_avg
+                };
+                let fraction = if target > 0.0 {
+                    (minutes / target).clamp(0.0, 1.0)
+                } else {
+                    0.0
+                };
+                (1.0 - p.get("bone.exercise_max_reduction") * fraction).max(0.0) / 30.44
+            })
+            .sum()
     };
     let base_rows = query_rows(
         conn,
@@ -123,10 +138,14 @@ pub fn compute(
         }
     }
 
-    let site_rows = query_rows(conn, "SELECT * FROM bone_sites ORDER BY display_order, id", &[])?;
+    let site_rows = query_rows(
+        conn,
+        "SELECT * FROM bone_sites ORDER BY display_order, id",
+        &[],
+    )?;
     let alert_pct = p.get("bone.alert_pct");
     let watch_pct = p.get("bone.watch_pct");
-    let end = md + days_ahead.max(0).min(3650);
+    let end = md + days_ahead.clamp(0, 3650);
 
     let mut sites = Vec::new();
     for s in &site_rows {

@@ -44,19 +44,28 @@ pub async fn post_checkin(
     headers: HeaderMap,
     body: Bytes,
 ) -> Result<(StatusCode, Json<Value>), AppError> {
-    let content_type = headers.get(CONTENT_TYPE).and_then(|v| v.to_str().ok()).unwrap_or("");
-    if !content_type.split(';').next().is_some_and(|v| v.trim().eq_ignore_ascii_case("application/json")) {
-        return Err(AppError::unsupported_media("Content-Type must be application/json."));
+    let content_type = headers
+        .get(CONTENT_TYPE)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    if !content_type
+        .split(';')
+        .next()
+        .is_some_and(|v| v.trim().eq_ignore_ascii_case("application/json"))
+    {
+        return Err(AppError::unsupported_media(
+            "Content-Type must be application/json.",
+        ));
     }
-    let input: CheckinIn = serde_json::from_slice(&body)
-        .map_err(|_| AppError::bad("The request body must be JSON with astronaut_id and readings."))?;
+    let input: CheckinIn = serde_json::from_slice(&body).map_err(|_| {
+        AppError::bad("The request body must be JSON with astronaut_id and readings.")
+    })?;
     let astro_id = input.astronaut_id;
 
     // Store the check-in in its own scope so the lock is released before any await.
     let cid = {
         let mut conn = db::lock(&st)?;
-        let id = save_checkin(&mut *conn, &input)?;
-        id
+        save_checkin(&mut conn, &input)?
     };
 
     let python = st.python.clone();
@@ -65,12 +74,19 @@ pub async fn post_checkin(
         .await
         .unwrap_or(false);
     if !scored {
-        eprintln!("ML scorer did not finish for check-in {}; using the z-score fallback.", cid);
+        eprintln!(
+            "ML scorer did not finish for check-in {}; using the z-score fallback.",
+            cid
+        );
     }
 
     let conn = db::lock(&st)?;
     if anomaly::stored(&conn, cid)?.is_none() {
-        let taken = match first_row(&conn, "SELECT taken_at FROM checkins WHERE id = ?1", params![cid])? {
+        let taken = match first_row(
+            &conn,
+            "SELECT taken_at FROM checkins WHERE id = ?1",
+            params![cid],
+        )? {
             Some(r) => sval(&r, "taken_at"),
             None => String::new(),
         };
@@ -88,18 +104,39 @@ pub async fn post_checkin(
 
 /// Validates the body against the database, then inserts the check-in and its readings in one transaction.
 fn save_checkin(conn: &mut Connection, input: &CheckinIn) -> Result<i64, AppError> {
-    if input.notes.as_deref().is_some_and(|notes| notes.chars().count() > 4000) {
-        return Err(AppError::bad_field("Notes must be 4000 characters or fewer.", "notes"));
+    if input
+        .notes
+        .as_deref()
+        .is_some_and(|notes| notes.chars().count() > 4000)
+    {
+        return Err(AppError::bad_field(
+            "Notes must be 4000 characters or fewer.",
+            "notes",
+        ));
     }
     let payload = serde_json::to_string(input).map_err(|_| AppError::bad("Invalid submission"))?;
     if let Some(key) = &input.client_submission_id {
-        if key.len() > 128 || key.is_empty() { return Err(AppError::bad("Invalid submission id")); }
-        if let Some(row) = first_row(conn, "SELECT checkin_id, payload FROM submission_keys WHERE key = ?1", params![key])? {
-            if sval(&row, "payload") != payload { return Err(AppError::bad("Submission id already used with different readings")); }
+        if key.len() > 128 || key.is_empty() {
+            return Err(AppError::bad("Invalid submission id"));
+        }
+        if let Some(row) = first_row(
+            conn,
+            "SELECT checkin_id, payload FROM submission_keys WHERE key = ?1",
+            params![key],
+        )? {
+            if sval(&row, "payload") != payload {
+                return Err(AppError::bad(
+                    "Submission id already used with different readings",
+                ));
+            }
             return Ok(int(&row, "checkin_id").unwrap());
         }
     }
-    let astro = match first_row(conn, "SELECT * FROM astronauts WHERE id = ?1", params![input.astronaut_id])? {
+    let astro = match first_row(
+        conn,
+        "SELECT * FROM astronauts WHERE id = ?1",
+        params![input.astronaut_id],
+    )? {
         Some(a) => a,
         None => return Err(AppError::not_found("Unknown astronaut.")),
     };
@@ -117,7 +154,10 @@ fn save_checkin(conn: &mut Connection, input: &CheckinIn) -> Result<i64, AppErro
             None => return Err(AppError::bad_field("Unknown indicator.", &r.indicator_id)),
         };
         if !seen.insert(r.indicator_id.clone()) {
-            return Err(AppError::bad_field("This indicator is listed more than once.", &r.indicator_id));
+            return Err(AppError::bad_field(
+                "This indicator is listed more than once.",
+                &r.indicator_id,
+            ));
         }
         let lo = num(ind, "min_plausible").unwrap_or(f64::MIN);
         let hi = num(ind, "max_plausible").unwrap_or(f64::MAX);
@@ -129,13 +169,19 @@ fn save_checkin(conn: &mut Connection, input: &CheckinIn) -> Result<i64, AppErro
         }
         let method = r.method.as_deref().unwrap_or("manual");
         if !METHODS.contains(&method) {
-            return Err(AppError::bad_field("Unknown measurement method.", &r.indicator_id));
+            return Err(AppError::bad_field(
+                "Unknown measurement method.",
+                &r.indicator_id,
+            ));
         }
     }
 
     for (id, ind) in &by_id {
         if int(ind, "required").unwrap_or(0) == 1 && !seen.contains(id) {
-            return Err(AppError::bad_field(format!("{} is required.", sval(ind, "name")), id));
+            return Err(AppError::bad_field(
+                format!("{} is required.", sval(ind, "name")),
+                id,
+            ));
         }
     }
 
@@ -155,7 +201,10 @@ fn save_checkin(conn: &mut Connection, input: &CheckinIn) -> Result<i64, AppErro
         )?;
     }
     if let Some(key) = &input.client_submission_id {
-        tx.execute("INSERT INTO submission_keys(key, checkin_id, payload) VALUES (?1, ?2, ?3)", params![key, cid, payload])?;
+        tx.execute(
+            "INSERT INTO submission_keys(key, checkin_id, payload) VALUES (?1, ?2, ?3)",
+            params![key, cid, payload],
+        )?;
     }
     tx.commit()?;
     Ok(cid)
@@ -205,14 +254,22 @@ mod tests {
     #[test]
     fn duplicate_submission_is_idempotent_and_changed_payload_rejected() {
         let mut conn = Connection::open_in_memory().unwrap();
-        conn.execute_batch(include_str!("../../db/schema.sql")).unwrap();
+        conn.execute_batch(include_str!("../../db/schema.sql"))
+            .unwrap();
         conn.execute_batch("CREATE TABLE IF NOT EXISTS submission_keys(key TEXT PRIMARY KEY, checkin_id INTEGER, payload TEXT);
           INSERT INTO missions(id,name,comms_delay_s,consult_mode,gravity_g,gcr_msv_per_day) VALUES('test','Test',0,'ground_led',0,0);
           INSERT INTO astronauts(id,name,mission_id,mission_start) VALUES(1,'Test','test','2026-01-01');").unwrap();
-        let mut input = CheckinIn { astronaut_id: 1, client_submission_id: Some("repeat".into()), readings: vec![], notes: None };
+        let mut input = CheckinIn {
+            astronaut_id: 1,
+            client_submission_id: Some("repeat".into()),
+            readings: vec![],
+            notes: None,
+        };
         let a = save_checkin(&mut conn, &input).unwrap();
         assert_eq!(a, save_checkin(&mut conn, &input).unwrap());
-        let count: i64 = conn.query_row("SELECT COUNT(*) FROM checkins", [], |r| r.get(0)).unwrap();
+        let count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM checkins", [], |r| r.get(0))
+            .unwrap();
         assert_eq!(count, 1);
         input.notes = Some("changed".into());
         assert!(save_checkin(&mut conn, &input).is_err());
@@ -221,8 +278,14 @@ mod tests {
     #[test]
     fn oversized_notes_are_rejected() {
         let mut conn = Connection::open_in_memory().unwrap();
-        conn.execute_batch(include_str!("../../db/schema.sql")).unwrap();
-        let input = CheckinIn { astronaut_id: 1, client_submission_id: None, readings: vec![], notes: Some("x".repeat(4001)) };
+        conn.execute_batch(include_str!("../../db/schema.sql"))
+            .unwrap();
+        let input = CheckinIn {
+            astronaut_id: 1,
+            client_submission_id: None,
+            readings: vec![],
+            notes: Some("x".repeat(4001)),
+        };
         assert!(save_checkin(&mut conn, &input).is_err());
     }
 }

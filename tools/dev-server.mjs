@@ -16,9 +16,32 @@ const TYPES = {
 };
 
 function mockFile(method, path, params) {
-  if (path === '/api/health') return { inline: { ok: true, model: 'mock' } };
+  if (path === '/api/health') return { inline: { ok: true, model: 'mock', db: 'frontend/mock' } };
   if (path === '/api/config') return { file: 'config.json' };
-  if (path === '/api/environment') return { inline: { mission_id: 'iss', reading: { taken_at: new Date().toISOString(), co2_ppm: 820, temperature_c: 22.6, humidity_pct: 44, source: 'sim' }, note: 'Cabin context only. It does not change the health score.' } };
+  if (path === '/api/environment') {
+    const days = Math.max(1, Math.min(3650, Number(params.get('days')) || 60));
+    const readings = Array.from({ length: days }, (_, index) => {
+      const offset = days - index - 1;
+      const observed = new Date(Date.now() - offset * 86400000);
+      const cycle = Math.sin(index * Math.PI * 2 / 14);
+      return {
+        taken_at: observed.toISOString(),
+        co2_ppm: Math.round(820 + 45 * cycle),
+        temperature_c: Number((22.6 + 0.5 * cycle).toFixed(1)),
+        humidity_pct: Number((44 - 2.5 * cycle).toFixed(1)),
+        source: 'sim',
+      };
+    });
+    const reading = readings.at(-1);
+    const freshness = { status: 'current', observed_at: reading.taken_at, age_h: 0, max_age_h: 24 };
+    const metric = (id, label, unit) => ({ id, label, unit, samples: readings.map((row) => ({ observed_at: row.taken_at, value: row[id], source: row.source })) });
+    return { inline: {
+      mission_id: params.get('mission') || 'iss', reading, readings, window: { days }, freshness,
+      layer: { schema_version: 1, id: 'environment', label: 'Cabin environment', freshness,
+        metrics: [metric('co2_ppm', 'Carbon dioxide', 'ppm'), metric('temperature_c', 'Temperature', '°C'), metric('humidity_pct', 'Relative humidity', '%')] },
+      note: 'Cabin context only. It does not change the health score.',
+    } };
+  }
   if (path === '/api/astronauts') return { file: 'astronauts.json' };
   if (path === '/api/radiation') {
     const f = `radiation-${params.get('mission')}.json`;

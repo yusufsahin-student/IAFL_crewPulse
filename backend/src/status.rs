@@ -11,7 +11,10 @@ use serde_json::{json, Value};
 
 use crate::anomaly::{self, Anomaly};
 use crate::bone;
-use crate::db::{self, first_row, fmt_num, int, lock, num, query_rows, round_to, sval, text, AppState, Params, Row};
+use crate::db::{
+    self, first_row, fmt_num, int, lock, num, query_rows, round_to, sval, text, AppState, Params,
+    Row,
+};
 use crate::errors::AppError;
 use crate::radiation;
 
@@ -48,7 +51,12 @@ pub struct Reading {
 }
 
 impl Eval {
-    fn new(status: &'static str, direction: Option<&'static str>, limit: Option<f64>, limit_kind: &'static str) -> Eval {
+    fn new(
+        status: &'static str,
+        direction: Option<&'static str>,
+        limit: Option<f64>,
+        limit_kind: &'static str,
+    ) -> Eval {
         Eval {
             status,
             direction,
@@ -71,7 +79,8 @@ pub fn mean(xs: &[f64]) -> f64 {
 }
 
 pub fn parse_astronaut_id(raw: &str) -> Result<i64, AppError> {
-    raw.parse::<i64>().map_err(|_| AppError::bad_field("Astronaut id must be an integer.", "astronaut_id"))
+    raw.parse::<i64>()
+        .map_err(|_| AppError::bad_field("Astronaut id must be an integer.", "astronaut_id"))
 }
 
 pub fn load_astronaut(conn: &Connection, id: i64) -> Result<Row, AppError> {
@@ -89,7 +98,11 @@ pub fn load_mission(conn: &Connection, id: &str) -> Result<Row, AppError> {
 }
 
 pub fn load_indicators(conn: &Connection) -> Result<Vec<Row>, AppError> {
-    query_rows(conn, "SELECT * FROM indicators ORDER BY display_order, id", &[])
+    query_rows(
+        conn,
+        "SELECT * FROM indicators ORDER BY display_order, id",
+        &[],
+    )
 }
 
 pub fn latest_checkin(conn: &Connection, astro_id: i64) -> Result<Option<Row>, AppError> {
@@ -101,7 +114,10 @@ pub fn latest_checkin(conn: &Connection, astro_id: i64) -> Result<Option<Row>, A
 }
 
 /// Indicator values of one check-in.
-pub fn checkin_values(conn: &Connection, checkin_id: i64) -> Result<HashMap<String, f64>, AppError> {
+pub fn checkin_values(
+    conn: &Connection,
+    checkin_id: i64,
+) -> Result<HashMap<String, f64>, AppError> {
     let rows = query_rows(
         conn,
         "SELECT indicator_id, value FROM readings WHERE checkin_id = ?1",
@@ -133,11 +149,14 @@ pub fn baseline_ids(
 }
 
 /// Values per indicator over the given check-ins.
-pub fn baseline_values(conn: &Connection, ids: &[i64]) -> Result<HashMap<String, Vec<f64>>, AppError> {
+pub fn baseline_values(
+    conn: &Connection,
+    ids: &[i64],
+) -> Result<HashMap<String, Vec<f64>>, AppError> {
     let mut m: HashMap<String, Vec<f64>> = HashMap::new();
     for id in ids {
         for (k, v) in checkin_values(conn, *id)? {
-            m.entry(k).or_insert_with(Vec::new).push(v);
+            m.entry(k).or_default().push(v);
         }
     }
     Ok(m)
@@ -148,7 +167,12 @@ pub fn current_utc_year() -> i32 {
 }
 
 /// Personalized lower normal bound for kcal_intake (NASA-STD-3001 EER) and grip_strength (EWGSOP2 sex cut-offs).
-pub fn personal_normal_low(ind: &Row, astro: Option<&Row>, p: &Params, current_year: i32) -> Option<f64> {
+pub fn personal_normal_low(
+    ind: &Row,
+    astro: Option<&Row>,
+    p: &Params,
+    current_year: i32,
+) -> Option<f64> {
     let id = sval(ind, "id");
     let fallback = num(ind, "normal_low");
     let Some(a) = astro else {
@@ -156,7 +180,11 @@ pub fn personal_normal_low(ind: &Row, astro: Option<&Row>, p: &Params, current_y
     };
     let sex = text(a, "sex").unwrap_or_default();
     if id == "kcal_intake" {
-        let (Some(by), Some(h_cm), Some(m_kg)) = (int(a, "birth_year"), num(a, "height_cm"), num(a, "preflight_mass_kg")) else {
+        let (Some(by), Some(h_cm), Some(m_kg)) = (
+            int(a, "birth_year"),
+            num(a, "height_cm"),
+            num(a, "preflight_mass_kg"),
+        ) else {
             return fallback;
         };
         if by <= 1900 || by >= current_year as i64 || h_cm <= 0.0 || m_kg <= 0.0 {
@@ -166,8 +194,14 @@ pub fn personal_normal_low(ind: &Row, astro: Option<&Row>, p: &Params, current_y
         let h_m = h_cm / 100.0;
         let act = p.get("kcal.activity_factor");
         let eer = match sex.as_str() {
-            "M" => p.get("kcal.eer_m_const") - p.get("kcal.eer_m_age") * age + act * (p.get("kcal.eer_m_mass") * m_kg + p.get("kcal.eer_m_height") * h_m),
-            "F" => p.get("kcal.eer_f_const") - p.get("kcal.eer_f_age") * age + act * (p.get("kcal.eer_f_mass") * m_kg + p.get("kcal.eer_f_height") * h_m),
+            "M" => {
+                p.get("kcal.eer_m_const") - p.get("kcal.eer_m_age") * age
+                    + act * (p.get("kcal.eer_m_mass") * m_kg + p.get("kcal.eer_m_height") * h_m)
+            }
+            "F" => {
+                p.get("kcal.eer_f_const") - p.get("kcal.eer_f_age") * age
+                    + act * (p.get("kcal.eer_f_mass") * m_kg + p.get("kcal.eer_f_height") * h_m)
+            }
             _ => return fallback,
         };
         return Some((eer / 10.0).round() * 10.0);
@@ -183,7 +217,14 @@ pub fn personal_normal_low(ind: &Row, astro: Option<&Row>, p: &Params, current_y
 }
 
 /// Effective range (contract section 3): one adjustment row, matching mission first, then latest day_from.
-pub fn effective_range(conn: &Connection, ind: &Row, mission_id: &str, mission_day: i64, astro: Option<&Row>, p: &Params) -> Result<Range, AppError> {
+pub fn effective_range(
+    conn: &Connection,
+    ind: &Row,
+    mission_id: &str,
+    mission_day: i64,
+    astro: Option<&Row>,
+    p: &Params,
+) -> Result<Range, AppError> {
     let mut r = Range {
         nl: personal_normal_low(ind, astro, p, current_utc_year()),
         nh: num(ind, "normal_high"),
@@ -325,9 +366,17 @@ fn with_unit(v: &str, unit: &str) -> String {
 fn reading_sentence(r: &Reading) -> String {
     let v = r.value.unwrap_or(0.0);
     let lim = r.eval.limit.unwrap_or(0.0);
-    let dir = if r.eval.direction == Some("low") { "below" } else { "above" };
+    let dir = if r.eval.direction == Some("low") {
+        "below"
+    } else {
+        "above"
+    };
     // User-facing words follow the caution/warning terms (CONTRACT section 10), not the internal status ids.
-    let kind = if r.eval.limit_kind == "critical" { "safe" } else { "usual" };
+    let kind = if r.eval.limit_kind == "critical" {
+        "safe"
+    } else {
+        "usual"
+    };
     format!(
         "{} {} is {} the {} limit ({}).",
         r.name,
@@ -358,7 +407,12 @@ fn worst_status(statuses: &[&str]) -> String {
     best.to_string()
 }
 
-fn find_guidance(conn: &Connection, indicator: &str, direction: &str, severity: &str) -> Result<Option<Row>, AppError> {
+fn find_guidance(
+    conn: &Connection,
+    indicator: &str,
+    direction: &str,
+    severity: &str,
+) -> Result<Option<Row>, AppError> {
     first_row(
         conn,
         "SELECT * FROM guidance WHERE indicator_id = ?1 AND (direction = ?2 OR direction = 'any') AND severity = ?3 ORDER BY CASE WHEN direction = ?2 THEN 0 ELSE 1 END, id LIMIT 1",
@@ -368,7 +422,11 @@ fn find_guidance(conn: &Connection, indicator: &str, direction: &str, severity: 
 
 /// Builds the full status object for one astronaut (contract 5.1).
 /// `mission_override` changes only the `mission` and `triage` parts (the distance what-if).
-pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&str>) -> Result<Value, AppError> {
+pub fn build_status(
+    conn: &Connection,
+    astro_id: i64,
+    mission_override: Option<&str>,
+) -> Result<Value, AppError> {
     let p = Params::load(conn)?;
     let astro = load_astronaut(conn, astro_id)?;
     let mission_id = sval(&astro, "mission_id");
@@ -390,10 +448,24 @@ pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&
         Some(_) => checkin_values(conn, cid)?,
         None => HashMap::new(),
     };
-    let reading_day = checkin.as_ref().and_then(|c| int(c, "mission_day")).unwrap_or(mday);
-    let mut readings = evaluate(conn, &mission_id, reading_day, &inds, &values, Some(&astro), &p)?;
-    let age_hours = db::parse_ts(&taken).map(|t| (chrono::Utc::now().timestamp() - t).max(0) as f64 / 3600.0);
-    let fresh = age_hours.map(|h| h <= p.get("routine.checkin_interval_h").max(1.0)).unwrap_or(false);
+    let reading_day = checkin
+        .as_ref()
+        .and_then(|c| int(c, "mission_day"))
+        .unwrap_or(mday);
+    let mut readings = evaluate(
+        conn,
+        &mission_id,
+        reading_day,
+        &inds,
+        &values,
+        Some(&astro),
+        &p,
+    )?;
+    let age_hours =
+        db::parse_ts(&taken).map(|t| (chrono::Utc::now().timestamp() - t).max(0) as f64 / 3600.0);
+    let fresh = age_hours
+        .map(|h| h <= p.get("routine.checkin_interval_h").max(1.0))
+        .unwrap_or(false);
 
     let mut anomaly: Option<Anomaly> = None;
     if checkin.is_some() {
@@ -416,7 +488,14 @@ pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&
         None => Value::Null,
     };
 
-    let bone = bone::compute(conn, &p, astro_id, mday, num(&mission, "gravity_g").unwrap_or(0.0), 0)?;
+    let bone = bone::compute(
+        conn,
+        &p,
+        astro_id,
+        mday,
+        num(&mission, "gravity_g").unwrap_or(0.0),
+        0,
+    )?;
     let rad = radiation::compute(conn, &p, &mission, Some((astro_id, start.clone())))?;
 
     let worst = bone.worst();
@@ -429,18 +508,33 @@ pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&
     let n_alert = readings.iter().filter(|r| r.eval.status == "alert").count();
     let any_watch = readings.iter().any(|r| r.eval.status == "watch");
     let vit = vitals_of(&readings, &p);
-    let anomaly_part: Option<f64> = anomaly.as_ref().filter(|a| a.method != "insufficient_history").map(|a| 100.0 * (1.0 - a.score));
-    let bone_part = (100.0 - bone_loss * p.get("score.bone_penalty_per_pct")).max(0.0).min(100.0);
-    let storm = if rad.active.is_some() { p.get("score.storm_penalty") } else { 0.0 };
-    let rad_part = ((100.0 - rad.pct).max(0.0).min(100.0) - storm).max(0.0).min(100.0);
+    let anomaly_part: Option<f64> = anomaly
+        .as_ref()
+        .filter(|a| a.method != "insufficient_history")
+        .map(|a| 100.0 * (1.0 - a.score));
+    let bone_part = (100.0 - bone_loss * p.get("score.bone_penalty_per_pct")).clamp(0.0, 100.0);
+    let storm = if rad.active.is_some() {
+        p.get("score.storm_penalty")
+    } else {
+        0.0
+    };
+    let rad_part = ((100.0 - rad.pct).clamp(0.0, 100.0) - storm).clamp(0.0, 100.0);
     let value: Option<i64> = vit.filter(|_| fresh).map(|v| {
-        let weight = p.get("score.w_vitals") + p.get("score.w_bone") + p.get("score.w_radiation") + if anomaly_part.is_some() { p.get("score.w_anomaly") } else { 0.0 };
+        let weight = p.get("score.w_vitals")
+            + p.get("score.w_bone")
+            + p.get("score.w_radiation")
+            + if anomaly_part.is_some() {
+                p.get("score.w_anomaly")
+            } else {
+                0.0
+            };
         let total = (v * p.get("score.w_vitals")
             + anomaly_part.unwrap_or(0.0) * p.get("score.w_anomaly")
             + bone_part * p.get("score.w_bone")
-            + rad_part * p.get("score.w_radiation")) / weight.max(0.001);
+            + rad_part * p.get("score.w_radiation"))
+            / weight.max(0.001);
         let capped = if any_alert { total.min(49.0) } else { total };
-        capped.max(0.0).min(100.0).round() as i64
+        capped.clamp(0.0, 100.0).round() as i64
     });
     let band: Option<&str> = value.map(|v| {
         if v >= 75 {
@@ -494,7 +588,10 @@ pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&
         if zone_name.is_empty() {
             rad_reasons.push("Solar particle event in progress: take shelter now.".to_string());
         } else {
-            rad_reasons.push(format!("Solar particle event in progress: move to {}.", zone_name));
+            rad_reasons.push(format!(
+                "Solar particle event in progress: move to {}.",
+                zone_name
+            ));
         }
     }
     let mut bone_reasons: Vec<String> = Vec::new();
@@ -516,9 +613,14 @@ pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&
     reasons.extend(anomaly_reasons);
     reasons.extend(bone_reasons);
     if checkin.is_none() {
-        reasons.insert(0, "No check-in yet. Do a check-in to see your score.".to_string());
+        reasons.insert(
+            0,
+            "No check-in yet. Do a check-in to see your score.".to_string(),
+        );
     }
-    if !fresh && checkin.is_some() { reasons.insert(0, "Current assessment unavailable: take a new check-in. Earlier readings are last known values.".to_string()); }
+    if !fresh && checkin.is_some() {
+        reasons.insert(0, "Current assessment unavailable: take a new check-in. Earlier readings are last known values.".to_string());
+    }
     reasons.truncate(5);
 
     // Triage (contract 4.5).
@@ -569,7 +671,11 @@ pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&
     let mut guidance: Vec<Value> = Vec::new();
     for r in flagged {
         let dir = r.eval.direction.unwrap_or("any");
-        let want = if r.eval.status == "alert" { "alert" } else { "watch" };
+        let want = if r.eval.status == "alert" {
+            "alert"
+        } else {
+            "watch"
+        };
         let mut g = find_guidance(conn, &r.id, dir, want)?;
         if g.is_none() && r.eval.status == "alert" {
             g = find_guidance(conn, &r.id, dir, "watch")?;
@@ -592,7 +698,11 @@ pub fn build_status(conn: &Connection, astro_id: i64, mission_override: Option<&
     }
 
     // Body regions: worst status of their indicators and bone sites.
-    let region_rows = query_rows(conn, "SELECT * FROM body_regions ORDER BY display_order, id", &[])?;
+    let region_rows = query_rows(
+        conn,
+        "SELECT * FROM body_regions ORDER BY display_order, id",
+        &[],
+    )?;
     let mut regions: Vec<Value> = Vec::new();
     for reg in &region_rows {
         let rid = sval(reg, "id");
@@ -756,13 +866,30 @@ mod tests {
 
     #[test]
     fn critical_reading_names_the_safe_limit() {
-        let range = Range { nl: Some(50.0), nh: Some(100.0), cl: Some(40.0), ch: Some(130.0), adjusted: false, note: None };
-        let reading = Reading {
-            id: "heart_rate".into(), name: "Heart rate".into(), unit: "bpm".into(), decimals: 0,
-            region: "heart".into(), weight: 1.0, value: Some(140.0), eval: classify(140.0, &range),
-            range, baseline_mean: None,
+        let range = Range {
+            nl: Some(50.0),
+            nh: Some(100.0),
+            cl: Some(40.0),
+            ch: Some(130.0),
+            adjusted: false,
+            note: None,
         };
-        assert_eq!(reading_sentence(&reading), "Heart rate 140 bpm is above the safe limit (130).");
+        let reading = Reading {
+            id: "heart_rate".into(),
+            name: "Heart rate".into(),
+            unit: "bpm".into(),
+            decimals: 0,
+            region: "heart".into(),
+            weight: 1.0,
+            value: Some(140.0),
+            eval: classify(140.0, &range),
+            range,
+            baseline_mean: None,
+        };
+        assert_eq!(
+            reading_sentence(&reading),
+            "Heart rate 140 bpm is above the safe limit (130)."
+        );
     }
 
     #[test]
@@ -773,7 +900,8 @@ mod tests {
     #[test]
     fn personalized_kcal_and_grip_bounds() {
         let conn = Connection::open_in_memory().unwrap();
-        conn.execute_batch(include_str!("../../db/schema.sql")).unwrap();
+        conn.execute_batch(include_str!("../../db/schema.sql"))
+            .unwrap();
         let p = Params::load(&conn).unwrap();
         let year = 2026;
         let kcal_ind = row(&[("id", json!("kcal_intake")), ("normal_low", json!(2300.0))]);
@@ -786,8 +914,14 @@ mod tests {
             ("height_cm", json!(165.0)),
             ("preflight_mass_kg", json!(60.0)),
         ]);
-        assert_eq!(personal_normal_low(&kcal_ind, Some(&female), &p, year), Some(2280.0));
-        assert_eq!(personal_normal_low(&grip_ind, Some(&female), &p, year), Some(16.0));
+        assert_eq!(
+            personal_normal_low(&kcal_ind, Some(&female), &p, year),
+            Some(2280.0)
+        );
+        assert_eq!(
+            personal_normal_low(&grip_ind, Some(&female), &p, year),
+            Some(16.0)
+        );
 
         // Male, 40y, 70 kg, 175 cm (1.75 m) -> 2810 kcal, 27 kg
         let male = row(&[
@@ -796,8 +930,14 @@ mod tests {
             ("height_cm", json!(175.0)),
             ("preflight_mass_kg", json!(70.0)),
         ]);
-        assert_eq!(personal_normal_low(&kcal_ind, Some(&male), &p, year), Some(2810.0));
-        assert_eq!(personal_normal_low(&grip_ind, Some(&male), &p, year), Some(27.0));
+        assert_eq!(
+            personal_normal_low(&kcal_ind, Some(&male), &p, year),
+            Some(2810.0)
+        );
+        assert_eq!(
+            personal_normal_low(&grip_ind, Some(&male), &p, year),
+            Some(27.0)
+        );
 
         // Missing or invalid inputs -> fallback 2300 kcal, 16 kg
         let unknown_sex = row(&[
@@ -813,9 +953,21 @@ mod tests {
         ]);
         assert_eq!(personal_normal_low(&kcal_ind, None, &p, year), Some(2300.0));
         assert_eq!(personal_normal_low(&grip_ind, None, &p, year), Some(16.0));
-        assert_eq!(personal_normal_low(&kcal_ind, Some(&unknown_sex), &p, year), Some(2300.0));
-        assert_eq!(personal_normal_low(&grip_ind, Some(&unknown_sex), &p, year), Some(16.0));
-        assert_eq!(personal_normal_low(&kcal_ind, Some(&missing_height), &p, year), Some(2300.0));
-        assert_eq!(personal_normal_low(&grip_ind, Some(&missing_height), &p, year), Some(27.0));
+        assert_eq!(
+            personal_normal_low(&kcal_ind, Some(&unknown_sex), &p, year),
+            Some(2300.0)
+        );
+        assert_eq!(
+            personal_normal_low(&grip_ind, Some(&unknown_sex), &p, year),
+            Some(16.0)
+        );
+        assert_eq!(
+            personal_normal_low(&kcal_ind, Some(&missing_height), &p, year),
+            Some(2300.0)
+        );
+        assert_eq!(
+            personal_normal_low(&grip_ind, Some(&missing_height), &p, year),
+            Some(27.0)
+        );
     }
 }

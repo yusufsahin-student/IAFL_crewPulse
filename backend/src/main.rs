@@ -39,21 +39,38 @@ fn local_host(host: &str) -> bool {
     } else {
         host.split(':').next().unwrap_or("")
     };
-    matches!(name.to_ascii_lowercase().as_str(), "127.0.0.1" | "localhost" | "::1")
+    matches!(
+        name.to_ascii_lowercase().as_str(),
+        "127.0.0.1" | "localhost" | "::1"
+    )
 }
 
 async fn protect_local_request(req: Request, next: Next) -> Response {
-    let valid = req.headers().get(HOST).and_then(|v| v.to_str().ok()).is_some_and(local_host);
+    let valid = req
+        .headers()
+        .get(HOST)
+        .and_then(|v| v.to_str().ok())
+        .is_some_and(local_host);
     if !valid {
-        return (StatusCode::BAD_REQUEST, Json(json!({ "error": "Host must be localhost." }))).into_response();
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": "Host must be localhost." })),
+        )
+            .into_response();
     }
     let mut response = next.run(req).await;
     let headers = response.headers_mut();
     headers.insert("content-security-policy", HeaderValue::from_static("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"));
-    headers.insert("x-content-type-options", HeaderValue::from_static("nosniff"));
+    headers.insert(
+        "x-content-type-options",
+        HeaderValue::from_static("nosniff"),
+    );
     headers.insert("x-frame-options", HeaderValue::from_static("DENY"));
     headers.insert("referrer-policy", HeaderValue::from_static("no-referrer"));
-    headers.insert("permissions-policy", HeaderValue::from_static("geolocation=(), microphone=(), camera=(self)"));
+    headers.insert(
+        "permissions-policy",
+        HeaderValue::from_static("geolocation=(), microphone=(), camera=(self)"),
+    );
     response
 }
 
@@ -65,13 +82,19 @@ async fn main() {
     let python = env_or("ASTRO_PYTHON", "python");
 
     if !std::path::Path::new(&db_path).is_file() {
-        eprintln!("Database not found at {}. Run: python tools/seed.py", db_path);
+        eprintln!(
+            "Database not found at {}. Run: python tools/seed.py",
+            db_path
+        );
         std::process::exit(1);
     }
     let port: u16 = match port_text.parse::<u16>() {
         Ok(p) => p,
         Err(_) => {
-            eprintln!("ASTRO_PORT must be a number from 1 to 65535, not {}.", port_text);
+            eprintln!(
+                "ASTRO_PORT must be a number from 1 to 65535, not {}.",
+                port_text
+            );
             std::process::exit(1);
         }
     };

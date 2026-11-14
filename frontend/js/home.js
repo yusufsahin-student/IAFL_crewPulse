@@ -4,7 +4,7 @@ import {
   initShell, el, statusBadge, masterAlert, showError, formatValue, formatDateTime,
   indicatorById, missionById, STATUS_LABEL,
 } from './shell.js';
-import { renderRoutine } from './routine.js';
+import { renderRoutine, utcDay } from './routine.js';
 import { openMeasureDialog, hasDiagram } from './measure.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -377,7 +377,7 @@ function partExplain(s, key) {
 // Older readings stay visible in the 14-day trend and on the rest of the page.
 function checkedInToday(s) {
   const t = s && s.checkin && s.checkin.taken_at;
-  return Boolean(t) && new Date(t).toDateString() === new Date().toDateString();
+  return Boolean(t) && utcDay(t) === utcDay(Date.now());
 }
 
 function bodyView(s) {

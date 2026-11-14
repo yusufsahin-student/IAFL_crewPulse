@@ -95,10 +95,12 @@ pub fn zscore(
         zs.push((id, (v - m) / sd, v, m, sd));
     }
 
-    if zs.is_empty() { return Ok(Anomaly::insufficient()); }
+    if zs.is_empty() {
+        return Ok(Anomaly::insufficient());
+    }
     let max_abs = zs.iter().fold(0.0_f64, |acc, z| acc.max(z.1.abs()));
     let score = if 2.0 * z_alert > 0.0 {
-        (max_abs / (2.0 * z_alert)).max(0.0).min(1.0)
+        (max_abs / (2.0 * z_alert)).clamp(0.0, 1.0)
     } else {
         0.0
     };
@@ -132,7 +134,12 @@ pub fn zscore(
 }
 
 /// Writes one ml_scores row (replaces an existing one for the same check-in).
-pub fn save(conn: &Connection, checkin_id: i64, a: &Anomaly, model_version: Option<&str>) -> Result<(), AppError> {
+pub fn save(
+    conn: &Connection,
+    checkin_id: i64,
+    a: &Anomaly,
+    model_version: Option<&str>,
+) -> Result<(), AppError> {
     let flag: i64 = if a.is_anomaly { 1 } else { 0 };
     let contributors = a.contributors.to_string();
     let scored_at = db::now_iso();

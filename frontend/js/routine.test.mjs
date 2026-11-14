@@ -1,6 +1,6 @@
 // Run: node frontend/js/routine.test.mjs
 import assert from 'node:assert/strict';
-import { streak, dueState, badgeDays, badgeMeta, routineSummary } from './routine.js';
+import { streak, dueState, badgeDays, badgeMeta, routineSummary, utcDay } from './routine.js';
 
 const p = (...d) => d.map((x) => ({ taken_at: `${x}T08:00:00Z` }));
 
@@ -11,6 +11,8 @@ assert.deepEqual(streak(p('2026-11-09', '2026-11-10', '2026-11-11'), '2026-11-13
 assert.deepEqual(streak(p('2026-11-01', '2026-11-02', '2026-11-02', '2026-11-03', '2026-11-12', '2026-11-13'), '2026-11-13'), { current: 2, best: 3 });
 
 const now = Date.parse('2026-11-13T12:00:00Z');
+assert.equal(utcDay('2026-11-13T23:30:00Z'), '2026-11-13');
+assert.equal(utcDay('invalid'), '');
 assert.deepEqual(dueState('2026-11-13T07:00:00Z', 24, now), { state: 'ok', hours: 19 });
 assert.deepEqual(dueState('2026-11-12T07:00:00Z', 24, now), { state: 'overdue', hours: 5 });
 assert.equal(dueState(null, 24, now).state, 'none');

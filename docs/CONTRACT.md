@@ -118,13 +118,14 @@ The Fitness view uses the configured `bone.exercise_target_min` as its base targ
 
 `POST /api/checkins` accepts an optional `client_submission_id`. Repeating the same ID and identical payload returns the original check-in; reusing the ID with a different payload is rejected. This makes local queued retries safe after a lost response.
 
-`GET /api/environment?astronaut_id=&mission=` returns the latest cabin CO₂, temperature, and humidity snapshot. It is contextual evidence only and never contributes to the health score. Every reading states whether it came from a device, import, or simulation.
+`GET /api/environment?astronaut_id=&mission=&days=60` returns the latest cabin CO₂, temperature, and humidity snapshot plus oldest-first history for the requested window. It also returns a versioned `layer` with `id`, `label`, `freshness`, and metric sample arrays. Trends can accept future context sources through this same boundary (for example a gravity layer) without changing health scoring. Environmental data is contextual evidence only and never contributes to the health score or establishes causation. Every reading states whether it came from a device, import, or simulation.
 
 The backend also serves `frontend/` as static files at `/` (index.html default). Errors: status 4xx/5xx with `{"error": "plain sentence", "field": "optional"}`. Numbers are JSON numbers, absent values `null`.
 
 | Method & path | Response |
 |---|---|
 | `GET /api/health` | `{"ok":true,"db":"db/astro.db","model":"tf_autoencoder"\|"zscore_fallback"}` |
+| `GET /api/environment?astronaut_id=1&days=60` | `{"mission_id":"iss","reading":<latest>\|null,"readings":[...],"window":{"days":60},"freshness":{"status":"current"\|"stale"\|"missing","observed_at":...,"age_h":...,"max_age_h":24},"layer":{"schema_version":1,"id":"environment","label":"Cabin environment","freshness":{...},"metrics":[{"id":"co2_ppm","label":"Carbon dioxide","unit":"ppm","samples":[{"observed_at","value","source"}]}]},"note":"..."}` |
 | `GET /api/config` | `{missions:[...], body_regions:[...], indicators:[...], bone_sites:[...], sources:[...], params:{key:value}}` — rows as in the schema; when `?astronaut_id=` is passed, `indicators[].normal_low..critical_high` reflect that astronaut's effective range (including personalized `kcal_intake` and `grip_strength` limits); `indicators[].scale_labels` parsed to an array or null; lists sorted by `display_order`. |
 | `GET /api/astronauts` | `[{id,name,role,sex,birth_year,height_cm,preflight_mass_kg,mission_id,mission_start,mission_day,avatar_color,latest_score,latest_band}]` |
 | `GET /api/astronauts/{id}/status?mission=mars` | Status object, 5.1. `mission` is optional and only changes `mission`, `triage` (what-if for the distance slider). |

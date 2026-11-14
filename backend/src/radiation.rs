@@ -8,7 +8,10 @@ use chrono::{NaiveDate, Utc};
 use rusqlite::{params, Connection};
 use serde_json::{json, Value};
 
-use crate::db::{self, day_start_secs, int, lock, num, parse_ts, query_rows, round_to, sval, text, AppState, Params, Row};
+use crate::db::{
+    self, day_start_secs, int, lock, num, parse_ts, query_rows, round_to, sval, text, AppState,
+    Params, Row,
+};
 use crate::errors::AppError;
 use crate::status::{load_astronaut, load_mission};
 
@@ -43,7 +46,12 @@ pub struct Rad {
 
 /// Computes zone rates, the active event and the mission dose. `who` is (astronaut id, mission start);
 /// without it no doses are computed.
-pub fn compute(conn: &Connection, p: &Params, mission: &Row, who: Option<(i64, String)>) -> Result<Rad, AppError> {
+pub fn compute(
+    conn: &Connection,
+    p: &Params,
+    mission: &Row,
+    who: Option<(i64, String)>,
+) -> Result<Rad, AppError> {
     let mission_id = sval(mission, "id");
     let gcr = num(mission, "gcr_msv_per_day").unwrap_or(0.0);
     let sep_mission = num(mission, "sep_exposure_factor").unwrap_or(1.0);
@@ -84,7 +92,12 @@ pub fn compute(conn: &Connection, p: &Params, mission: &Row, who: Option<(i64, S
             None => start + dur_s as i64,
         };
         let sev = num(&e, "severity").unwrap_or(0.0);
-        wins.push(Win { row: e, start, end, sev });
+        wins.push(Win {
+            row: e,
+            start,
+            end,
+            sev,
+        });
     }
 
     // Active event: window contains now; if several, the most recently started one.
@@ -103,10 +116,20 @@ pub fn compute(conn: &Connection, p: &Params, mission: &Row, who: Option<(i64, S
         let shield = num(&z, "shielding_g_cm2").unwrap_or(0.0);
         let background = gcr * (-(shield - ref_shield) / gcr_atten).exp();
         let sep_factor = sep_peak * sep_mission * (-shield / sep_atten).exp();
-        let event_rate = if active_idx.is_some() { sep_factor * active_sev } else { 0.0 };
+        let event_rate = if active_idx.is_some() {
+            sep_factor * active_sev
+        } else {
+            0.0
+        };
         let mut z2 = z.clone();
-        z2.insert("background_msv_per_day".to_string(), json!(round_to(background, 3)));
-        z2.insert("event_msv_per_h".to_string(), json!(round_to(event_rate, 3)));
+        z2.insert(
+            "background_msv_per_day".to_string(),
+            json!(round_to(background, 3)),
+        );
+        z2.insert(
+            "event_msv_per_h".to_string(),
+            json!(round_to(event_rate, 3)),
+        );
         zrates.push(ZoneRate {
             id: sval(&z, "id"),
             background,
@@ -132,7 +155,7 @@ pub fn compute(conn: &Connection, p: &Params, mission: &Row, who: Option<(i64, S
             let day = sval(&r, "day");
             let zone = sval(&r, "zone_id");
             let h = num(&r, "hours").unwrap_or(0.0);
-            log.entry(day).or_insert_with(HashMap::new).insert(zone, h);
+            log.entry(day).or_default().insert(zone, h);
         }
 
         if let Ok(mstart) = NaiveDate::parse_from_str(start, "%Y-%m-%d") {
@@ -148,13 +171,17 @@ pub fn compute(conn: &Connection, p: &Params, mission: &Row, who: Option<(i64, S
                 if d == today {
                     today_msv = v;
                 }
-                d = d + chrono::Duration::days(1);
+                d += chrono::Duration::days(1);
                 guard += 1;
             }
         }
     }
 
-    let pct = if limit > 0.0 { 100.0 * total / limit } else { 0.0 };
+    let pct = if limit > 0.0 {
+        100.0 * total / limit
+    } else {
+        0.0
+    };
 
     Ok(Rad {
         zones,
@@ -218,25 +245,14 @@ fn day_dose(
     dose
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn integrates_event_overlapping_midnight() {
-        let day = NaiveDate::from_ymd_opt(2020, 1, 2).unwrap();
-        let start = day_start_secs(day).unwrap();
-        let zones = vec![ZoneRate { id: "test".into(), background: 1.0, sep_factor: 2.0, default_hours: 24.0 }];
-        let wins = vec![Win { row: Row::new(), start: start - 3600, end: start + 3600, sev: 0.5 }];
-        assert!((day_dose(day, &zones, &wins, &HashMap::new()) - 2.0).abs() < 1e-9);
-    }
-}
-
 pub async fn get_radiation(
     State(st): State<AppState>,
     Query(q): Query<HashMap<String, String>>,
 ) -> Result<Json<Value>, AppError> {
     let conn = lock(&st)?;
-    let astro_id = q.get("astronaut_id").and_then(|s| s.trim().parse::<i64>().ok());
+    let astro_id = q
+        .get("astronaut_id")
+        .and_then(|s| s.trim().parse::<i64>().ok());
     let mission_q = q
         .get("mission")
         .map(|s| s.trim().to_string())
@@ -294,4 +310,28 @@ pub async fn get_radiation(
         "recommended_zone_id": rad.recommended,
         "note": "Estimate from a simplified shielding model."
     })))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn integrates_event_overlapping_midnight() {
+        let day = NaiveDate::from_ymd_opt(2020, 1, 2).unwrap();
+        let start = day_start_secs(day).unwrap();
+        let zones = vec![ZoneRate {
+            id: "test".into(),
+            background: 1.0,
+            sep_factor: 2.0,
+            default_hours: 24.0,
+        }];
+        let wins = vec![Win {
+            row: Row::new(),
+            start: start - 3600,
+            end: start + 3600,
+            sev: 0.5,
+        }];
+        assert!((day_dose(day, &zones, &wins, &HashMap::new()) - 2.0).abs() < 1e-9);
+    }
 }

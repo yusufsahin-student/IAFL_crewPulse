@@ -43,8 +43,8 @@ function query(params) {
 export const api = {
   health: () => request('/api/health'),
   config: (astronautId) => request(`/api/config${query({astronaut_id: astronautId})}`),
-  environment: (astronautId, mission) =>
-    request(`/api/environment${query({ astronaut_id: astronautId, mission })}`),
+  environment: (astronautId, mission, days = 60) =>
+    request(`/api/environment${query({ astronaut_id: astronautId, mission, days })}`),
   astronauts: () => request('/api/astronauts'),
   status: (astronautId, mission) =>
     request(`/api/astronauts/${astronautId}/status${query({ mission })}`),

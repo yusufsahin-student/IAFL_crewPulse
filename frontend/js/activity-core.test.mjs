@@ -6,6 +6,9 @@ const base = (extra={}) => ({mission:{id:'iss'},freshness:{state:'current'},tria
 const points = (minutes) => minutes.map((value,i)=>({taken_at:`2026-11-${String(i+1).padStart(2,'0')}T08:00:00Z`,values:{exercise_minutes:value}}));
 
 assert.equal(buildAdaptivePlan({status:base(),points:points([60,62,58,60,65,61,60]),today:'2026-11-13'}).mode,'build');
+const missionTargetPlan=buildAdaptivePlan({status:base(),points:points([120,120,120,120,120,120,120]),baseTarget:120,today:'2026-11-13'});
+assert.equal(missionTargetPlan.mode,'build');
+assert.equal(missionTargetPlan.minutes,120);
 assert.equal(buildAdaptivePlan({status:base({indicators:[indicator('sleep_hours',5),indicator('mood',4),indicator('stress',2)]}),points:points([60]),today:'2026-11-13'}).mode,'recover');
 assert.notEqual(buildAdaptivePlan({status:base({indicators:[indicator('sleep_hours',null),indicator('mood',4),indicator('stress',2)]}),points:points([60]),today:'2026-11-13'}).mode,'recover');
 assert.equal(buildAdaptivePlan({status:base({freshness:{state:'stale'}}),points:[],today:'2026-11-13'}).mode,'verify');

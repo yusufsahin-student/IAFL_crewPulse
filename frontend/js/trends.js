@@ -3,6 +3,8 @@
 import { initShell, el, showError, statusBadge, formatValue, formatDate, STATUS_LABEL } from './shell.js';
 import { api } from './api.js';
 import { pearson, matrix, minPairs } from './correlation.js';
+import { selectSolarEvents } from './trend-data.js';
+import { layerSummary } from './context-data.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const DAY_MS = 86400000;
@@ -10,7 +12,7 @@ const main = document.getElementById('content');
 const ui = {}; // the indicator chart's readout, slider and active-point setters
 let activeSetters = [];
 let chainReadout = null;
-const state = { config: null, astronautId: null, status: null, solarEvents: [], points: [], indicatorId: null, index: 0, showTable: false, seq: 0 };
+const state = { config: null, astronautId: null, status: null, contextLayer: null, solarEvents: [], points: [], indicatorId: null, index: 0, showTable: false, seq: 0 };
 
 // Charts measure their slot and redraw at its width, so labels stay legible at 360 px and 1440 px.
 const resizeObserver = new ResizeObserver((entries) => {
@@ -759,6 +761,29 @@ function correlationPanel() {
   return section;
 }
 
+function contextPanel() {
+  const summary = layerSummary(state.contextLayer, 60);
+  const head = el('h2', { id: 'context-title' }, 'Mission context data');
+  if (!summary) {
+    return el('section', { class: 'panel', 'aria-labelledby': 'context-title' }, head,
+      el('p', { class: 'state' }, 'No environmental observations are available for this period.'),
+      el('p', { class: 'muted trend-note' }, 'Context data is kept separate from the health score.'));
+  }
+  const freshness = summary.freshness.status === 'current' ? 'Current'
+    : summary.freshness.status === 'stale' ? 'Stale' : 'Missing';
+  const cards = summary.metrics.map((metric) => el('div', { class: 'spark-card context-card' },
+    el('span', { class: 'spark-name' }, metric.label),
+    metric.latest
+      ? el('span', { class: 'metric__value' }, formatValue(metric.latest.value, metric.id === 'co2_ppm' ? 0 : 1),
+        el('span', { class: 'metric__unit' }, metric.unit))
+      : el('span', { class: 'muted' }, 'No observations')));
+  return el('section', { class: 'panel', 'aria-labelledby': 'context-title' }, head,
+    el('p', {}, `${summary.label} · ${freshness} · ${summary.observedDays} of 60 days observed (${summary.coveragePct}%).`),
+    el('div', { class: 'spark-grid' }, cards),
+    el('p', { class: 'muted trend-note' },
+      'These readings provide mission context only. They do not change the health score or establish a cause. Future context sources can be added as separate layers.'));
+}
+
 function render(focusId) {
   resizeObserver.disconnect();
   activeSetters = [];
@@ -767,6 +792,7 @@ function render(focusId) {
   const parts = [el('div', { class: 'page-head' },
     el('h1', {}, 'Trends'),
     el('p', {}, 'Readings over the last 60 check-ins, the normal range for each, and projected bone loss for this mission.'))];
+  parts.push(contextPanel());
   if (!state.points.length) {
     parts.push(el('section', { class: 'panel' },
       el('h2', {}, 'No check-ins yet'),
@@ -789,20 +815,20 @@ async function load() {
   }
   main.replaceChildren(el('p', { class: 'state' }, 'Loading…'));
   try {
-    const [history, bone, status, rad, solarFallback] = await Promise.all([
+    const [history, bone, status, rad, solarFallback, environment] = await Promise.all([
       api.history(state.astronautId, 60),
       api.bone(state.astronautId, 180),
       api.status(state.astronautId).catch(() => null),
       api.radiation(state.astronautId).catch(() => null),
       api.solarEvents(60).catch(() => null),
+      api.environment(state.astronautId, null, 60).catch(() => null),
     ]);
     if (seq !== state.seq) return;
     state.history = history;
     state.bone = bone;
     state.status = status;
-    const radEvents = rad && Array.isArray(rad.events) ? rad.events : [];
-    const fallbackEvents = solarFallback && Array.isArray(solarFallback.events) ? solarFallback.events : [];
-    state.solarEvents = radEvents.length ? radEvents : fallbackEvents;
+    state.solarEvents = selectSolarEvents(rad, solarFallback);
+    state.contextLayer = environment && environment.layer;
     state.points = history.points || [];
     const list = indicatorList();
     if (!list.some((i) => i.id === state.indicatorId)) {

@@ -348,14 +348,22 @@ def simulate(conn, days, today, rng):
                         "INSERT INTO exposure_log (astronaut_id, day, zone_id, hours) VALUES (?, ?, ?, ?)",
                         (astro["id"], day.isoformat(), zone_id, h))
 
-    # One current cabin snapshot per mission. It is clearly marked simulated and is context only.
+    # Daily cabin context per mission. These simulated observations are displayed alongside
+    # health history, but deliberately do not alter the health score.
     for mission_id in sorted(zones_by_mission):
-        taken = min(datetime.combine(today, time(8)), now)
-        conn.execute(
-            "INSERT INTO cabin_readings (mission_id, taken_at, co2_ppm, temperature_c, humidity_pct, source) "
-            "VALUES (?, ?, ?, ?, ?, 'sim')",
-            (mission_id, stamp(taken), round(rng.uniform(650, 950)),
-             round(rng.uniform(21.0, 24.5), 1), round(rng.uniform(35.0, 55.0), 1)))
+        co2_base = rng.uniform(720, 880)
+        temp_base = rng.uniform(21.5, 23.5)
+        humidity_base = rng.uniform(38.0, 50.0)
+        first_day = today - timedelta(days=max(0, days - 1))
+        for index, cabin_day in enumerate(day_range(first_day, today)):
+            taken = min(datetime.combine(cabin_day, time(8)), now)
+            cycle = math.sin(index * math.tau / 14)
+            conn.execute(
+                "INSERT INTO cabin_readings (mission_id, taken_at, co2_ppm, temperature_c, humidity_pct, source) "
+                "VALUES (?, ?, ?, ?, ?, 'sim')",
+                (mission_id, stamp(taken), round(co2_base + 45 * cycle + rng.uniform(-25, 25)),
+                 round(temp_base + 0.5 * cycle + rng.uniform(-0.25, 0.25), 1),
+                 round(humidity_base - 2.5 * cycle + rng.uniform(-1.5, 1.5), 1)))
 
 
 def main(argv=None):

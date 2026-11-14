@@ -1,4 +1,5 @@
 [
+  {"key": "context.environment_fresh_h", "value": 24, "unit": "h", "description": "Maximum age of a cabin observation before its data-quality label becomes stale. This does not alter the health score.", "source_ref": "assumption"},
   {"key": "score.normal_points", "value": 100, "unit": "points", "description": "Health score points for a normal reading (vitals part).", "source_ref": "assumption"},
   {"key": "score.watch_points", "value": 60, "unit": "points", "description": "Health score points for a watch reading (vitals part).", "source_ref": "assumption"},
   {"key": "score.alert_points", "value": 10, "unit": "points", "description": "Health score points for an alert reading (vitals part).", "source_ref": "assumption"},

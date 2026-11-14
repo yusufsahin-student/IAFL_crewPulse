@@ -10,7 +10,9 @@ use serde_json::{json, Map, Value};
 use crate::anomaly;
 use crate::db::{self, int, lock, qint, query_rows, round_to, sval, AppState, Params};
 use crate::errors::AppError;
-use crate::status::{checkin_values, evaluate, load_astronaut, load_indicators, parse_astronaut_id, vitals_of};
+use crate::status::{
+    checkin_values, evaluate, load_astronaut, load_indicators, parse_astronaut_id, vitals_of,
+};
 
 pub async fn get_history(
     State(st): State<AppState>,

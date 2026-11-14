@@ -4,15 +4,14 @@ import { el, statusBadge, indicatorById } from './shell.js';
 const DAY_MS = 86400000;
 const MAX_TASKS = 5;
 const dayNum = (iso) => Math.floor(Date.parse(`${String(iso).slice(0, 10)}T00:00:00Z`) / DAY_MS);
-const localDay = (value) => {
+export const utcDay = (value) => {
   const d = new Date(value);
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return Number.isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
 };
 
 // Consecutive-day check-in streak from history points (UTC dates). Current streak must end today or yesterday.
 export function streak(points, todayISO) {
-  const days = [...new Set((points || []).map((p) => dayNum(localDay(p.taken_at))))].filter(Number.isFinite).sort((a, b) => a - b);
+  const days = [...new Set((points || []).map((p) => dayNum(utcDay(p.taken_at))))].filter(Number.isFinite).sort((a, b) => a - b);
   let best = 0;
   let run = 0;
   days.forEach((d, i) => {
@@ -67,7 +66,7 @@ export function badgeMeta(days) {
 
 export function routineSummary({ status = {}, points = null, config = {}, now = Date.now() } = {}) {
   const intervalH = Number((config.params || {})['routine.checkin_interval_h']) || 24;
-  const todayISO = localDay(now);
+  const todayISO = utcDay(now);
   const last = status.checkin ? status.checkin.taken_at : null;
   const due = dueState(last, intervalH, now);
   const s = points ? streak(points, todayISO) : null;

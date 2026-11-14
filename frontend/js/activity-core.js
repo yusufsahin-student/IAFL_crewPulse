@@ -83,7 +83,7 @@ export function buildAdaptivePlan({ status, points = [], localLogs = [], baseTar
     mode = 'reentry'; minutes = Math.max(45, round5(target * 0.9));
     reasons.push('Son yedi günlük uygulama hedefin altında; sürdürülebilir yeniden giriş planı seçildi.');
   } else if (average !== null && average >= target * 0.95 && (sleep === null || sleep >= 7) && (mood === null || mood >= 3) && (stress === null || stress <= 3)) {
-    mode = 'build'; minutes = Math.min(75, round5(target * 1.1));
+    mode = 'build'; minutes = Math.min(120, round5(target * 1.1));
     reasons.push('Yakın dönem uyumu ve toparlanma uygun; yük küçük bir adımla artırıldı.');
   } else {
     reasons.push(average === null ? 'Yedi günlük geçmiş henüz oluşmadı; görev temel hedefi korunuyor.' : 'Yakın dönem yükü dengeli; görev temel hedefi korunuyor.');
