@@ -33,7 +33,10 @@
 .gravity-loss-card { padding:20px; border:1px solid var(--line); border-radius:14px; background:var(--surface-2); }
 .gravity-loss-card h3 { margin:8px 0; }
 .gravity-loss-list { display:grid; gap:0; }
-.gravity-loss-row { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--line); }
+.gravity-loss-item { padding:10px 0; border-top:1px solid var(--line); }
+.gravity-loss-row { display:flex; justify-content:space-between; gap:12px; padding:0 0 8px; }
+.gravity-loss-track { height:6px; border-radius:99px; background:var(--line); overflow:hidden; }
+.gravity-loss-track span { display:block; height:100%; border-radius:inherit; background:var(--advisory); }
 .gravity-loss-unavailable { font-weight:700; }
 @media (max-width: 620px) {
   .gravity-loss-grid { grid-template-columns:1fr; }

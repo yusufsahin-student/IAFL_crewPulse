@@ -41,8 +41,14 @@ function healthSection(status, history, bone) {
   if (sites.length) {
     const names = {lumbar_spine:'Bel omurgası',femoral_neck:'Uyluk boynu',trochanter:'Kalça (trokanter)',pelvis:'Pelvis',calcaneus:'Topuk kemiği'};
     boneCard.append(el('p', { class: 'muted' }, 'Görev süresince modellenen kayıp; kemik taraması veya doğrudan ölçüm değildir.'),
-      el('div', { class: 'gravity-loss-list' }, sites.map((site) => el('div', { class: 'gravity-loss-row' },
-        el('span', {}, names[site.bone_site_id] || site.name), el('strong', {}, `%${formatValue(site.loss_pct, 1)}`)))));
+      el('div', { class: 'gravity-loss-list' }, sites.map((site) => {
+        const highest = Math.max(...sites.map((item) => Math.max(0, Number(item.loss_pct))), 0.01);
+        const width = Math.max(0, Math.min(100, Number(site.loss_pct) / highest * 100));
+        return el('div', { class: 'gravity-loss-item' }, el('div', { class: 'gravity-loss-row' },
+          el('span', {}, names[site.bone_site_id] || site.name), el('strong', {}, `%${formatValue(site.loss_pct, 1)}`)),
+          el('div', { class: 'gravity-loss-track', 'aria-hidden': 'true' }, el('span', { style: `width:${width}%` })));
+      })));
+    boneCard.append(el('small', { class: 'muted' }, 'Çubuk uzunlukları bu listedeki en yüksek değere göre karşılaştırmalıdır.'));
   } else boneCard.append(el('p', { class: 'state' }, matching ? 'Kemik tahmini şu anda bulunmuyor.' : 'Kemik tahmini astronotun kendi görev profilinde gösterilir.'));
   const grip = (status.indicators || []).find((item) => item.indicator_id === 'grip_strength');
   const muscleCard = el('article', { class: 'gravity-loss-card' }, el('div', { class: 'eyebrow' }, 'KAS SAĞLIĞI'), el('h3', {}, 'Kas kaybı ve kuvvet takibi'),
