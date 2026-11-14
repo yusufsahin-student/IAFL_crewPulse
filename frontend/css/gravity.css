@@ -21,6 +21,14 @@
 .gravity-overview > div { padding:20px; border:1px solid var(--line); border-radius:14px; background:var(--surface-2); }
 .gravity-overview h2 { font-size:clamp(1.5rem,3vw,2.4rem); margin:10px 0; }
 .gravity-overview p { color:var(--ink-muted); }
+.gravity-health-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:18px 0; }
+.gravity-health-card { display:grid; gap:8px; padding:18px; border:1px solid var(--line); border-radius:12px; background:var(--surface-2); }
+.gravity-health-card strong { font-size:var(--text-lg); }
+.gravity-health-card small { color:var(--ink-muted); line-height:1.5; }
+.gravity-health-state { font-size:var(--text-sm); font-weight:700; }
+.gravity-health-state[data-status=alert] { color:var(--alert); }
+.gravity-health-state[data-status=watch] { color:var(--watch); }
+.gravity-health-freshness,.gravity-health-bone { padding:12px 14px; background:var(--surface-2); border-left:3px solid var(--line-strong); }
 @media (max-width: 620px) {
   .gravity-overview { grid-template-columns:1fr; }
   .gravity-chart-slot, .gravity-chart { min-height: 260px; }

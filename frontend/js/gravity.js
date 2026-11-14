@@ -10,6 +10,40 @@ let missionId;
 let windowDays = 60;
 let seq = 0;
 
+const healthFields = [
+  ['heart_rate', 'Nabız'], ['spo2', 'Oksijen'], ['sleep_hours', 'Uyku'],
+  ['exercise_minutes', 'Aktivite'], ['grip_strength', 'Kavrama gücü'], ['balance_symptoms', 'Denge ve baş dönmesi'],
+];
+
+function healthSection(status, history, bone) {
+  const section = el('section', { class: 'panel' }, el('div', { class: 'eyebrow' }, 'ASTRONOT SAĞLIĞI'), el('h2', {}, 'Yerçekimi bağlamında sağlık göstergeleri'));
+  if (!status) { section.append(el('p', { class: 'state' }, 'Sağlık verileri alınamadı. Daha sonra tekrar deneyin.')); return section; }
+  const matching = status.mission?.id === missionId;
+  section.append(el('p', { class: 'muted' }, matching
+    ? 'Aşağıdaki ölçümler bu astronotun görevine aittir. Birlikte gösterilmeleri yerçekiminin ölçümlere neden olduğunu kanıtlamaz.'
+    : 'Seçilen yerçekimi profili astronotun kayıtlı görevinden farklıdır. Sağlık ölçümleri karşılaştırma amacıyla kendi görevinden gösterilir; seçilen profile aktarılmaz.'));
+  const freshness = status.freshness;
+  section.append(el('p', { class: 'gravity-health-freshness' }, freshness?.state === 'current' ? 'Sağlık kontrolü güncel.' : 'Sağlık kontrolü güncel değil; yeni ölçüm alın.', freshness?.age_hours != null ? ` Son kontrol ${formatValue(freshness.age_hours, 1)} saat önce.` : ''));
+  const cards = healthFields.map(([id, label]) => {
+    const row = (status.indicators || []).find((item) => item.indicator_id === id);
+    const samples = (history?.points || []).filter((point) => point.values?.[id] != null && Number.isFinite(Number(point.values[id]))).sort((a,b) => String(a.taken_at).localeCompare(String(b.taken_at)));
+    const first = samples[0]; const last = samples.at(-1);
+    const change = samples.length > 1 ? Number(last.values[id]) - Number(first.values[id]) : null;
+    const text = change === null ? 'Karşılaştırma için yeterli geçmiş yok' : `${samples.length} kayıt · ilk ${formatValue(first.values[id], 1)} → son ${formatValue(last.values[id], 1)} ${row?.unit || ''}`;
+    const states = {normal:'Normal',watch:'Dikkat',alert:'Uyarı',missing:'Veri yok'};
+    return el('article', { class: 'gravity-health-card' }, el('span', { class: 'eyebrow' }, label),
+      el('strong', {}, row?.value == null ? '—' : `${formatValue(row.value, row.decimals || 0)} ${row.unit || ''}`),
+      el('span', { class: 'gravity-health-state', 'data-status': row?.status || 'missing' }, states[row?.status] || 'Veri yok'), el('small', {}, text));
+  });
+  section.append(el('div', { class: 'gravity-health-grid' }, cards));
+  if (matching && bone?.sites?.length) {
+    const sites = bone.sites.filter((site) => site.loss_pct != null && Number.isFinite(Number(site.loss_pct)));
+    if (sites.length) { const highest = sites.reduce((a,b) => Number(a.loss_pct) >= Number(b.loss_pct) ? a : b); section.append(el('p', { class: 'gravity-health-bone' }, `Kemik modeli: ${highest.name} için tahmini kayıp %${formatValue(highest.loss_pct, 1)}. Bu değer ölçüm değil, model tahminidir.`)); }
+  }
+  section.append(el('a', { class: 'btn', href: 'trends.html' }, 'Sağlık eğilimlerini ayrıntılı incele →'));
+  return section;
+}
+
 function svg(tag, attrs = {}, ...children) {
   const node = document.createElementNS(NS, tag);
   Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, String(value)));
@@ -78,7 +112,7 @@ function assessmentCards(assessment) {
     el('span', { class: 'metric__label' }, name), el('strong', { class: 'metric__value' }, value))));
 }
 
-function render(data) {
+function render(data, status, history, bone) {
   const assessment = data.assessment;
   const transitions = transitionPoints(gravityPoints(data.readings));
   const picker = el('select', { class: 'input', 'aria-label': 'Mission gravity profile', onchange: (event) => { missionId = event.target.value; load(); } },
@@ -96,6 +130,7 @@ function render(data) {
     el('section', { class: 'panel gravity-overview' }, el('div', {}, el('span', { class: 'eyebrow' }, 'GÖREV BAĞLAMI'), el('h2', {}, `${formatValue(assessment.current_g, 3)} g`), el('p', {}, 'Yerel yerçekimi · Dünya = 1 g')), el('div', {}, el('span', { class: 'eyebrow' }, 'VERİ KAPSAMI'), el('h2', {}, `${data.readings.length} kayıt`), el('p', {}, `Kaynak: ${sourceText}`)), el('div', {}, el('span', { class: 'eyebrow' }, 'ANALİZE ETKİSİ'), el('p', {}, 'Kemik tahminine günlük yerçekimi geçmişi, aktivite önerilerine güncel görev bağlamı eklenir.'), el('a', { class: 'btn', href: 'activity.html' }, 'Aktiviteler ve öneriler →'))),
     el('section', { class: 'panel' }, el('h2', {}, 'Current gravity context'), assessmentCards(assessment),
       el('p', { class: 'muted gravity-note' }, `Analysis areas: ${areas.join(', ') || 'none flagged'}. Evidence: ${assessment.evidence === 'limited_human_evidence' ? 'limited human evidence' : 'mission profile'}.`)),
+    healthSection(status, history, bone),
     el('section', { class: 'panel' }, el('h2', {}, 'Local gravity over time'),
       el('p', { class: 'muted' }, 'A vertical dashed marker shows a change of at least 0.05 g.'),
       chart(data.readings, 'gravity', 'Local gravity in g over the selected window')),
@@ -116,8 +151,13 @@ async function load() {
   const current = ++seq;
   root.replaceChildren(el('p', { class: 'state' }, 'Loading gravity profile…'));
   try {
-    const data = await api.gravity(null, missionId, windowDays);
-    if (current === seq) render(data);
+    const [data, status, history, bone] = await Promise.all([
+      api.gravity(null, missionId, windowDays),
+      api.status(ctx.astronautId).catch(() => null),
+      api.history(ctx.astronautId, windowDays).catch(() => null),
+      api.bone(ctx.astronautId).catch(() => null),
+    ]);
+    if (current === seq) render(data, status, history, bone);
   } catch (error) { if (current === seq) showError(root, error); }
 }
 
