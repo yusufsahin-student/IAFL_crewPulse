@@ -42,6 +42,30 @@ function mockFile(method, path, params) {
       note: 'Cabin context only. It does not change the health score.',
     } };
   }
+  if (path === '/api/gravity') {
+    const days = Math.max(1, Math.min(3650, Number(params.get('days')) || 60));
+    const gravityG = params.get('mission') === 'moon' ? 0.166 : params.get('mission') === 'mars' ? 0.38 : 0;
+    const readings = Array.from({ length: days }, (_, index) => ({
+      observed_at: new Date(Date.now() - (days - index - 1) * 86400000).toISOString(),
+      gravity_g: gravityG, source: 'mission_profile_sim',
+    }));
+    const samples = readings.map((row) => ({ observed_at: row.observed_at, value: row.gravity_g, source: row.source }));
+    const deficit = readings.map((row) => ({ observed_at: row.observed_at, value: (1 - row.gravity_g) * 100, source: 'derived' }));
+    const freshness = { status: 'current', observed_at: readings.at(-1).observed_at };
+    return { inline: {
+      mission_id: params.get('mission') || 'iss', reading: readings.at(-1), readings, window: { days },
+      assessment: { current_g: gravityG, earth_load_pct: gravityG * 100, load_deficit_pct: (1 - gravityG) * 100,
+        window_equivalent_microgravity_days: days * (1 - gravityG), transition_count: 0,
+        interpretation: gravityG < 0.4 && gravityG > 0 ? 'Partial gravity below 0.4 g; long-term protection is uncertain' : 'Microgravity',
+        evidence: gravityG > 0 && gravityG < 1 ? 'limited_human_evidence' : 'mission_profile',
+        analysis_areas: gravityG < 0.67 ? ['bone_loading', 'muscle_loading', 'cardiovascular_conditioning'] : [] },
+      layer: { schema_version: 1, id: 'gravity', label: 'Gravital tracking', freshness, metrics: [
+        { id: 'gravity_g', label: 'Local gravity', unit: 'g', samples },
+        { id: 'load_deficit_pct', label: 'Modeled load deficit', unit: '%', samples: deficit },
+      ] },
+      note: 'Decision-support model, not a clinical probability.',
+    } };
+  }
   if (path === '/api/astronauts') return { file: 'astronauts.json' };
   if (path === '/api/radiation') {
     const f = `radiation-${params.get('mission')}.json`;

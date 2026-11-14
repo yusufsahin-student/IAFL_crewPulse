@@ -87,6 +87,15 @@ pub fn compute(
     let md = mission_day.max(1);
     let months = (md - 1) as f64 / 30.44;
     let gravity_factor = (1.0 - gravity_g).clamp(0.0, 1.0);
+    let daily_gravity = crate::gravity::gravity_by_mission_day(conn, astro_id)?;
+    let first_gravity = daily_gravity.values().next().copied().unwrap_or(gravity_g);
+    let gravity_on = |day: i64| {
+        daily_gravity
+            .range(..=day)
+            .next_back()
+            .map(|(_, value)| *value)
+            .unwrap_or(first_gravity)
+    };
 
     let window = (p.get("bone.exercise_window_days") as i64).clamp(0, 3650);
     let ex = query_rows(
@@ -122,7 +131,8 @@ pub fn compute(
                 } else {
                     0.0
                 };
-                (1.0 - p.get("bone.exercise_max_reduction") * fraction).max(0.0) / 30.44
+                let unloading = (1.0 - gravity_on(d)).clamp(0.0, 1.0);
+                unloading * (1.0 - p.get("bone.exercise_max_reduction") * fraction).max(0.0) / 30.44
             })
             .sum()
     };
@@ -152,7 +162,7 @@ pub fn compute(
         let id = sval(s, "id");
         let rate = num(s, "loss_pct_per_month").unwrap_or(0.0);
         let baseline = base.get(&id).copied();
-        let loss = (rate * accumulated(md) * gravity_factor).min(100.0);
+        let loss = (rate * accumulated(md)).min(100.0);
         let status: &'static str = if loss >= alert_pct {
             "alert"
         } else if loss >= watch_pct {
@@ -164,7 +174,7 @@ pub fn compute(
         let mut projected = Vec::new();
         let mut d: i64 = 1;
         while d <= end {
-            let l = (rate * accumulated(d) * gravity_factor).min(100.0);
+            let l = (rate * accumulated(d)).min(100.0);
             projected.push(json!({
                 "mission_day": d,
                 "bmd": baseline.map(|b| round_to(b * (1.0 - l / 100.0), 3)),
@@ -206,6 +216,7 @@ pub async fn get_bone(
     let conn = lock(&st)?;
     let astro = load_astronaut(&conn, id)?;
     let mission = load_mission(&conn, &sval(&astro, "mission_id"))?;
+    let mission_id = sval(&mission, "id");
     let p = Params::load(&conn)?;
     let mday = db::mission_day(&sval(&astro, "mission_start"), db::today());
     let calc = compute(
@@ -213,7 +224,11 @@ pub async fn get_bone(
         &p,
         id,
         mday,
-        num(&mission, "gravity_g").unwrap_or(0.0),
+        crate::gravity::current_gravity_g(
+            &conn,
+            &mission_id,
+            num(&mission, "gravity_g").unwrap_or(0.0),
+        )?,
         days_ahead,
     )?;
     Ok(Json(calc.to_json()))

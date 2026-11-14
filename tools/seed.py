@@ -25,7 +25,7 @@ SEED_TABLES = [
     "bone_sites", "habitat_zones", "guidance", "triage_actions", "model_params",
     "astronauts", "bone_baselines",
 ]
-COUNT_TABLES = ["meta"] + SEED_TABLES + ["solar_events", "checkins", "readings", "exposure_log", "cabin_readings"]
+COUNT_TABLES = ["meta"] + SEED_TABLES + ["solar_events", "checkins", "readings", "exposure_log", "cabin_readings", "gravity_readings"]
 
 OFFSET_RE = re.compile(r"^OFFSET:(-?\d+)$")
 
@@ -245,6 +245,7 @@ def simulate(conn, days, today, rng):
     indicators = [dict(r) for r in conn.execute("SELECT * FROM indicators ORDER BY display_order, id")]
     astronauts = [dict(r) for r in conn.execute("SELECT * FROM astronauts ORDER BY id")]
     params = {r["key"]: r["value"] for r in conn.execute("SELECT key, value FROM model_params")}
+    mission_gravity = {r["id"]: r["gravity_g"] for r in conn.execute("SELECT id, gravity_g FROM missions")}
     zones_by_mission = {}
     for r in conn.execute("SELECT * FROM habitat_zones ORDER BY mission_id, display_order, id"):
         zones_by_mission.setdefault(r["mission_id"], []).append(dict(r))
@@ -364,6 +365,20 @@ def simulate(conn, days, today, rng):
                 (mission_id, stamp(taken), round(co2_base + 45 * cycle + rng.uniform(-25, 25)),
                  round(temp_base + 0.5 * cycle + rng.uniform(-0.25, 0.25), 1),
                  round(humidity_base - 2.5 * cycle + rng.uniform(-1.5, 1.5), 1)))
+
+    # Daily gravity context uses the configured mission profile. Future imports can provide
+    # time-varying sensor/profile values through the same table and API.
+    for mission_id, gravity_g in sorted(mission_gravity.items()):
+        first_day = today - timedelta(days=max(0, days - 1))
+        partial = 0 < gravity_g < 1
+        uncertainty = 0.08 if partial else 0.0
+        for gravity_day in day_range(first_day, today):
+            observed = min(datetime.combine(gravity_day, time(8)), now)
+            conn.execute(
+                "INSERT INTO gravity_readings (mission_id, observed_at, gravity_g, uncertainty_low_g, uncertainty_high_g, source) "
+                "VALUES (?, ?, ?, ?, ?, 'mission_profile_sim')",
+                (mission_id, stamp(observed), gravity_g,
+                 max(0, gravity_g - uncertainty), min(2, gravity_g + uncertainty)))
 
 
 def main(argv=None):

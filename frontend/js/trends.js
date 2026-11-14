@@ -13,7 +13,7 @@ const ui = {}; // the indicator chart's readout, slider and active-point setters
 let activeSetters = [];
 let chainReadout = null;
 let clipSeq = 0;
-const state = { config: null, astronautId: null, status: null, contextLayer: null, solarEvents: [], points: [], indicatorId: null, index: 0, showTable: false, seq: 0 };
+const state = { config: null, astronautId: null, status: null, contextLayers: [], gravityAssessment: null, solarEvents: [], points: [], indicatorId: null, index: 0, showTable: false, seq: 0 };
 
 // Charts measure their slot and redraw at its width, so labels stay legible at 360 px and 1440 px.
 const resizeObserver = new ResizeObserver((entries) => {
@@ -776,26 +776,38 @@ function correlationPanel() {
 }
 
 function contextPanel() {
-  const summary = layerSummary(state.contextLayer, 60);
+  const summaries = state.contextLayers.map((layer) => layerSummary(layer, 60)).filter(Boolean);
   const head = el('h2', { id: 'context-title' }, 'Mission context data');
-  if (!summary) {
+  if (!summaries.length) {
     return el('section', { class: 'panel', 'aria-labelledby': 'context-title' }, head,
       el('p', { class: 'state' }, 'No environmental observations are available for this period.'),
       el('p', { class: 'muted trend-note' }, 'Context data is kept separate from the health score.'));
   }
-  const freshness = summary.freshness.status === 'current' ? 'Current'
-    : summary.freshness.status === 'stale' ? 'Stale' : 'Missing';
-  const cards = summary.metrics.map((metric) => el('div', { class: 'spark-card context-card' },
-    el('span', { class: 'spark-name' }, metric.label),
-    metric.latest
-      ? el('span', { class: 'metric__value' }, formatValue(metric.latest.value, metric.id === 'co2_ppm' ? 0 : 1),
-        el('span', { class: 'metric__unit' }, metric.unit))
-      : el('span', { class: 'muted' }, 'No observations')));
+  const blocks = summaries.map((summary) => {
+    const freshness = summary.freshness.status === 'current' ? 'Current'
+      : summary.freshness.status === 'stale' ? 'Stale' : 'Missing';
+    const cards = summary.metrics.map((metric) => el('div', { class: 'spark-card context-card' },
+      el('span', { class: 'spark-name' }, metric.label),
+      metric.latest
+        ? el('span', { class: 'metric__value' }, formatValue(metric.latest.value, metric.id === 'co2_ppm' ? 0 : 1),
+          el('span', { class: 'metric__unit' }, metric.unit))
+        : el('span', { class: 'muted' }, 'No observations')));
+    const gravity = summary.id === 'gravity' && state.gravityAssessment
+      ? el('p', { class: 'muted trend-note' },
+        `${state.gravityAssessment.interpretation}. Window-equivalent microgravity exposure: ${formatValue(state.gravityAssessment.window_equivalent_microgravity_days, 1)} days. `,
+        `Gravity-field transitions detected: ${state.gravityAssessment.transition_count}. `,
+        `Analysis areas: ${(state.gravityAssessment.analysis_areas || []).map((id) => id.replaceAll('_', ' ')).join(', ') || 'none flagged'}. `,
+        `Evidence: ${state.gravityAssessment.evidence === 'limited_human_evidence' ? 'limited human evidence' : 'mission profile'}.`)
+      : null;
+    return el('div', { class: 'context-layer' },
+      el('h3', {}, summary.label),
+      el('p', {}, `${freshness} · ${summary.observedDays} of 60 days observed (${summary.coveragePct}%).`),
+      el('div', { class: 'spark-grid' }, cards), gravity);
+  });
   return el('section', { class: 'panel', 'aria-labelledby': 'context-title' }, head,
-    el('p', {}, `${summary.label} · ${freshness} · ${summary.observedDays} of 60 days observed (${summary.coveragePct}%).`),
-    el('div', { class: 'spark-grid' }, cards),
+    blocks,
     el('p', { class: 'muted trend-note' },
-      'These readings provide mission context only. They do not change the health score or establish a cause. Future context sources can be added as separate layers.'));
+      'Context layers support analysis but do not establish a cause. Gravity feeds the bone projection through the latest measured g value; partial-gravity effects remain uncertain.'));
 }
 
 function render(focusId) {
@@ -829,20 +841,22 @@ async function load() {
   }
   main.replaceChildren(el('p', { class: 'state' }, 'Loading…'));
   try {
-    const [history, bone, status, rad, solarFallback, environment] = await Promise.all([
+    const [history, bone, status, rad, solarFallback, environment, gravity] = await Promise.all([
       api.history(state.astronautId, 60),
       api.bone(state.astronautId, 180),
       api.status(state.astronautId).catch(() => null),
       api.radiation(state.astronautId).catch(() => null),
       api.solarEvents(60).catch(() => null),
       api.environment(state.astronautId, null, 60).catch(() => null),
+      api.gravity(state.astronautId, null, 60).catch(() => null),
     ]);
     if (seq !== state.seq) return;
     state.history = history;
     state.bone = bone;
     state.status = status;
     state.solarEvents = selectSolarEvents(rad, solarFallback);
-    state.contextLayer = environment && environment.layer;
+    state.contextLayers = [environment && environment.layer, gravity && gravity.layer].filter(Boolean);
+    state.gravityAssessment = gravity && gravity.assessment;
     state.points = history.points || [];
     const list = indicatorList();
     if (!list.some((i) => i.id === state.indicatorId)) {

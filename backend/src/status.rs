@@ -493,7 +493,11 @@ pub fn build_status(
         &p,
         astro_id,
         mday,
-        num(&mission, "gravity_g").unwrap_or(0.0),
+        crate::gravity::current_gravity_g(
+            conn,
+            &mission_id,
+            num(&mission, "gravity_g").unwrap_or(0.0),
+        )?,
         0,
     )?;
     let rad = radiation::compute(conn, &p, &mission, Some((astro_id, start.clone())))?;

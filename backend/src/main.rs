@@ -6,6 +6,7 @@ mod bone;
 mod checkin;
 mod db;
 mod errors;
+mod gravity;
 mod history;
 mod radiation;
 mod reference;
@@ -123,6 +124,7 @@ async fn main() {
         .route("/api/health", get(reference::health))
         .route("/api/config", get(reference::config))
         .route("/api/environment", get(reference::environment))
+        .route("/api/gravity", get(gravity::get_gravity))
         .route("/api/solar-events", get(reference::solar_events))
         .route("/api/astronauts", get(status::list_astronauts))
         .route("/api/astronauts/:id/status", get(status::get_status))

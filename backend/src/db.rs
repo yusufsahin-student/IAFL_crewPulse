@@ -49,7 +49,26 @@ pub fn open(path: &str) -> Result<Connection, rusqlite::Error> {
             source TEXT NOT NULL DEFAULT 'sim'
         );
         CREATE INDEX IF NOT EXISTS idx_cabin_readings_mission_time
-            ON cabin_readings(mission_id, taken_at);",
+            ON cabin_readings(mission_id, taken_at);
+        CREATE TABLE IF NOT EXISTS gravity_readings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mission_id TEXT NOT NULL REFERENCES missions(id),
+            observed_at TEXT NOT NULL,
+            gravity_g REAL NOT NULL CHECK (gravity_g >= 0 AND gravity_g <= 2),
+            uncertainty_low_g REAL,
+            uncertainty_high_g REAL,
+            source TEXT NOT NULL DEFAULT 'mission_profile_sim'
+        );
+        CREATE INDEX IF NOT EXISTS idx_gravity_readings_mission_time
+            ON gravity_readings(mission_id, observed_at);
+        INSERT INTO gravity_readings
+            (mission_id, observed_at, gravity_g, uncertainty_low_g, uncertainty_high_g, source)
+        SELECT m.id, strftime('%Y-%m-%dT%H:%M:%SZ','now'), m.gravity_g,
+               CASE WHEN m.gravity_g > 0 AND m.gravity_g < 1 THEN MAX(0, m.gravity_g - 0.08) ELSE m.gravity_g END,
+               CASE WHEN m.gravity_g > 0 AND m.gravity_g < 1 THEN MIN(2, m.gravity_g + 0.08) ELSE m.gravity_g END,
+               'mission_profile_migration'
+        FROM missions m
+        WHERE NOT EXISTS (SELECT 1 FROM gravity_readings g WHERE g.mission_id=m.id);",
     )?;
     Ok(conn)
 }

@@ -43,6 +43,20 @@ CREATE TABLE IF NOT EXISTS missions (
   source_ref          TEXT REFERENCES sources(id)
 );
 
+-- Time-varying gravity context. Imported/sensor readings can replace the simulated mission
+-- profile without changing the API or the calculations that consume the latest value.
+CREATE TABLE IF NOT EXISTS gravity_readings (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  mission_id         TEXT NOT NULL REFERENCES missions(id),
+  observed_at        TEXT NOT NULL,
+  gravity_g          REAL NOT NULL CHECK (gravity_g >= 0 AND gravity_g <= 2),
+  uncertainty_low_g  REAL CHECK (uncertainty_low_g IS NULL OR uncertainty_low_g >= 0),
+  uncertainty_high_g REAL CHECK (uncertainty_high_g IS NULL OR uncertainty_high_g <= 2),
+  source             TEXT NOT NULL DEFAULT 'mission_profile_sim'
+);
+CREATE INDEX IF NOT EXISTS idx_gravity_readings_mission_time
+  ON gravity_readings(mission_id, observed_at);
+
 CREATE TABLE IF NOT EXISTS astronauts (
   id                INTEGER PRIMARY KEY,
   name              TEXT NOT NULL,            -- fictional demo crew only
