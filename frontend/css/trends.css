@@ -94,13 +94,15 @@
 
 /* Solar events overlay & cause-and-effect strip */
 .chart .band-solar { fill: var(--radiation-bg); }
+.chart .solar-day { fill: var(--watch); stroke:var(--bg); stroke-width:1; }
+.chart .solar-day--dose { fill:var(--radiation); }
 .chart .marker-solar { stroke: var(--watch); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .chart .marker-solar--sep { stroke: var(--radiation); stroke-width: 2; stroke-dasharray: 4 3; }
 .chart .solar-tag { fill: var(--watch); font-weight: 700; }
 .chart .solar-tag--sep { fill: var(--radiation); }
 .key-solar {
-  display: inline-block; width: 18px; height: 10px;
-  background: var(--radiation-bg); border-left: 2px dashed var(--radiation); border-radius: 2px;
+  display: inline-block; width: 9px; height: 9px;
+  background: var(--watch); border-radius: 50%;
 }
 
 .solar-strip {
@@ -114,6 +116,10 @@
   gap: var(--s-2);
 }
 .solar-strip__head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-2); align-items: baseline; }
+.solar-strip > summary,.solar-day-group > summary { cursor:pointer; font-weight:700; padding:10px 4px; }
+.solar-strip__groups { display:grid; gap:8px; max-height:420px; overflow:auto; }
+.solar-day-group { border:1px solid var(--line); border-radius:10px; padding:0 12px 8px; background:var(--surface); }
+.solar-day-group:not([open]) { padding-bottom:0; }
 .solar-strip__list { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .solar-chip {
   display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s-2);

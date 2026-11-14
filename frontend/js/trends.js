@@ -3,7 +3,7 @@
 import { initShell, el, showError, statusBadge, formatValue, formatDate, STATUS_LABEL } from './shell.js';
 import { api } from './api.js';
 import { pearson, matrix, minPairs } from './correlation.js';
-import { fitTicks, responsiveChartHeight, selectSolarEvents } from './trend-data.js';
+import { fitTicks, responsiveChartHeight, selectSolarEvents, groupSolarEvents } from './trend-data.js';
 import { layerSummary } from './context-data.js';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -209,22 +209,15 @@ function lineChart(width, cfg) {
     const bottom = sy(clamp(b.from, yMin, yMax));
     if (bottom > top) root.append(svg('rect', { x: L, y: top, width: pw, height: bottom - top, class: b.cls }));
   }
-  (cfg.solarEvents || []).forEach((ev, idx) => {
+  (cfg.solarEvents || []).filter((ev) => ev.dose_relevant).forEach((ev) => {
     const x1 = sx(clamp(ev.startX, cfg.xMin, cfg.xMax));
-    const x2 = sx(clamp(Math.max(ev.endX, ev.startX + 0.5), cfg.xMin, cfg.xMax));
-    if (ev.dose_relevant && x2 > x1) {
-      root.append(svg('rect', { x: x1, y: T, width: Math.max(4, x2 - x1), height: ph, class: 'band-solar' }));
-    }
-    const nearRight = x1 > L + pw - 68;
-    root.append(
-      svg('line', { x1, x2: x1, y1: T, y2: T + ph, class: ev.dose_relevant ? 'marker-solar marker-solar--sep' : 'marker-solar' }),
-      svg('text', {
-        x: nearRight ? x1 - 4 : x1 + 4,
-        y: T + 11 + (idx % 2) * 11,
-        'text-anchor': nearRight ? 'end' : 'start',
-        class: ev.dose_relevant ? 'axis-label solar-tag solar-tag--sep' : 'axis-label solar-tag',
-      }, ev.shortLabel),
-    );
+    const x2 = sx(clamp(ev.endX, cfg.xMin, cfg.xMax));
+    if (x2 > x1) root.append(svg('rect', { x: x1, y: T, width: x2 - x1, height: ph, class: 'band-solar' }));
+  });
+  groupSolarEvents(cfg.solarEvents || []).forEach((group) => {
+    const x = sx(clamp(group.day, cfg.xMin, cfg.xMax));
+    root.append(svg('circle', { cx: x, cy: T - 9, r: group.dose_relevant ? 4 : 3, class: group.dose_relevant ? 'solar-day solar-day--dose' : 'solar-day' },
+      svg('title', {}, `Day ${group.day}: ${group.events.length} event(s)`)));
   });
   for (const t of cfg.yTicks) {
     root.append(
@@ -405,11 +398,15 @@ function solarEventsStrip(events) {
   if (!events.length) {
     return el('p', { class: 'muted trend-note' }, 'No DONKI or simulated solar events occurred during this check-in window.');
   }
-  return el('div', { class: 'solar-strip', role: 'region', 'aria-label': 'Solar events on this timeline' },
+  const groups = groupSolarEvents(events);
+  return el('details', { class: 'solar-strip', role: 'region', 'aria-label': 'Solar events on this timeline' },
+    el('summary', {}, `Güneş olayları: ${events.length} kayıt · ${groups.length} görev günü — ayrıntıları göster`),
     el('div', { class: 'solar-strip__head' },
       el('strong', {}, `Solar events in this period (${events.length})`),
       el('span', { class: 'muted' }, 'Select an event to jump the timeline cursor to that mission day.')),
-    el('div', { class: 'solar-strip__list' }, events.map((ev) => el('button', {
+    el('div', { class: 'solar-strip__groups' }, groups.map((group) => el('details', { class: 'solar-day-group' },
+      el('summary', {}, `Görev günü ${group.day} · ${group.events.length} olay${group.dose_relevant ? ' · dozla ilişkili olay var' : ''}`),
+      el('div', { class: 'solar-strip__list' }, group.events.map((ev) => el('button', {
       type: 'button',
       class: 'solar-chip',
       'data-dose': ev.dose_relevant ? '1' : '0',
@@ -422,7 +419,7 @@ function solarEventsStrip(events) {
       ev.class_type || null,
       `severity ${formatValue(ev.severity, 1)}`,
       ev.dose_relevant ? 'adds to dose' : null,
-    ].filter(Boolean).join(' · '))))));
+    ].filter(Boolean).join(' · ')))))))));
 }
 
 function indicatorPanel() {
@@ -487,7 +484,7 @@ function indicatorPanel() {
         svg('circle', { cx: 6, cy: 6, r: 3.5, class: 'trend-point' })), 'Check-in'),
       el('li', {}, svg('svg', { viewBox: '0 0 12 12', width: 12, height: 12, 'aria-hidden': 'true' },
         svg('path', { d: diamond(6, 6, 5), class: 'key-diamond' })), 'Unusual for you'),
-      el('li', {}, el('span', { class: 'key-solar' }), 'Solar event (SEP / FLR / CME)')),
+      el('li', {}, el('span', { class: 'key-solar' }), 'Nokta: o gün güneş olayı var · gölge: dozla ilişkili olay süresi')),
     solarEventsStrip(events),
     el('div', { class: 'range-row' },
       el('label', { for: 'day-range' }, 'Check-in'),

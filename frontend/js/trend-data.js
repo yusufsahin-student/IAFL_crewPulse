@@ -8,6 +8,19 @@ export function selectSolarEvents(radiation, fallback) {
   return Array.isArray(fallback?.events) ? fallback.events : [];
 }
 
+// Aggregate markers by mission day; the original event objects remain available in each group.
+export function groupSolarEvents(events = []) {
+  const groups = new Map();
+  for (const event of events) {
+    if (!Number.isFinite(event.startDay)) continue;
+    const group = groups.get(event.startDay) || { day: event.startDay, events: [], dose_relevant: false };
+    group.events.push(event);
+    group.dose_relevant ||= Boolean(event.dose_relevant);
+    groups.set(event.startDay, group);
+  }
+  return [...groups.values()].sort((a, b) => a.day - b.day);
+}
+
 export function responsiveChartHeight(width, compact = false) {
   const min = compact ? 210 : 280;
   const max = compact ? 250 : 380;
