@@ -36,10 +36,26 @@ function healthSection(status, history, bone) {
       el('span', { class: 'gravity-health-state', 'data-status': row?.status || 'missing' }, states[row?.status] || 'Veri yok'), el('small', {}, text));
   });
   section.append(el('div', { class: 'gravity-health-grid' }, cards));
-  if (matching && bone?.sites?.length) {
-    const sites = bone.sites.filter((site) => site.loss_pct != null && Number.isFinite(Number(site.loss_pct)));
-    if (sites.length) { const highest = sites.reduce((a,b) => Number(a.loss_pct) >= Number(b.loss_pct) ? a : b); section.append(el('p', { class: 'gravity-health-bone' }, `Kemik modeli: ${highest.name} için tahmini kayıp %${formatValue(highest.loss_pct, 1)}. Bu değer ölçüm değil, model tahminidir.`)); }
-  }
+  const boneCard = el('article', { class: 'gravity-loss-card' }, el('div', { class: 'eyebrow' }, 'KEMİK KAYBI'), el('h3', {}, 'Bölgelere göre kemik tahmini'));
+  const sites = matching && bone?.sites ? bone.sites.filter((site) => site.loss_pct != null && Number.isFinite(Number(site.loss_pct))) : [];
+  if (sites.length) {
+    const names = {lumbar_spine:'Bel omurgası',femoral_neck:'Uyluk boynu',trochanter:'Kalça (trokanter)',pelvis:'Pelvis',calcaneus:'Topuk kemiği'};
+    boneCard.append(el('p', { class: 'muted' }, 'Görev süresince modellenen kayıp; kemik taraması veya doğrudan ölçüm değildir.'),
+      el('div', { class: 'gravity-loss-list' }, sites.map((site) => el('div', { class: 'gravity-loss-row' },
+        el('span', {}, names[site.bone_site_id] || site.name), el('strong', {}, `%${formatValue(site.loss_pct, 1)}`)))));
+  } else boneCard.append(el('p', { class: 'state' }, matching ? 'Kemik tahmini şu anda bulunmuyor.' : 'Kemik tahmini astronotun kendi görev profilinde gösterilir.'));
+  const grip = (status.indicators || []).find((item) => item.indicator_id === 'grip_strength');
+  const muscleCard = el('article', { class: 'gravity-loss-card' }, el('div', { class: 'eyebrow' }, 'KAS SAĞLIĞI'), el('h3', {}, 'Kas kaybı ve kuvvet takibi'),
+    el('p', { class: 'gravity-loss-unavailable' }, 'Kas kütlesi kaybı: ölçüm mevcut değil'),
+    el('p', { class: 'muted' }, 'Kavrama gücü kas kuvvetiyle ilgili bir göstergedir; kas kütlesi kaybı yüzdesi olarak yorumlanamaz.'));
+  if (grip?.value != null && Number.isFinite(Number(grip.value))) {
+    muscleCard.append(el('p', {}, 'Son kavrama gücü: ', el('strong', {}, `${formatValue(grip.value, 1)} kg`)));
+    if (grip.baseline_mean != null && Number.isFinite(Number(grip.baseline_mean)) && Number(grip.baseline_mean) > 0) {
+      const diff = (Number(grip.value) / Number(grip.baseline_mean) - 1) * 100;
+      muscleCard.append(el('p', {}, `Kişisel referans ortalaması ${formatValue(grip.baseline_mean, 1)} kg · kuvvet değişimi ${diff >= 0 ? '+' : '−'}%${formatValue(Math.abs(diff), 1)}`));
+    }
+  } else muscleCard.append(el('p', { class: 'state' }, 'Kavrama gücü ölçümü bulunmuyor.'));
+  section.append(el('div', { class: 'gravity-loss-grid' }, boneCard, muscleCard));
   section.append(el('a', { class: 'btn', href: 'trends.html' }, 'Sağlık eğilimlerini ayrıntılı incele →'));
   return section;
 }

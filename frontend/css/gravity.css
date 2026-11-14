@@ -29,7 +29,14 @@
 .gravity-health-state[data-status=alert] { color:var(--alert); }
 .gravity-health-state[data-status=watch] { color:var(--watch); }
 .gravity-health-freshness,.gravity-health-bone { padding:12px 14px; background:var(--surface-2); border-left:3px solid var(--line-strong); }
+.gravity-loss-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:18px 0; }
+.gravity-loss-card { padding:20px; border:1px solid var(--line); border-radius:14px; background:var(--surface-2); }
+.gravity-loss-card h3 { margin:8px 0; }
+.gravity-loss-list { display:grid; gap:0; }
+.gravity-loss-row { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--line); }
+.gravity-loss-unavailable { font-weight:700; }
 @media (max-width: 620px) {
+  .gravity-loss-grid { grid-template-columns:1fr; }
   .gravity-overview { grid-template-columns:1fr; }
   .gravity-chart-slot, .gravity-chart { min-height: 260px; }
   .gravity-picker { align-items: stretch; }
