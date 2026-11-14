@@ -209,7 +209,7 @@ function habitatPanel(d, zones) {
   const z = zoneById(state.zoneId);
   return el('section', { class: 'panel', 'aria-labelledby': 'habitat-title' },
     el('h2', { id: 'habitat-title' }, 'Habitat zones'),
-    el('p', { class: 'muted' }, 'Colour shows relative dose between zones: darker magenta means a higher dose. Select a zone for its shielding and estimated dose rates.'),
+    el('p', { class: 'muted' }, 'Teal shading compares relative dose between zones: a deeper shade means a higher dose. Radiation alerts remain magenta. Select a zone for its shielding and estimated dose rates.'),
     el('ul', { class: 'legend', 'aria-label': 'Key' },
       el('li', {}, el('span', { class: 'swatch', 'data-fill-dose': '1' }), 'Lower dose'),
       el('li', {}, el('span', { class: 'swatch', 'data-fill-dose': '2' }), 'Middle'),

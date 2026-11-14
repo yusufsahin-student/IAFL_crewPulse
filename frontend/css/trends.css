@@ -8,7 +8,10 @@
 .trend-controls .btn { flex: none; }
 .trend-note { margin-top: var(--s-3); }
 
-.chart-slot { width: 100%; min-height: 240px; }
+.chart-slot { width: 100%; min-height: 280px; margin-top: var(--s-2); }
+.trend-chart { min-height: 280px; }
+.chart .plot-bg { fill: var(--surface-2); }
+.chart .grid-line--vertical { stroke-opacity: 0.55; }
 .range-row { display: flex; flex-direction: column; gap: var(--s-2); margin-top: var(--s-3); }
 .range { width: 100%; min-height: var(--target); accent-color: var(--accent); }
 .readout { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-1) var(--s-2); margin: 0; font-size: var(--text-sm); }
@@ -131,4 +134,5 @@
   display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s-2); margin-bottom: var(--s-2);
 }
 .btn--sm { min-height: 36px; padding: 6px 12px; font-size: var(--text-xs); }
-.storm-chain-item .chart-slot { min-height: 175px; }
+.storm-chain-item .chart-slot { min-height: 210px; }
+.storm-chain-item .trend-chart { min-height: 210px; }

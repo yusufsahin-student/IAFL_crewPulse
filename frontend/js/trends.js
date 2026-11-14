@@ -3,7 +3,7 @@
 import { initShell, el, showError, statusBadge, formatValue, formatDate, STATUS_LABEL } from './shell.js';
 import { api } from './api.js';
 import { pearson, matrix, minPairs } from './correlation.js';
-import { selectSolarEvents } from './trend-data.js';
+import { fitTicks, responsiveChartHeight, selectSolarEvents } from './trend-data.js';
 import { layerSummary } from './context-data.js';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -12,6 +12,7 @@ const main = document.getElementById('content');
 const ui = {}; // the indicator chart's readout, slider and active-point setters
 let activeSetters = [];
 let chainReadout = null;
+let clipSeq = 0;
 const state = { config: null, astronautId: null, status: null, contextLayer: null, solarEvents: [], points: [], indicatorId: null, index: 0, showTable: false, seq: 0 };
 
 // Charts measure their slot and redraw at its width, so labels stay legible at 360 px and 1440 px.
@@ -180,18 +181,28 @@ function jumpToMissionDay(day) {
 // label, height, bands [{from,to,cls}], solarEvents [...], lines [{points:[[x,y]],cls}], points [{x,y,anomaly}],
 // hlines [{y,cls,label}], verticals [{x,label}], onPick(i).
 function lineChart(width, cfg) {
-  const H = cfg.height || 240;
-  const L = 52;
-  const R = 14;
-  const T = cfg.solarEvents && cfg.solarEvents.length ? 30 : 26;
-  const B = 42;
+  const H = cfg.height || responsiveChartHeight(width);
+  const widestY = Math.max(...cfg.yTicks.map((tick) => fmtTick(tick).length));
+  const L = Math.min(78, Math.max(54, 30 + widestY * 7));
+  const R = 18;
+  const T = cfg.solarEvents && cfg.solarEvents.length ? 48 : 34;
+  const B = 48;
   const pw = Math.max(60, width - L - R);
   const ph = H - T - B;
   const yMin = cfg.yTicks[0];
   const yMax = cfg.yTicks[cfg.yTicks.length - 1];
   const sx = (v) => L + ((v - cfg.xMin) / (cfg.xMax - cfg.xMin)) * pw;
   const sy = (v) => T + ph - ((v - yMin) / (yMax - yMin)) * ph;
-  const root = svg('svg', { viewBox: `0 0 ${width} ${H}`, class: 'chart', role: 'img', 'aria-label': cfg.label });
+  const clipId = `plot-clip-${++clipSeq}`;
+  const xTicks = fitTicks(cfg.xTicks, pw);
+  const root = svg('svg', {
+    viewBox: `0 0 ${width} ${H}`, class: 'chart trend-chart', role: 'img',
+    'aria-label': cfg.label, preserveAspectRatio: 'xMidYMid meet',
+  });
+  root.append(
+    svg('defs', {}, svg('clipPath', { id: clipId }, svg('rect', { x: L, y: T, width: pw, height: ph }))),
+    svg('rect', { x: L, y: T, width: pw, height: ph, class: 'plot-bg' }),
+  );
 
   for (const b of cfg.bands) {
     const top = sy(clamp(b.to, yMin, yMax));
@@ -221,8 +232,11 @@ function lineChart(width, cfg) {
       svg('text', { x: L - 8, y: sy(t) + 4, 'text-anchor': 'end', class: 'axis-label' }, fmtTick(t)),
     );
   }
-  for (const t of cfg.xTicks) {
-    root.append(svg('text', { x: sx(t), y: T + ph + 16, 'text-anchor': 'middle', class: 'axis-label' }, String(t)));
+  for (const t of xTicks) {
+    root.append(
+      svg('line', { x1: sx(t), x2: sx(t), y1: T, y2: T + ph, class: 'grid-line grid-line--vertical' }),
+      svg('text', { x: sx(t), y: T + ph + 19, 'text-anchor': 'middle', class: 'axis-label' }, String(t)),
+    );
   }
   root.append(
     svg('line', { x1: L, x2: L, y1: T, y2: T + ph, class: 'axis' }),
@@ -250,7 +264,7 @@ function lineChart(width, cfg) {
       d += `${pen ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)} `;
       pen = true;
     }
-    root.append(svg('path', { d: d.trim(), class: ln.cls }));
+    root.append(svg('path', { d: d.trim(), class: ln.cls, 'clip-path': `url(#${clipId})` }));
   }
   // Unusual check-ins are diamonds in advisory blue; ordinary readings are circles in accent colour.
   const dots = cfg.points.map((pt) => {
@@ -258,8 +272,8 @@ function lineChart(width, cfg) {
     const cx = sx(pt.x);
     const cy = sy(pt.y);
     const node = pt.anomaly
-      ? svg('path', { d: diamond(cx, cy, 5), class: 'point-anomaly' })
-      : svg('circle', { cx, cy, r: 3, class: 'trend-point' });
+      ? svg('path', { d: diamond(cx, cy, 5), class: 'point-anomaly', 'clip-path': `url(#${clipId})` })
+      : svg('circle', { cx, cy, r: 3.5, class: 'trend-point', 'clip-path': `url(#${clipId})` });
     root.append(node);
     return node;
   });
@@ -498,7 +512,7 @@ function solarStormChainPanel() {
       : [];
     const cfg = {
       label: `${labelOf(ind)} alongside solar events from mission day ${xMin} to ${xMax}.`,
-      height: 175,
+      height: responsiveChartHeight(720, true),
       xMin, xMax, xTicks, yTicks, bands,
       solarEvents: events,
       xLabel: 'Mission day',

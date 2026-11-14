@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { selectSolarEvents } from './trend-data.js';
+import { fitTicks, responsiveChartHeight, selectSolarEvents } from './trend-data.js';
 
 const primary = [{ id: 'primary' }];
 const fallback = [{ id: 'fallback' }];
@@ -9,5 +9,11 @@ assert.deepEqual(selectSolarEvents({ events: [] }, fallback), fallback);
 assert.deepEqual(selectSolarEvents(null, fallback), fallback);
 assert.deepEqual(selectSolarEvents(null, { events: fallback }), fallback);
 assert.deepEqual(selectSolarEvents(null, null), []);
+
+assert.equal(responsiveChartHeight(360), 280);
+assert.equal(responsiveChartHeight(1200), 380);
+assert.equal(responsiveChartHeight(360, true), 210);
+assert.deepEqual(fitTicks([1, 2, 3, 4, 5, 6, 7], 240, 80), [1, 4, 7]);
+assert.deepEqual(fitTicks([1, 2, 3], 800), [1, 2, 3]);
 
 console.log('trend response-shape tests passed');

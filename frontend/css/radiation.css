@@ -12,6 +12,16 @@
 }
 
 /* Habitat map: drawn at its real width, so zone text is 13 px like the other chart text */
+:root, :root[data-theme="dark"] {
+  --habitat-dose-1: #15383b;
+  --habitat-dose-2: #075b60;
+  --habitat-dose-3: #00757a;
+}
+:root[data-theme="light"] {
+  --habitat-dose-1: #dff2ef;
+  --habitat-dose-2: #88c9c1;
+  --habitat-dose-3: #31988c;
+}
 .habitat { max-width: 560px; margin: var(--s-3) 0; }
 .zone { cursor: pointer; }
 .zone:focus { outline: none; }
@@ -21,6 +31,9 @@
 .zone:focus-visible .zone-rect { stroke: var(--focus-ring); stroke-width: 4; stroke-dasharray: none; }
 .habitat .zone-name, .habitat .zone-tag { fill: var(--ink); font-weight: 700; }
 .habitat .zone-value { fill: var(--ink); }
+.habitat [data-fill-dose="1"] { fill: var(--habitat-dose-1); }
+.habitat [data-fill-dose="2"] { fill: var(--habitat-dose-2); }
+.habitat [data-fill-dose="3"] { fill: var(--habitat-dose-3); }
 
 /* Keys */
 .legend {
@@ -30,9 +43,9 @@
 }
 .legend li { display: flex; align-items: center; gap: var(--s-2); }
 .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; flex: none; }
-.swatch[data-fill-dose="1"] { background: var(--dose-1); box-shadow: inset 0 0 0 1px var(--radiation); }
-.swatch[data-fill-dose="2"] { background: var(--dose-2); }
-.swatch[data-fill-dose="3"] { background: var(--dose-3); }
+.swatch[data-fill-dose="1"] { background: var(--habitat-dose-1); box-shadow: inset 0 0 0 1px var(--line); }
+.swatch[data-fill-dose="2"] { background: var(--habitat-dose-2); }
+.swatch[data-fill-dose="3"] { background: var(--habitat-dose-3); }
 .swatch--shelter { background: transparent; border: 2px dashed var(--accent); }
 .swatch--day { background: var(--ink-faint); }
 .swatch--storm { background: var(--radiation); }
