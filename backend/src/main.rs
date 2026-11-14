@@ -61,6 +61,7 @@ async fn protect_local_request(req: Request, next: Next) -> Response {
     }
     let mut response = next.run(req).await;
     let headers = response.headers_mut();
+    headers.insert("cache-control", HeaderValue::from_static("no-cache"));
     headers.insert("content-security-policy", HeaderValue::from_static("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"));
     headers.insert(
         "x-content-type-options",
