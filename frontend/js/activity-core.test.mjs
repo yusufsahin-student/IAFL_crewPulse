@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {buildAdaptivePlan, recentActivity} from './activity-core.js';
+import {buildAdaptivePlan, recentActivity, activityTrend} from './activity-core.js';
 
 const indicator = (indicator_id, value, status='normal') => ({indicator_id, value, status});
 const base = (extra={}) => ({mission:{id:'iss'},freshness:{state:'current'},triage:{level:0},indicators:[indicator('sleep_hours',8),indicator('mood',4),indicator('stress',2),...extra.indicators||[]],...extra});
@@ -27,4 +27,14 @@ assert.ok(layered.recommendations.some(item=>item.id==='gravity-load'));
 assert.ok(layered.recommendations.some(item=>item.id==='gravity-transition'));
 assert.ok(layered.recommendations.some(item=>item.id==='environment-verify'));
 assert.ok(layered.segments.find(segment=>segment.id==='mobility').minutes>=layered.segments.find(segment=>segment.id==='aerobic').minutes);
+const missing=buildAdaptivePlan({status:base(),today:'2026-11-13'});
+assert.ok(missing.recommendations.some(item=>item.id==='gravity-missing'));
+assert.ok(!missing.recommendations.some(item=>item.id==='gravity-load'));
+const combined=buildAdaptivePlan({status:base(),today:'2026-11-13',gravity:{current_g:0,load_deficit_pct:100},radiation:{active_event:{id:1}},bone:{sites:[{name:'Hip',loss_pct:2.1}]}});
+assert.equal(combined.recommendations[0].priority,'watch');
+assert.ok(combined.recommendations.some(item=>item.id==='radiation-event'));
+assert.ok(combined.recommendations.some(item=>item.id==='bone-review' && item.basis.includes('2.1')));
+assert.deepEqual(activityTrend([{taken_at:'2026-11-02',values:{sleep_hours:7}},{taken_at:'2026-11-01',values:{sleep_hours:8}},{taken_at:'2026-11-03',values:{sleep_hours:null}}],'sleep_hours'),{first:8,last:7,count:2});
+const radiationDose=buildAdaptivePlan({status:base(),radiation:{active_event:null,astronaut:{mission_dose_msv:42,pct_of_limit:7}},today:'2026-11-13'});
+assert.ok(radiationDose.recommendations.some(item=>item.id==='radiation-review' && item.basis.includes('42 mSv')));
 console.log('activity adaptation tests passed');

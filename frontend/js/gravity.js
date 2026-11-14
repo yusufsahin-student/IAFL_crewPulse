@@ -7,6 +7,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const root = document.getElementById('gravity-root');
 let ctx;
 let missionId;
+let windowDays = 60;
 let seq = 0;
 
 function svg(tag, attrs = {}, ...children) {
@@ -26,7 +27,9 @@ function chart(readings, kind, label) {
     const pw = width - L - R; const ph = height - T - B;
     const values = points.map((point) => kind === 'gravity' ? point.g : Math.max(0, 1 - point.g) * 100);
     const [yMin, yMax] = kind === 'gravity' ? seriesDomain(values, [0, 1]) : [0, 100];
-    const x = (index) => L + (index / Math.max(1, points.length - 1)) * pw;
+    const start = points.length ? Date.parse(points[0].at) : 0;
+    const span = points.length ? Math.max(1, Date.parse(points.at(-1).at) - start) : 1;
+    const x = (index) => L + ((Date.parse(points[index].at) - start) / span) * pw;
     const y = (value) => T + ph - ((value - yMin) / Math.max(0.001, yMax - yMin)) * ph;
     const graph = svg('svg', { viewBox: `0 0 ${width} ${height}`, class: 'gravity-chart', role: 'img', 'aria-label': label });
     graph.append(svg('rect', { x: L, y: T, width: pw, height: ph, class: 'gravity-plot-bg' }));
@@ -37,7 +40,7 @@ function chart(readings, kind, label) {
         svg('text', { x: L - 8, y: y(value) + 4, 'text-anchor': 'end', class: 'gravity-axis-label' }, formatValue(value, kind === 'gravity' ? 2 : 0)),
       );
     }
-    const tickIndexes = [...new Set([0, Math.round((points.length - 1) / 4), Math.round((points.length - 1) / 2), Math.round(((points.length - 1) * 3) / 4), points.length - 1])].filter((index) => index >= 0);
+    const tickIndexes = points.length ? [...new Set([0, Math.round((points.length - 1) / 4), Math.round((points.length - 1) / 2), Math.round(((points.length - 1) * 3) / 4), points.length - 1])] : [];
     tickIndexes.forEach((index) => graph.append(
       svg('line', { x1: x(index), x2: x(index), y1: T, y2: T + ph, class: 'gravity-grid gravity-grid--vertical' }),
       svg('text', { x: x(index), y: T + ph + 20, 'text-anchor': 'middle', class: 'gravity-axis-label' }, formatDate(points[index]?.at)),
@@ -57,6 +60,7 @@ function chart(readings, kind, label) {
     );
     wrap.replaceChildren(graph);
   };
+  if (!points.length) return el('p', { class: 'state' }, 'Bu zaman aralığında yerçekimi kaydı yok. Daha uzun bir aralık seçin.');
   new ResizeObserver(draw).observe(wrap);
   requestAnimationFrame(draw);
   return wrap;
@@ -79,12 +83,17 @@ function render(data) {
   const transitions = transitionPoints(gravityPoints(data.readings));
   const picker = el('select', { class: 'input', 'aria-label': 'Mission gravity profile', onchange: (event) => { missionId = event.target.value; load(); } },
     ctx.config.missions.map((mission) => el('option', { value: mission.id, selected: mission.id === missionId }, `${mission.name} · ${formatValue(mission.gravity_g, 3)} g`)));
+  const period = el('select', { class: 'input', 'aria-label': 'Gösterilecek zaman aralığı', onchange: (event) => { windowDays = Number(event.target.value); load(); } },
+    [7, 30, 60, 180].map((days) => el('option', { value: days, selected: days === windowDays }, `Son ${days} gün`)));
+  const sources = [...new Set((data.readings || []).map((reading) => reading.source).filter(Boolean))];
+  const sourceText = sources.length ? sources.map((source) => source.includes('sim') ? 'Simülasyon / görev profili' : source).join(', ') : 'Kayıt yok; görev profili kullanılıyor';
   const areas = (assessment.analysis_areas || []).map((area) => area.replaceAll('_', ' '));
   root.replaceChildren(el('div', { class: 'gravity-stack' },
     el('div', { class: 'page-head' }, el('h1', {}, 'Gravital Tracking'),
       el('p', {}, 'Follow local gravity, mechanical unloading and gravity-field transitions. Calculations are transparent decision support, not clinical probabilities.')),
-    el('section', { class: 'panel gravity-picker' }, el('div', { class: 'field' }, el('label', {}, 'Mission profile'), picker),
+    el('section', { class: 'panel gravity-picker' }, el('div', { class: 'field' }, el('label', {}, 'Görev profili'), picker), el('div', { class: 'field' }, el('label', {}, 'Zaman aralığı'), period),
       el('p', { class: 'muted' }, assessment.interpretation)),
+    el('section', { class: 'panel gravity-overview' }, el('div', {}, el('span', { class: 'eyebrow' }, 'GÖREV BAĞLAMI'), el('h2', {}, `${formatValue(assessment.current_g, 3)} g`), el('p', {}, 'Yerel yerçekimi · Dünya = 1 g')), el('div', {}, el('span', { class: 'eyebrow' }, 'VERİ KAPSAMI'), el('h2', {}, `${data.readings.length} kayıt`), el('p', {}, `Kaynak: ${sourceText}`)), el('div', {}, el('span', { class: 'eyebrow' }, 'ANALİZE ETKİSİ'), el('p', {}, 'Kemik tahminine günlük yerçekimi geçmişi, aktivite önerilerine güncel görev bağlamı eklenir.'), el('a', { class: 'btn', href: 'activity.html' }, 'Aktiviteler ve öneriler →'))),
     el('section', { class: 'panel' }, el('h2', {}, 'Current gravity context'), assessmentCards(assessment),
       el('p', { class: 'muted gravity-note' }, `Analysis areas: ${areas.join(', ') || 'none flagged'}. Evidence: ${assessment.evidence === 'limited_human_evidence' ? 'limited human evidence' : 'mission profile'}.`)),
     el('section', { class: 'panel' }, el('h2', {}, 'Local gravity over time'),
@@ -107,7 +116,7 @@ async function load() {
   const current = ++seq;
   root.replaceChildren(el('p', { class: 'state' }, 'Loading gravity profile…'));
   try {
-    const data = await api.gravity(null, missionId, 60);
+    const data = await api.gravity(null, missionId, windowDays);
     if (current === seq) render(data);
   } catch (error) { if (current === seq) showError(root, error); }
 }

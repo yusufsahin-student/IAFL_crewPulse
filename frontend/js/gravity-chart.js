@@ -1,7 +1,8 @@
 export function gravityPoints(readings = []) {
   return readings
+    .filter((row) => row.gravity_g != null && row.gravity_g !== '')
     .map((row) => ({ at: row.observed_at, g: Number(row.gravity_g) }))
-    .filter((point) => point.at && Number.isFinite(point.g))
+    .filter((point) => point.at && Number.isFinite(Date.parse(point.at)) && Number.isFinite(point.g) && point.g >= 0)
     .sort((a, b) => String(a.at).localeCompare(String(b.at)));
 }
 

@@ -17,7 +17,12 @@
 .gravity-transition { stroke: var(--watch); stroke-width: 2; stroke-dasharray: 6 4; vector-effect: non-scaling-stroke; }
 .gravity-current { fill: var(--accent); stroke: var(--bg); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .gravity-method p { max-width: 78ch; }
+.gravity-overview { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.gravity-overview > div { padding:20px; border:1px solid var(--line); border-radius:14px; background:var(--surface-2); }
+.gravity-overview h2 { font-size:clamp(1.5rem,3vw,2.4rem); margin:10px 0; }
+.gravity-overview p { color:var(--ink-muted); }
 @media (max-width: 620px) {
+  .gravity-overview { grid-template-columns:1fr; }
   .gravity-chart-slot, .gravity-chart { min-height: 260px; }
   .gravity-picker { align-items: stretch; }
 }

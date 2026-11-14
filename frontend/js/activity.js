@@ -7,7 +7,7 @@ const notice=document.getElementById('activity-status');
 const today=localDay();
 const modeLabel={steady:'TEMEL YÜK',build:'KONTROLLÜ ARTIŞ',reentry:'YENİDEN GİRİŞ',recover:'TOPARLANMA',verify:'ÖNCE ÖLÇÜM',hold:'GÜVENLİK DURAKLATMASI'};
 const priorityLabel={watch:'ÖNCE KONTROL ET',advisory:'PLANA DAHİL ET',normal:'GÜNLÜK TAKİP'};
-let ctx,status,history,gravity,environment,logs,plan,key,legacyKey;
+let ctx,status,history,gravity,environment,radiation,bone,logs,plan,key,legacyKey;
 
 function loadLogs(){try{return JSON.parse(localStorage.getItem(key)||localStorage.getItem(legacyKey)||'[]');}catch{return [];}}
 function saveLogs(){localStorage.setItem(key,JSON.stringify(logs.slice(-90)));}
@@ -42,11 +42,11 @@ function render(){
   for(const item of plan.recommendations){
     const box=el('input',{type:'checkbox','aria-label':`${item.title} tamamlandı`});box.checked=recommendationChecks.has(item.id);
     box.addEventListener('change',()=>{box.checked?recommendationChecks.add(item.id):recommendationChecks.delete(item.id);});
-    recommendationList.append(el('label',{class:`recommendation-card recommendation-card--${item.priority}`},box,
-      el('span',{class:'recommendation-card__body'},el('span',{class:'recommendation-meta'},el('span',{class:'eyebrow'},item.category),el('span',{class:`recommendation-priority recommendation-priority--${item.priority}`},priorityLabel[item.priority])),
-        el('strong',{},item.title),el('span',{},item.detail),el('small',{class:'recommendation-basis'},`Dayanak: ${item.basis}`))));
+    recommendationList.append(el('div',{class:`recommendation-card recommendation-card--${item.priority}`},box,
+      el('div',{class:'recommendation-card__body'},el('div',{class:'recommendation-meta'},el('span',{class:'eyebrow'},item.category),el('span',{class:`recommendation-priority recommendation-priority--${item.priority}`},priorityLabel[item.priority])),
+        el('strong',{},item.title),el('details',{},el('summary',{},'Ayrıntı ve dayanak'),el('p',{},item.detail),el('small',{class:'recommendation-basis'},`Dayanak: ${item.basis}`)))));
   }
-  const actual=el('input',{class:'input',type:'number',min:0,max:300,step:5,value:todayLog.actual_minutes??plan.minutes,'aria-label':'Bugün tamamlanan toplam dakika'});
+  const actual=el('input',{class:'input',type:'number',min:0,max:300,step:1,value:todayLog.actual_minutes??0,'aria-label':'Bugün tamamlanan toplam dakika'});
   const saved=el('p',{role:'status',class:'muted'},todayLog.saved_at?'Bugünkü yerel kayıt güncellendi.':'Henüz bugünkü yerel kayıt yok.');
   const save=el('button',{class:'btn btn--primary',type:'button',onclick:()=>{
     if(!actual.checkValidity()){saved.textContent='Dakikayı 0–300 arasında gir.';actual.focus();return;}
@@ -77,7 +77,7 @@ function render(){
 
 try{
   ctx=await initShell({page:'activity'});key=`astro-activity-v2:${ctx.astronautId}`;legacyKey=`astro-activity-v1:${ctx.astronautId}`;logs=loadLogs();
-  [status,history,gravity,environment]=await Promise.all([api.status(ctx.astronautId),api.history(ctx.astronautId,14),api.gravity(ctx.astronautId,null,60).catch(()=>null),api.environment(ctx.astronautId,null,60).catch(()=>null)]);
+  [status,history,gravity,environment,radiation,bone]=await Promise.all([api.status(ctx.astronautId),api.history(ctx.astronautId,14),api.gravity(ctx.astronautId,null,60).catch(()=>null),api.environment(ctx.astronautId,null,60).catch(()=>null),api.radiation(ctx.astronautId).catch(()=>null),api.bone(ctx.astronautId).catch(()=>null)]);
   const baseTarget=Number(ctx.config.params?.['bone.exercise_target_min'])||120;
-  plan=buildAdaptivePlan({status,points:history.points,localLogs:logs,baseTarget,today,gravity:gravity?.assessment||null,environment});render();
+  plan=buildAdaptivePlan({status,points:history.points,localLogs:logs,baseTarget,today,gravity:gravity?.assessment||null,environment,radiation,bone});render();
 }catch(error){root.replaceChildren(el('p',{class:'orbit-error'},error.message||'Aktivite ve öneriler yüklenemedi.'));}
