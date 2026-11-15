@@ -12,7 +12,6 @@
 | **Project outputs** | https://drive.google.com/drive/folders/14TgAOtC_r5MkBHsC1mm_KQtjkjRhBYnP |
 | **Source code** | https://github.com/yusufsahin-student/IAFL_crewPulse |
 | **Sprint reports** | [`sprint-reports/`](sprint-reports/) |
-| **Türkçe** | [README.tr.md](README.tr.md) |
 
 **CrewPulse** is a health app for astronauts on long missions. Every day, the astronaut spends a few minutes taking measurements. The app compares these measurements with the person's own normal, warns early if something changes and says what to do. Even when the doctor is very far away, the astronaut knows what to do.
 
