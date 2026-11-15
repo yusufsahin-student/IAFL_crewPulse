@@ -34,6 +34,8 @@ All rules, thresholds, missions, habitat zones and guidance text live in the SQL
 | NASA Human Research Program: 5 hazards and risks | Each indicator is mapped to a spaceflight hazard |
 | NASA-STD-3001, NASA HRP evidence reports and other cited sources | Thresholds, bone loss rates, exercise targets; see `data/seed/sources.json` and `docs/SOURCE-AUDIT.md` |
 | CSA: monitoring radiation for astronaut health | Background for the radiation model |
+| [NASA OSDR Environmental Data Application](https://visualization.osdr.nasa.gov/eda/) and [Law et al. 2014](https://pubmed.ncbi.nlm.nih.gov/24806559/) | Level of the simulated ISS cabin CO2 (about 2 mmHg); OSDR holds the recorded cabin CO2, temperature and humidity |
+| NASA HRP, OCHMO technical briefs, NASA NTRS and peer-reviewed papers | Gravity risk analysis; each source is linked on the Gravital Tracking page |
 
 ## Layout
 
@@ -120,6 +122,7 @@ python -m unittest discover -s tools -p "test_*.py"
 
 ## Honest limits
 
+- Cabin CO2, temperature and humidity are simulated at ISS-like levels and never change the health score. Recorded ISS cabin data is available in NASA OSDR; connecting it is the next step.
 - The crew and their history are simulated. Crew names are fictional and do not refer to real astronauts. The anomaly model learns the patterns of that data, not of real astronauts.
 - The live demo scores check-ins with personal z-scores. The TensorFlow autoencoder was trained and tested locally, but TensorFlow does not fit the small free hosting instance.
 - The live demo rebuilds its data on every restart, so check-ins entered by visitors do not persist.

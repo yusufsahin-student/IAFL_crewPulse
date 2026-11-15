@@ -359,17 +359,20 @@ export const ENVIRONMENTS = [
     change: 'Landing risks (R3, R6, R7) without a help team; show model uncertainty' },
 ];
 
-// Sources named in the documents (titles only; the documents list them in full).
+// Sources named in the documents, each with a public link (checked 15 Nov 2026).
+// url: null means the document names the source but no public link is confirmed yet.
 export const SOURCES = [
-  'NASA: The Human Body in Space (RIDGE)',
-  'NASA Human System Risk Board',
-  'NASA Human Research Roadmap – evidence reports',
-  'NASA HRP: bone loss data',
-  'NASA OCHMO: Space Adaptation Syndrome technical brief',
-  'NASA: SANS 2023 clinical update; SANS expert consensus (PMC)',
-  'JAMA Network Open: jugular vein flow and clot',
-  'npj Microgravity: musculoskeletal update; immunity in space',
-  'Ottawa Hospital Research Institute: space anemia',
-  'NASA: Moon and Mars partial gravity',
-  'NASA: Life After Microgravity (astronaut accounts)',
+  { title: 'NASA: The Human Body in Space (RIDGE)', url: 'https://www.nasa.gov/humans-in-space/the-human-body-in-space/' },
+  { title: 'NASA Human System Risk Board', url: 'https://www.nasa.gov/directorates/esdmd/hhp/human-system-risk-board/' },
+  { title: 'NASA Human Research Roadmap – evidence reports', url: 'https://humanresearchroadmap.nasa.gov/evidence/' },
+  { title: 'NASA HRP: bone loss data', url: 'https://ntrs.nasa.gov/citations/20170004597' },
+  { title: 'NASA OCHMO: Space Adaptation Syndrome technical brief', url: 'https://www.nasa.gov/wp-content/uploads/2025/09/ochmo-mtb-004-space-adaptation-sickness-sas.pdf' },
+  { title: 'NASA OCHMO: SANS technical brief (clinical update)', url: 'https://www.nasa.gov/wp-content/uploads/2024/02/ochmo-mtb-001-sans.pdf' },
+  { title: 'SANS expert consensus (PMC)', url: null },
+  { title: 'JAMA Network Open: jugular vein flow and clot', url: 'https://pubmed.ncbi.nlm.nih.gov/31722025/' },
+  { title: 'npj Microgravity: musculoskeletal update', url: 'https://www.nature.com/articles/s41526-021-00158-4' },
+  { title: 'npj Microgravity: immunity in space', url: 'https://www.nature.com/articles/s41526-024-00446-9' },
+  { title: 'Ottawa Hospital Research Institute: space anemia', url: 'https://ohri.ca/en/newsroom/being-space-destroys-more-red-blood-cells' },
+  { title: 'NASA: Moon and Mars partial gravity', url: 'https://ntrs.nasa.gov/citations/20210019591' },
+  { title: 'NASA: Life After Microgravity (astronaut accounts)', url: 'https://www.nasa.gov/centers-and-facilities/johnson/life-after-microgravity-astronauts-reflect-on-post-flight-recovery/' },
 ];

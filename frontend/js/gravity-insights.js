@@ -500,7 +500,9 @@ function evidenceSection() {
 function sourcesFooter() {
   return el('details', { class: 'more' },
     el('summary', {}, 'Sources for the gravity risk analysis'),
-    el('ul', {}, SOURCES.map((s) => el('li', {}, t(s)))),
+    el('ul', {}, SOURCES.map((s) => el('li', {}, s.url
+      ? el('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, t(s.title))
+      : t(s.title)))),
     el('p', { class: 'estimate-note' }, 'Risk scores are the team’s assessment; some thresholds (strength loss percentages, fluid target, screening days) are prototype proposals that need clinical validation. Partial-gravity effects have not been measured directly in humans. This is decision support, not a medical device.'));
 }
 

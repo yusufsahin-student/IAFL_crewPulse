@@ -35,6 +35,7 @@ SEP_START_HOUR_UTC = 4
 SEP_DURATION_H = 30
 SEP_SEVERITY = 0.8
 STORM_SHELTER_HOURS = 20.0    # hours per storm day spent in the shelter zone
+MMHG_TO_PPM = 1e6 / 760         # CO2 partial pressure (mmHg) to ppm at 1 atm
 POST_STORM_DAYS = 2           # days after the storm that show worse head readings
 POST_STORM_FACTOR = 0.12      # 12 percent worse: lower for "higher is better", higher otherwise
 OPTIONAL_READING_RATE = 0.9   # share of days an optional indicator is asked
@@ -351,8 +352,11 @@ def simulate(conn, days, today, rng):
 
     # Daily cabin context per mission. These simulated observations are displayed alongside
     # health history, but deliberately do not alter the health score.
+    # ISS cabin CO2 is far above Earth air: crews lived at 1-9 mmHg, and a 7-day mean below 2.5 mmHg
+    # keeps headache risk under 1% (Law et al. 2014, source co2_law2014). Real cabin logs are in
+    # NASA OSDR (source cabin_osdr_eda). Simulated here at 2.0-2.4 mmHg; the app stores ppm.
     for mission_id in sorted(zones_by_mission):
-        co2_base = rng.uniform(720, 880)
+        co2_base = rng.uniform(2.0, 2.4) * MMHG_TO_PPM
         temp_base = rng.uniform(21.5, 23.5)
         humidity_base = rng.uniform(38.0, 50.0)
         first_day = today - timedelta(days=max(0, days - 1))
@@ -362,7 +366,7 @@ def simulate(conn, days, today, rng):
             conn.execute(
                 "INSERT INTO cabin_readings (mission_id, taken_at, co2_ppm, temperature_c, humidity_pct, source) "
                 "VALUES (?, ?, ?, ?, ?, 'sim')",
-                (mission_id, stamp(taken), round(co2_base + 45 * cycle + rng.uniform(-25, 25)),
+                (mission_id, stamp(taken), round(co2_base + 120 * cycle + rng.uniform(-60, 60)),
                  round(temp_base + 0.5 * cycle + rng.uniform(-0.25, 0.25), 1),
                  round(humidity_base - 2.5 * cycle + rng.uniform(-1.5, 1.5), 1)))
 
