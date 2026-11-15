@@ -19,12 +19,17 @@ function run() {
     history = JSON.parse(localStorage.getItem(key) || '[]');
   } catch {}
 
-  const result = {
-    at: new Date().toISOString(),
-    survey: { sleep: 7, mood: null, stress: null, loneliness: null, workload: null },
-    pvt: null,
-    cognitive_tasks: {},
-  };
+  const result = {};
+  // Every session (also "Start again") starts empty with its own time stamp.
+  function newSession() {
+    Object.assign(result, {
+      at: new Date().toISOString(),
+      survey: { sleep: 7, mood: null, stress: null, loneliness: null, workload: null },
+      pvt: null,
+      cognitive_tasks: {},
+    });
+  }
+  newSession();
 
   let timer;
   let phase = 'idle';
@@ -133,7 +138,7 @@ function run() {
       clock,
       target,
       button('Skip the attention test', () => { cleanup(); result.pvt = null; cognitiveHub(); }),
-      button('Stop the test and start over', () => { cleanup(); intro(); }),
+      button('Stop the test and start over', () => { cleanup(); newSession(); intro(); }),
     );
     ends = performance.now() + (practice ? 20000 : 180000);
 
@@ -198,13 +203,14 @@ function run() {
       const left = Math.max(0, Math.ceil((ends - performance.now()) / 1000));
       clock.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')} · ${trials.length} responses`;
       if (left === 0) {
-        if (phase === 'go') trials.push(performance.now() - signalAt);
+        // A signal still on screen when time runs out was not answered: count it apart, not as a reaction time.
+        const missed = phase === 'go' ? 1 : 0;
         cleanup();
         if (trials.length < 5) {
           root.replaceChildren(el('h2', {}, 'Not enough responses.'), button('Start again', () => pvt(false), true));
           return;
         }
-        result.pvt = summarize(trials, early);
+        result.pvt = { ...summarize(trials, early), missed };
         cognitiveHub();
       }
     }, 250);
@@ -337,7 +343,7 @@ function run() {
       el('div', { class: 'lab-big' }, result.pvt ? `${Math.round(result.pvt.median_ms)} ms` : 'Skipped'),
       el('p', {}, result.pvt ? 'Median reaction time' : 'Reaction time was not recorded'),
       result.pvt
-        ? el('p', {}, `${result.pvt.trials.length} responses · ${result.pvt.early} early presses · ${result.pvt.lapses} slow responses (≥500 ms; prototype threshold)`)
+        ? el('p', {}, `${result.pvt.trials} responses · ${result.pvt.early} early presses · ${result.pvt.lapses} slow responses (≥500 ms; prototype threshold)${result.pvt.missed ? ` · ${result.pvt.missed} unanswered signal` : ''}`)
         : null,
       assessment.delta !== null
         ? el('p', {}, `Change from previous days: ${assessment.delta}%. Reference: ${Math.round(assessment.baseline)} ms.`)
@@ -381,10 +387,12 @@ function run() {
       el('p', { class: 'trust-note' }, saved ? 'The result was saved on this device.' : 'Storage is unavailable. Download the result now.'),
       el('div', { class: 'lab-actions' },
         dl,
-        button('Start again', intro),
+        button('Start again', () => { newSession(); intro(); }),
         el('a', { class: 'btn btn--primary', href: 'index.html' }, 'Return to mission centre →'),
       ),
     );
+    // Keep the saved list in memory too, so a second session on this page is added, not written over the first.
+    history = [...history.slice(-29), entry];
   }
 
   function bars(entries) {

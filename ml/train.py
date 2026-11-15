@@ -1,6 +1,6 @@
 """Train the anomaly autoencoder and score every check-in (contract section 6).
 
-Run by hand from astro-health/:   python ml/train.py [--db PATH]
+Run by hand from the repository root:   python ml/train.py [--db PATH]
 Writes ml/model/autoencoder.keras and ml/model/meta.json, then upserts ml_scores.
 With fewer than 50 training samples it skips the model and scores with the z-score fallback.
 """

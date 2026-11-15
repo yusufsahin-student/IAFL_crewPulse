@@ -506,7 +506,7 @@
     "gcr_msv_per_day": 1.8,
     "gravity_g": 0.0,
     "id": "mars",
-    "name": "Mars mission",
+    "name": "Mars transit",
     "sep_exposure_factor": 1.0,
     "source_ref": "zeitlin2013"
   },
@@ -643,12 +643,12 @@
     "consult_mode": "crew_led",
     "contact": "Crew medical officer on board",
     "guidance": [],
-    "headline": "Act first on Mars mission, then tell ground",
+    "headline": "Act first on Mars transit, then tell ground",
     "instructions": [
       "Recheck the flagged reading now and again in 1 hour.",
       "Follow the self-care steps in the app.",
       "Tell the crew medical officer what you found. Do not wait for ground: a reply takes about 44 minutes.",
-      "Send the readings to Mars mission ground when the next window opens, and note what you did."
+      "Send the readings to Mars transit ground when the next window opens, and note what you did."
     ],
     "level": 1,
     "reply_minutes": 44.0

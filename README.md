@@ -1,23 +1,39 @@
-# Astronaut Health & Recommendations
+# CrewPulse
 
-Base app for the NASA Space Apps 2026 challenge *Create Health Monitoring Software for Astronauts on Space Missions*.
+**Team IAFL** · NASA Space Apps Challenge 2026 · Challenge: *Create Health Monitoring Software for Astronauts on Space Missions*
+
+- **Live app:** _add the Render link here_ (free hosting: the first load can take about a minute while the server wakes up)
+- **Demo:** _add the slide deck or video link here_
+- **Source code:** this repository
+
+On a Mars mission a message to the flight surgeon takes up to 22 minutes one way. CrewPulse helps astronauts check their own health every day, see what changed against their personal baseline, and know what to do next, with guidance that adapts to how far the crew is from Earth.
 
 One daily check-in, interpreted for where the crew is in the mission:
 
-- **Check-in**: vitals, sleep, mood and a reaction-time test.
-- **Personal anomaly model** (TensorFlow): learns each astronaut's own baseline and flags drift.
-- **Projected bone loss**: published loss rates, adjusted for gravity and logged exercise.
-- **Estimated radiation dose**: habitat zone model plus NASA DONKI solar events; shows where to shelter.
-- **Health score** with written reasons, and **distance-aware triage**: the same reading leads to "call the flight surgeon" on the ISS and to a crew-led protocol on the way to Mars.
-- **Mind Lab**: a guided flow with a short self-report and a three-minute vigilance test. The former emoji expression exercise is removed and its place is retained as a non-scoring development marker.
-- **Activity & Recommendations**: a traceable daily countermeasure and action plan that combines seven-day activity, sleep, mood, stress, health freshness, safety alerts, gravity-field transitions and cabin context within guarded limits.
-- **Gravital Tracking**: a dedicated chart view for local gravity, modeled mechanical unloading and detected gravity-field transitions. Partial-gravity uncertainty remains visible.
-- **Mission Companion**: turns the latest assessment into a local action checklist and an explicit handoff file. Nothing is sent automatically.
-- **Cabin context**: shows the latest CO₂, temperature, and humidity separately from the health score; simulated readings are labelled explicitly.
+- **Check-in**: vitals, sleep, mood, eye tests (near vision, Amsler grid) and a reaction-time test, one measurement at a time with how-to-measure diagrams.
+- **Personal anomaly model**: compares each check-in with the astronaut's own last 20 check-ins and flags unusual combinations. A TensorFlow autoencoder is used when TensorFlow is installed; otherwise the same personal z-scores are scored directly. The live demo uses the z-score method (see *Honest limits*).
+- **Health score** with written reasons, and **distance-aware triage**: the same reading leads to "message the flight surgeon" on the ISS and to a crew-led protocol on the way to Mars.
+- **Body map**: each body region shows the status of its indicators; the mission picker shows guidance for the ISS, lunar transit, Moon base, lunar rover and Mars.
+- **Projected bone loss**: published loss rates per site, adjusted for gravity and logged exercise.
+- **Estimated radiation dose**: habitat-zone shielding model plus NASA DONKI and Fermi GBM solar events; shows where to shelter.
+- **Mind Lab**: a short self-report, a three-minute vigilance test and eight short cognitive tasks.
+- **Activity & Recommendations**: a traceable daily countermeasure plan from seven-day activity, recovery, safety alerts, gravity and cabin context.
+- **Gravital Tracking** and **Trends**: charts of local gravity, readings over time, solar events and links between readings.
+- **Mission Companion**: turns the latest assessment into a checklist and a handoff file. Nothing is sent automatically.
+- English and Turkish interface, light and night mode.
 
-The default screen is a calm, task-first mission center. The original detailed body map remains available under **Body map**. Check-ins show one measurement at a time, preserve a local draft, and use retry-safe submission IDs so a lost response cannot create duplicate readings.
+All rules, thresholds, missions, habitat zones and guidance text live in the SQLite database built from `data/seed/*.json`. Change the data, not the code.
 
-All rules, thresholds, missions, habitat zones and guidance text live in the SQLite database. Change the data, not the code.
+## NASA and space agency data
+
+| Data | How it is used |
+|---|---|
+| NASA DONKI (api.nasa.gov) solar particle events and CMEs | Live space-weather events for the radiation view and trends; fetched on every server start |
+| Fermi GBM solar flare list (NASA GSFC) | Live flare events shown with the radiation context |
+| ISS TEPC dose measurements (NASA CDAWeb) | ISS background dose rate (`tools/fetch_tepc.py`) |
+| NASA Human Research Program: 5 hazards and risks | Each indicator is mapped to a spaceflight hazard |
+| NASA-STD-3001, NASA HRP evidence reports and other cited sources | Thresholds, bone loss rates, exercise targets; see `data/seed/sources.json` and `docs/SOURCE-AUDIT.md` |
+| CSA: monitoring radiation for astronaut health | Background for the radiation model |
 
 ## Layout
 
@@ -27,32 +43,27 @@ All rules, thresholds, missions, habitat zones and guidance text live in the SQL
 | `db/schema.sql` | SQLite schema |
 | `data/seed/*.json` | Reference data, one file per table: edit these to change the app |
 | `tools/seed.py` | Builds `db/astro.db` from the schema, seed files and simulated history |
-| `tools/fetch_donki.py` | Pulls real solar events from NASA DONKI |
-| `ml/` | TensorFlow autoencoder: `train.py`, `score.py` |
+| `tools/fetch_donki.py`, `tools/fetch_gbm.py`, `tools/fetch_tepc.py` | Pull NASA space-weather and dose data |
+| `ml/` | Anomaly model: `train.py`, `score.py` |
 | `backend/` | Rust API server (axum + rusqlite), also serves the frontend |
 | `frontend/` | HTML, CSS and JavaScript pages, no build step |
+| `Dockerfile`, `docker-start.sh` | Container used for the live deployment |
 | `tools/dev-server.mjs` | Frontend-only preview with mock data (Node) |
 
-## Requirements
+## Run it locally
 
-- Python 3.10–3.12 (TensorFlow does not support newer versions on Windows yet)
-- Rust (stable) via rustup; on Windows the MSVC build tools are needed for `rusqlite`'s bundled SQLite
-- Node.js only for the mock preview
+Requirements: Python 3.10–3.12, Rust (stable) via rustup (on Windows the MSVC build tools are needed for `rusqlite`'s bundled SQLite). Node.js only for the mock preview.
 
-## Run it
+On Windows, from the repository root:
 
-From the `astro-health/` folder:
+```bash
+powershell -ExecutionPolicy Bypass -File .\start-app.ps1 -Fresh
+```
+
+Or step by step, from the repository root:
 
 ```bash
 python tools/seed.py --fresh
-```
-
-```bash
-pip install -r ml/requirements.txt
-```
-
-```bash
-python ml/train.py
 ```
 
 ```bash
@@ -61,36 +72,31 @@ cargo run --manifest-path backend/Cargo.toml --release
 
 Then open http://127.0.0.1:8080.
 
-Optional, real space weather (needs internet):
+Optional, the TensorFlow model: `pip install -r ml/requirements.txt`, then `python ml/train.py`.
+
+Optional, real space weather (needs internet). Without `NASA_API_KEY` the fetcher uses the rate-limited `DEMO_KEY`:
 
 ```bash
-set NASA_API_KEY=your_api_nasa_gov_key
 python tools/fetch_donki.py --days 30
 ```
-
-`NASA_API_KEY` is also read by `start-app.ps1`. If it is absent, the fetcher falls back to the rate-limited `DEMO_KEY`.
-
-Optional: load real solar flares from the Fermi GBM flare list:
 
 ```bash
 python tools/fetch_gbm.py --days 30
 ```
 
-Optional: recompute the ISS background dose from NASA TEPC measurements (CDAWeb):
+Frontend preview without Python or Rust (mock data): `node tools/dev-server.mjs`, then open http://127.0.0.1:5173.
 
-```bash
-python tools/fetch_tepc.py --write-seed
-```
+Mind Lab sessions and daily activity logs are stored only in the browser.
 
-Frontend preview without Python or Rust (mock data):
+## Deploy (Docker, for example on Render)
 
-```bash
-node tools/dev-server.mjs
-```
+The `Dockerfile` builds the Rust server and runs it with the Python tools. On every start `docker-start.sh` rebuilds the demo database, fetches NASA DONKI and Fermi GBM events, and starts the server on `0.0.0.0:$PORT`.
 
-Then open http://127.0.0.1:5173.
+Environment variables:
 
-Mind-lab sessions and daily activity/recommendation completion logs are stored only in this browser. They are not synced to the server; clearing browser storage or moving to another device removes that local history.
+- `NASA_API_KEY`: your api.nasa.gov key. Set it as a secret in the hosting dashboard; never commit it.
+- `ASTRO_PUBLIC_HOST`: public host name(s), comma-separated. On Render this is read automatically from `RENDER_EXTERNAL_HOSTNAME`.
+- Optional: `ASTRO_HOST` (default `127.0.0.1`, the container sets `0.0.0.0`), `ASTRO_PORT` or `PORT` (default `8080`), `ASTRO_DB`, `ASTRO_FRONTEND`, `ASTRO_PYTHON`.
 
 ## Changing the data
 
@@ -98,13 +104,63 @@ Mind-lab sessions and daily activity/recommendation completion logs are stored o
 2. Run `python tools/seed.py --fresh` to rebuild the database.
 3. Run `python ml/train.py` if you added or removed indicators used by the model.
 
-When the official challenge resources are published, replace the simulated history by importing real or published data into the `checkins` and `readings` tables, and cite each source in `sources`.
+## Tests
+
+```bash
+node --test frontend/js/
+```
+
+```bash
+cargo test --manifest-path backend/Cargo.toml
+```
+
+```bash
+python -m unittest discover -s tools -p "test_*.py"
+```
 
 ## Honest limits
 
-- The crew and their history are simulated. The anomaly model learns the patterns of that data.
+- The crew and their history are simulated. Crew names are fictional and do not refer to real astronauts. The anomaly model learns the patterns of that data, not of real astronauts.
+- The live demo scores check-ins with personal z-scores. The TensorFlow autoencoder was trained and tested locally, but TensorFlow does not fit the small free hosting instance.
+- The live demo rebuilds its data on every restart, so check-ins entered by visitors do not persist.
+- The demo has no login so judges can try it: anyone can read the simulated crew data and add check-ins, and visitors share the same demo crew. A real deployment would need sign-in and per-astronaut access checks on the server.
+- The interface shows the first crew member; the other four simulated astronauts are available through the API.
 - Bone values are projections from published average loss rates, not scans.
-- Radiation dose is an estimate from a simplified shielding model.
-- The ISS background rate is a TEPC station average from 2017 samples, and Fermi GBM flares do not add dose.
+- Radiation dose is an estimate from a simplified shielding model. The strongest dose event in the demo history is a simulated solar particle event and is labelled as simulated; real DONKI and Fermi GBM events are shown as context.
+- Mind Lab is an independent prototype inspired by the NASA Cognition approach, not the NASA Cognition test. Its thresholds are visible prototype rules, not validated clinical cutoffs.
 - This is a hackathon prototype, not a medical device.
-- Mind Lab thresholds are visible prototype rules, not validated clinical cutoffs. The removed face-expression step remains only as a non-scoring development marker.
+
+## Use of AI
+
+AI coding assistants were used to help write and review parts of the code, tests, translations and documentation. The team chose the problem, the approach, the data sources and the design, and reviewed and tested the output.
+
+No AI image, video or audio generators were used. The pictures in the app are Health Icons (CC0) and simple vector drawings written as SVG code (the logo, the cup and plate drawings and the measurement-step drawings in `frontend/img/measure/`); that SVG code falls under the AI-assisted coding statement above. NASA logos, insignia, flags and mission identifiers are not used; "NASA" appears only as text to name data sources.
+
+## References and licenses
+
+Every threshold, rate and guidance text in the app cites its source in `data/seed/sources.json` (shown in the app on each indicator card); values without a source are labelled `assumption`. `docs/SOURCE-AUDIT.md` explains how each value was checked.
+
+| Third-party material | License |
+|---|---|
+| NASA DONKI, Fermi GBM, ISS TEPC data | NASA open data |
+| [Health Icons](https://healthicons.org) (`frontend/img/healthicons/`) | CC0 1.0 |
+| Rust crates: axum, tokio, tower-http, rusqlite (bundled SQLite), serde, serde_json, chrono | MIT or MIT/Apache-2.0; SQLite is public domain |
+| TensorFlow (optional) | Apache-2.0 |
+| NumPy | BSD-3-Clause |
+
+No copyrighted images, music or text are included. The frontend uses no external libraries or CDNs.
+
+## License
+
+CrewPulse is released under the [Apache License 2.0](LICENSE).
+
+## Team IAFL
+
+| Name | Role |
+|---|---|
+| Renas Yusuf Babür | Researcher |
+| Murathan Yapıcı | Scrum Master |
+| Efe Yüksel | Developer |
+| Mehmet Recep Baltacı | Designer |
+| Semih Bakır | Researcher |
+| Yusuf Şahin | Developer |

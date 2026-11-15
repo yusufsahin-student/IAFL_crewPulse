@@ -149,6 +149,12 @@
         "file": "../healthicons/body-arm.svg",
         "caption": "Arm"
       }
+    ],
+    "reaction_ms": [
+      {
+        "file": "../healthicons/body-neurology.svg",
+        "caption": "Reaction test"
+      }
     ]
   }
 }

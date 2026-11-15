@@ -6,6 +6,7 @@ Lunar transit spacecraft => Ay geçiş uzay aracı
 Lunar surface base => Ay yüzeyi üssü
 Pressurized lunar rover => Basınçlı Ay aracı
 Mars mission => Mars görevi
+Mars transit => Mars yolculuğu
 Mars => Mars
 Moon => Ay
 ISS => ISS

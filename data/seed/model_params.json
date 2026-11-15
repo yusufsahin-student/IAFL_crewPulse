@@ -11,7 +11,7 @@
   {"key": "score.w_radiation", "value": 0.15, "unit": "weight", "description": "Weight of the radiation part in the overall health score.", "source_ref": "assumption"},
   {"key": "ml.baseline_n", "value": 20, "unit": "check-ins", "description": "Number of earlier check-ins that form the personal baseline for anomaly scoring.", "source_ref": "assumption"},
   {"key": "ml.min_history", "value": 7, "unit": "check-ins", "description": "Fewer baseline check-ins than this means no anomaly score is given.", "source_ref": "assumption"},
-  {"key": "ml.sd_floor_frac", "value": 0.02, "unit": "fraction of mean", "description": "Smallest allowed standard deviation, as a fraction of the baseline mean, so tiny spreads do not inflate z-scores.", "source_ref": "assumption"},
+  {"key": "ml.sd_floor_frac", "value": 0.05, "unit": "fraction of mean", "description": "Smallest allowed standard deviation, as a fraction of the baseline mean, so tiny spreads do not inflate z-scores. 0.05 keeps ordinary day-to-day changes (a few mmHg or bpm) from looking unusual against the very steady simulated history.", "source_ref": "assumption"},
   {"key": "ml.z_alert", "value": 3, "unit": "sd", "description": "z-score that gives an anomaly score of 0.5 (anomaly score = max |z| / (2 x z_alert)).", "source_ref": "assumption"},
   {"key": "bone.exercise_window_days", "value": 7, "unit": "days", "description": "Days of check-ins averaged for exercise when projecting bone loss.", "source_ref": "ared2009"},
   {"key": "bone.exercise_max_reduction", "value": 0.5, "unit": "fraction", "description": "Largest share of projected bone loss that daily exercise can remove.", "source_ref": "hrp_bone2017"},

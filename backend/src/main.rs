@@ -12,8 +12,8 @@ mod radiation;
 mod reference;
 mod status;
 
-use std::net::SocketAddr;
-use std::sync::{Arc, Mutex};
+use std::net::{IpAddr, SocketAddr};
+use std::sync::{Arc, Mutex, OnceLock};
 
 use axum::extract::Request;
 use axum::http::{header::HOST, HeaderValue, StatusCode};
@@ -34,28 +34,46 @@ fn env_or(key: &str, default: &str) -> String {
     }
 }
 
-fn local_host(host: &str) -> bool {
+/// Public host names allowed besides loopback, from ASTRO_PUBLIC_HOST (comma-separated)
+/// or, on Render, the RENDER_EXTERNAL_HOSTNAME it sets. Empty means localhost only.
+static PUBLIC_HOSTS: OnceLock<Vec<String>> = OnceLock::new();
+
+fn public_hosts_from_env() -> Vec<String> {
+    let raw = env_or(
+        "ASTRO_PUBLIC_HOST",
+        &std::env::var("RENDER_EXTERNAL_HOSTNAME").unwrap_or_default(),
+    );
+    raw.split(',')
+        .map(|h| h.trim().to_ascii_lowercase())
+        .filter(|h| !h.is_empty())
+        .collect()
+}
+
+fn host_name(host: &str) -> String {
     let name = if let Some(rest) = host.strip_prefix('[') {
         rest.split(']').next().unwrap_or("")
     } else {
         host.split(':').next().unwrap_or("")
     };
-    matches!(
-        name.to_ascii_lowercase().as_str(),
-        "127.0.0.1" | "localhost" | "::1"
-    )
+    name.to_ascii_lowercase()
+}
+
+fn host_allowed(host: &str, public: &[String]) -> bool {
+    let name = host_name(host);
+    matches!(name.as_str(), "127.0.0.1" | "localhost" | "::1") || public.iter().any(|p| *p == name)
 }
 
 async fn protect_local_request(req: Request, next: Next) -> Response {
+    let public = PUBLIC_HOSTS.get_or_init(public_hosts_from_env);
     let valid = req
         .headers()
         .get(HOST)
         .and_then(|v| v.to_str().ok())
-        .is_some_and(local_host);
+        .is_some_and(|h| host_allowed(h, public));
     if !valid {
         return (
             StatusCode::BAD_REQUEST,
-            Json(json!({ "error": "Host must be localhost." })),
+            Json(json!({ "error": "Unknown host. Set ASTRO_PUBLIC_HOST to the public host name." })),
         )
             .into_response();
     }
@@ -79,9 +97,18 @@ async fn protect_local_request(req: Request, next: Next) -> Response {
 #[tokio::main]
 async fn main() {
     let db_path = env_or("ASTRO_DB", "db/astro.db");
-    let port_text = env_or("ASTRO_PORT", "8080");
+    // Hosting platforms such as Render pass the port in PORT.
+    let port_text = env_or("ASTRO_PORT", &env_or("PORT", "8080"));
+    let host_text = env_or("ASTRO_HOST", "127.0.0.1");
     let frontend = env_or("ASTRO_FRONTEND", "frontend");
     let python = env_or("ASTRO_PYTHON", "python");
+    let bind_ip: IpAddr = match host_text.parse() {
+        Ok(ip) => ip,
+        Err(_) => {
+            eprintln!("ASTRO_HOST must be an IP address such as 127.0.0.1 or 0.0.0.0, not {}.", host_text);
+            std::process::exit(1);
+        }
+    };
 
     if !std::path::Path::new(&db_path).is_file() {
         eprintln!(
@@ -138,7 +165,7 @@ async fn main() {
         .layer(middleware::from_fn(protect_local_request))
         .with_state(state);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = SocketAddr::new(bind_ip, port);
     let listener = match tokio::net::TcpListener::bind(addr).await {
         Ok(l) => l,
         Err(e) => {
@@ -146,7 +173,8 @@ async fn main() {
             std::process::exit(1);
         }
     };
-    println!("Astro health monitor running at http://127.0.0.1:{}", port);
+    let public = PUBLIC_HOSTS.get_or_init(public_hosts_from_env);
+    println!("CrewPulse running at http://{} (public hosts: {:?})", addr, public);
     if let Err(e) = axum::serve(listener, app).await {
         eprintln!("Server stopped: {}", e);
     }
@@ -154,13 +182,22 @@ async fn main() {
 
 #[cfg(test)]
 mod tests {
-    use super::local_host;
+    use super::host_allowed;
 
     #[test]
     fn host_filter_accepts_loopback_only() {
-        assert!(local_host("127.0.0.1:8080"));
-        assert!(local_host("localhost:8080"));
-        assert!(local_host("[::1]:8080"));
-        assert!(!local_host("attacker.invalid"));
+        assert!(host_allowed("127.0.0.1:8080", &[]));
+        assert!(host_allowed("localhost:8080", &[]));
+        assert!(host_allowed("[::1]:8080", &[]));
+        assert!(!host_allowed("attacker.invalid", &[]));
+    }
+
+    #[test]
+    fn host_filter_accepts_configured_public_host() {
+        let public = vec!["crewpulse.onrender.com".to_string()];
+        assert!(host_allowed("CrewPulse.onrender.com", &public));
+        assert!(host_allowed("crewpulse.onrender.com:443", &public));
+        assert!(!host_allowed("evil.onrender.com", &public));
+        assert!(host_allowed("localhost:8080", &public));
     }
 }

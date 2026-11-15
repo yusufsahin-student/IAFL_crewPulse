@@ -272,6 +272,9 @@ pub async fn get_radiation(
         }
     };
     let mission = load_mission(&conn, &mission_id)?;
+    // Personal dose only for the astronaut's own mission: their zone hours belong to that habitat,
+    // so mixing them with another mission's zones gives a wrong number.
+    let astro = astro.filter(|a| sval(a, "mission_id") == mission_id);
     let who = astro
         .as_ref()
         .map(|a| (int(a, "id").unwrap_or(0), sval(a, "mission_start")));

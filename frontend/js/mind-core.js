@@ -113,7 +113,7 @@ export const COGNITIVE_TASKS = [
   },
   {
     id: 'matrix_reasoning',
-    code: '07',
+    code: '06',
     name: 'Matrix Reasoning',
     domain: 'Logical reasoning',
     see: 'A 3×3 grid of evolving geometric shapes with the bottom-right cell marked ?.',
@@ -123,7 +123,7 @@ export const COGNITIVE_TASKS = [
   },
   {
     id: 'digit_symbol',
-    code: '08',
+    code: '07',
     name: 'Digit-Symbol Substitution',
     domain: 'Processing speed',
     see: 'A top reference key pairing digits 1–6 with symbols and a central prompt symbol.',
@@ -133,7 +133,7 @@ export const COGNITIVE_TASKS = [
   },
   {
     id: 'bart',
-    code: '09',
+    code: '08',
     name: 'Balloon Risk Test (BART)',
     domain: 'Risk decision-making',
     see: 'An expanding on-screen balloon with Inflate (+25 pts) and Collect points buttons.',

@@ -5,6 +5,7 @@
 import { UI } from './i18n-tr.js';
 import { DATA } from './i18n-tr-data.js';
 import { EYE } from './i18n-tr-eye.js';
+import { GRAVITY } from './i18n-tr-gravity.js';
 
 const KEY = 'astro.lang';
 const exact = new Map();
@@ -33,6 +34,7 @@ export function load(raw) {
     }
   }
 }
+load(GRAVITY); // first, so an existing translation of the same English wins
 load(EYE);
 load(DATA); // data patterns are the more specific ones, so they go first
 load(UI);

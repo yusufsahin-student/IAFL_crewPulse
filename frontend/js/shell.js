@@ -1,7 +1,7 @@
 // Shared page shell: header, navigation, crew selector, helpers.
 // Usage: const { config, astronauts, astronautId } = await initShell({ page: 'home' });
 import { api } from './api.js';
-import { initI18n } from './i18n.js';
+import { initI18n, currentLang } from './i18n.js';
 
 const PAGES = [
   { id: 'home', href: 'index.html', label: 'Home' },
@@ -81,16 +81,19 @@ export function formatValue(value, decimals = 0) {
   return Number(value).toFixed(decimals);
 }
 
+// Dates follow the app language, not the browser language.
+export const dateLocale = () => (currentLang() === 'tr' ? 'tr-TR' : 'en-GB');
+
 export function formatDate(iso) {
   if (!iso) return '–';
   const d = new Date(iso);
-  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short' });
 }
 
 export function formatDateTime(iso) {
   if (!iso) return '–';
   const d = new Date(iso);
-  return d.toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString(dateLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
 export function showError(container, err) {
@@ -106,7 +109,7 @@ let cache = null;
 export async function initShell({ page }) {
   const header = document.getElementById('app-header');
   const current = PAGES.find((p) => p.id === page);
-  if (current) document.title = `${current.label} · Astronaut Health & Recommendations`;
+  if (current) document.title = `${current.label} · CrewPulse`;
 
   const nav = el('nav', { class: 'app-nav', 'aria-label': 'Main' },
     PAGES.map((p) => el('a', { href: p.href, 'aria-current': p.id === page ? 'page' : null }, p.label)));
@@ -114,7 +117,7 @@ export async function initShell({ page }) {
   if (header) {
     header.className = 'app-header';
     header.replaceChildren(el('div', { class: 'app-header__inner' },
-      el('a', { class: 'app-title', href: 'index.html' }, 'Astronaut Health & Recommendations'),
+      el('a', { class: 'app-title', href: 'index.html' }, 'CrewPulse'),
       nav, crewSlot));
   }
   initI18n(crewSlot);

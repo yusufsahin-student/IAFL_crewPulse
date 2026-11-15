@@ -400,12 +400,12 @@ function solarEventsStrip(events) {
   }
   const groups = groupSolarEvents(events);
   return el('details', { class: 'solar-strip', role: 'region', 'aria-label': 'Solar events on this timeline' },
-    el('summary', {}, `Güneş olayları: ${events.length} kayıt · ${groups.length} görev günü — ayrıntıları göster`),
+    el('summary', {}, `Solar events: ${events.length} records · ${groups.length} mission days — show details`),
     el('div', { class: 'solar-strip__head' },
       el('strong', {}, `Solar events in this period (${events.length})`),
       el('span', { class: 'muted' }, 'Select an event to jump the timeline cursor to that mission day.')),
     el('div', { class: 'solar-strip__groups' }, groups.map((group) => el('details', { class: 'solar-day-group' },
-      el('summary', {}, `Görev günü ${group.day} · ${group.events.length} olay${group.dose_relevant ? ' · dozla ilişkili olay var' : ''}`),
+      el('summary', {}, `Mission day ${group.day} · ${group.events.length} ${group.events.length === 1 ? 'event' : 'events'}${group.dose_relevant ? ' · includes a dose-relevant event' : ''}`),
       el('div', { class: 'solar-strip__list' }, group.events.map((ev) => el('button', {
       type: 'button',
       class: 'solar-chip',
@@ -484,7 +484,7 @@ function indicatorPanel() {
         svg('circle', { cx: 6, cy: 6, r: 3.5, class: 'trend-point' })), 'Check-in'),
       el('li', {}, svg('svg', { viewBox: '0 0 12 12', width: 12, height: 12, 'aria-hidden': 'true' },
         svg('path', { d: diamond(6, 6, 5), class: 'key-diamond' })), 'Unusual for you'),
-      el('li', {}, el('span', { class: 'key-solar' }), 'Nokta: o gün güneş olayı var · gölge: dozla ilişkili olay süresi')),
+      el('li', {}, el('span', { class: 'key-solar' }), 'Dot: a solar event that day · shading: duration of a dose-relevant event')),
     solarEventsStrip(events),
     el('div', { class: 'range-row' },
       el('label', { for: 'day-range' }, 'Check-in'),

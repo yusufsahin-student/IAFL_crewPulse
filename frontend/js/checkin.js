@@ -72,8 +72,12 @@ async function boot() {
     build();
   });
   const seq = ++configSeq;
-  const nextCfg = await loadAstronautConfig(astronautId);
-  if (seq === configSeq) config = nextCfg;
+  try {
+    const nextCfg = await loadAstronautConfig(astronautId);
+    if (seq === configSeq) config = nextCfg;
+  } catch {
+    // Personal ranges could not load: keep the general config from initShell so the form still opens.
+  }
   build();
 }
 
@@ -126,7 +130,7 @@ function build() {
       reasons.length
         ? el('div', {}, el('h3', {}, 'Top reasons'), el('ul', { class: 'list' }, reasons.map((r) => el('li', {}, r))))
         : el('p', { class: 'muted' }, 'Nothing needs attention right now.'),
-      alertLevel ? null : el('p', {}, el('strong', {}, 'Next step: '), s.triage.headline),
+      alertLevel ? '' : el('p', {}, el('strong', {}, 'Next step: '), s.triage.headline), // '' not null: replaceChildren prints null as text
       el('p', {}, el('a', { class: 'btn btn--primary', href: 'index.html' }, 'Back to home')),
     );
     form.hidden = true;
@@ -183,14 +187,19 @@ function build() {
       try {
         await localRecord(localKey, {pending, readings, notes:data.notes});
       } catch {
-        recovery.textContent = 'Yerel taslak saklanamadı; kayıt yine de sağlık sunucusuna gönderilecek.';
+        recovery.textContent = 'The local draft could not be stored; the record will still be sent to the health server.';
       }
       const res = await api.submitCheckin(pending.payload);
+      clearTimeout(draftTimer); // a pending draft save must not bring back the submitted record
       try { await localRecord(localKey, null); } catch { /* submission already succeeded */ }
       showResult(res);
     } catch (err) {
       const f = err.field ? byId.get(err.field) : null;
       if (f) {
+        // In step-by-step mode the field may be hidden: go to its step, as for a browser-side error.
+        formError.replaceChildren(errorBox(err.message));
+        currentField = fields.indexOf(f);
+        showField();
         setError(f, err.message);
         f.focus();
       } else {
@@ -211,40 +220,42 @@ function build() {
   );
 
   const progress = el('p',{class:'eyebrow',role:'status'});
-  const previous = el('button',{type:'button',class:'btn',onclick:()=>{currentField=Math.max(0,currentField-1);showField();}},'← Önceki');
+  const previous = el('button',{type:'button',class:'btn',onclick:()=>{currentField=Math.max(0,currentField-1);showField();}},'← Previous');
   const next = el('button',{type:'button',class:'btn btn--primary',onclick:()=>{
     const f=fields[currentField];const error=validate(f);setError(f,error);if(error){f.focus();return;}
     currentField=Math.min(fields.length-1,currentField+1);showField();
-  }},'Sonraki ölçüm →');
-  const overview = el('button',{type:'button',class:'btn',onclick:()=>{focused=!focused;showField();}},'Tümünü göster');
+  }},'Next measurement →');
+  const overview = el('button',{type:'button',class:'btn',onclick:()=>{focused=!focused;showField();}},'Show all');
   const wizard=el('div',{class:'lab-footer'},previous,overview,next);
   form.prepend(progress);form.append(wizard);
   function showField(){
     form.classList.toggle("focused-form",focused);
     for(const stop of cleanups)stop();
     fields.forEach((f,i)=>f.wrap.hidden=focused&&i!==currentField);
-    progress.textContent=focused?`ÖLÇÜM ${currentField+1} / ${fields.length} · ${fields[currentField].ind.required?'GEREKLİ':'İSTEĞE BAĞLI'}`:'TÜM ÖLÇÜMLER';
+    progress.textContent=focused?`MEASUREMENT ${currentField+1} / ${fields.length} · ${fields[currentField].ind.required?'REQUIRED':'OPTIONAL'}`:'ALL MEASUREMENTS';
     previous.hidden=!focused||currentField===0;next.hidden=!focused||currentField===fields.length-1;
-    overview.textContent=focused?'Tümünü göster':'Adım adım ilerle';
+    overview.textContent=focused?'Show all':'Continue step by step';
     submit.hidden=focused&&currentField!==fields.length-1;
     notes.parentElement.hidden=focused&&currentField!==fields.length-1;
   }
   showField();
-  const recovery = el('p', {class:'trust-note', role:'status'}, 'Taslak bu tarayıcıda saklanır. Bağlantı kesilirse aynı kaydı tekrar gönderebilirsin.');
+  const recovery = el('p', {class:'trust-note', role:'status'}, 'The draft is stored in this browser. If the connection drops, you can submit the same record again.');
   form.prepend(recovery);
   let draftTimer;
-  form.addEventListener('input', () => {
+  const saveDraft = () => {
     clearTimeout(draftTimer);
-    draftTimer=setTimeout(()=>localRecord(localKey,{pending,readings:fields.filter(f=>f.read()!==null).map(f=>({indicator_id:f.ind.id,value:f.read(),method:f.method})),notes:notes.value}).catch(()=>{recovery.textContent='Taslak saklanamadı. Tarayıcı depolamasını kontrol et.';}),250);
-  });
+    draftTimer=setTimeout(()=>localRecord(localKey,{pending,readings:fields.filter(f=>f.read()!==null).map(f=>({indicator_id:f.ind.id,value:f.read(),method:f.method})),notes:notes.value}).catch(()=>{recovery.textContent='The draft could not be stored. Check browser storage.';}),250);
+  };
+  form.addEventListener('input', saveDraft);
+  form.addEventListener('draftchange', saveDraft);
   localRecord(localKey).then(draft=>{
     if(!draft)return;pending=draft.pending;
     const restore=el('button',{type:'button',class:'btn',onclick:()=>{
       for(const r of draft.readings||[]){const f=byId.get(r.indicator_id);if(!f)continue;if(f.setValue)f.setValue(r.value,r.method);else for(const i of f.inputs)i.checked=Number(i.value)===r.value;}
-      notes.value=draft.notes||'';recovery.textContent='Önceki taslak geri yüklendi. İncele ve gönder.';
-    }},'Önceki taslağı geri yükle');
-    recovery.replaceChildren('Bu kişiye ait bir taslak var. ',restore);
-  }).catch(()=>{recovery.textContent='Yerel taslak deposuna erişilemiyor.';});
+      notes.value=draft.notes||'';recovery.textContent='The previous draft was restored. Review and submit it.';
+    }},'Restore previous draft');
+    recovery.replaceChildren('There is a draft for this person. ',restore);
+  }).catch(()=>{recovery.textContent='Local draft storage is unavailable.';});
 
   root.replaceChildren(
     el('div', { class: 'page-head' },
@@ -323,6 +334,9 @@ function buildField(ind) {
     input.value = String(v);
     f.method = method;
     setError(f, null);
+    // Tools (pulse counter, reaction and eye tests) set the value in code, which fires no input event,
+    // so tell the form to save the draft. Not 'input': that would reset the method to manual.
+    input.dispatchEvent(new CustomEvent('draftchange', { bubbles: true }));
   };
   input.addEventListener('input', () => {
     f.method = 'manual';

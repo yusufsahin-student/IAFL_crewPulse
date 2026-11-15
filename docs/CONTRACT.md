@@ -1,11 +1,11 @@
-# Astronaut Health & Recommendations — build contract
+# CrewPulse — build contract
 
 Every part of the app is built against this file. If something here is unclear, choose the simplest reading, keep to it, and note it in your report. Never change another part's files.
 
 ## 1. Layout and ownership
 
 ```
-astro-health/
+crewpulse/ (repository root)
   db/schema.sql            SQLite schema (owner: lead, read-only for everyone)
   db/astro.db              created by tools/seed.py (never committed)
   data/seed/*.json         reference data, one file per table (Agent 1)
@@ -25,7 +25,7 @@ astro-health/
 
 Runtimes: Python 3.10–3.12 standard library only except TensorFlow + NumPy in `ml/`. Rust stable. Frontend: plain HTML, CSS, JavaScript ES modules, no libraries, no CDN, no build step, works offline.
 
-Paths: every program takes the database path from env `ASTRO_DB`, default `db/astro.db` relative to the `astro-health/` folder. Run everything from `astro-health/`.
+Paths: every program takes the database path from env `ASTRO_DB`, default `db/astro.db` relative to the repository root. Run everything from the repository root.
 
 ## 2. Data rules
 
@@ -80,7 +80,7 @@ Paths: every program takes the database path from env `ASTRO_DB`, default `db/as
 - Features: indicators with `ml_feature = 1`.
 - Baseline for check-in C: the astronaut's previous `ml.baseline_n`(=20) check-ins before C.
 - If fewer than `ml.min_history`(=7) baseline check-ins: `method='insufficient_history'`, `anomaly_score=0`, `is_anomaly=0`, contributors `[]`.
-- Per feature present in C and in >= 3 baseline check-ins: `mean`, `sd` (population), `sd = max(sd, ml.sd_floor_frac(=0.02)*abs(mean), 1e-6)`, `z = (value-mean)/sd`.
+- Per feature present in C and in >= 3 baseline check-ins: `mean`, `sd` (population), `sd = max(sd, ml.sd_floor_frac(=0.05)*abs(mean), 1e-6)`, `z = (value-mean)/sd`.
 - `anomaly_score = clamp(max(|z|) / (2*ml.z_alert(=3)), 0, 1)`; `is_anomaly = anomaly_score > 0.5`.
 - `contributors`: top 3 by |z| where |z| >= 1: `{"indicator_id","z","value","baseline_mean","baseline_sd"}` (numbers rounded to 3 decimals).
 
@@ -132,7 +132,7 @@ The backend also serves `frontend/` as static files at `/` (index.html default).
 | `GET /api/config` | `{missions:[...], body_regions:[...], indicators:[...], bone_sites:[...], sources:[...], params:{key:value}}` — rows as in the schema; when `?astronaut_id=` is passed, `indicators[].normal_low..critical_high` reflect that astronaut's effective range (including personalized `kcal_intake` and `grip_strength` limits); `indicators[].scale_labels` parsed to an array or null; lists sorted by `display_order`. |
 | `GET /api/astronauts` | `[{id,name,role,sex,birth_year,height_cm,preflight_mass_kg,mission_id,mission_start,mission_day,avatar_color,latest_score,latest_band}]` |
 | `GET /api/astronauts/{id}/status?mission=mars` | Status object, 5.1. `mission` is optional and only changes `mission`, `triage` (what-if for the distance slider). |
-| `POST /api/checkins` | Body `{"astronaut_id":1,"readings":[{"indicator_id":"heart_rate","value":72,"method":"manual"}],"notes":""}`. Validates ids, `min_plausible..max_plausible`, required indicators. Inserts check-in (now, mission day), readings, then anomaly score (5.3). Returns 201 `{"checkin_id":123,"status":<5.1>}`. |
+| `POST /api/checkins` | Body `{"astronaut_id":1,"readings":[{"indicator_id":"heart_rate","value":72,"method":"manual"}],"notes":""}`. Validates ids, `min_plausible..max_plausible`, required indicators. Inserts check-in (now, mission day), readings, then anomaly score (5.3). Returns 201 `{"checkin_id":123,"status":<5.1>}`; `status` always describes that check-in (also when two saves race or the same `client_submission_id` is sent again). |
 | `GET /api/astronauts/{id}/history?days=60` | `{"indicators":["heart_rate",...],"points":[{"checkin_id","taken_at","mission_day","values":{"heart_rate":72,...},"anomaly_score":0.12,"is_anomaly":false,"score":84}]}` oldest first. `score` = vitals-only health score of that check-in (4.1 vitals part), to keep history cheap. |
 | `GET /api/astronauts/{id}/bone?days_ahead=180` | `{"mission_day","months","gravity_factor","exercise_avg_min","exercise_factor","note":"Projection from published loss rates, not a scan.","sites":[{"bone_site_id","name","body_region_id","loss_pct_per_month","baseline_bmd","current_bmd","loss_pct","status","projected":[{"mission_day","bmd","loss_pct"}]}]}` |
 | `GET /api/radiation?astronaut_id=1&mission=iss` | `{"mission_id","zones":[{zone row..., "background_msv_per_day","event_msv_per_h"}],"active_event":<event>\|null,"events":[last 30 days, newest first],"astronaut":{"mission_dose_msv","today_msv","limit_msv","pct_of_limit","daily":[{"day","msv"}] last 30 days},"recommended_zone_id","note":"Estimate from a simplified shielding model."}`. `mission` defaults to the astronaut's mission; `astronaut` is null without `astronaut_id`. |

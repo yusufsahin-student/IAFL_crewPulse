@@ -19,11 +19,11 @@
   </g>
   <g data-step="2">
     <rect class="m-device" x="176" y="40" width="136" height="120" rx="8"/>
-    <text class="m-label" x="190" y="62">1  None</text>
-    <text class="m-label" x="190" y="84">2  Mild</text>
-    <text class="m-label" x="190" y="106">3  Moderate</text>
-    <text class="m-label" x="190" y="128">4  Severe</text>
-    <text class="m-label" x="190" y="150">5  Very severe</text>
+    <text class="m-label" x="190" y="62">1 · None</text>
+    <text class="m-label" x="190" y="84">2 · Mild</text>
+    <text class="m-label" x="190" y="106">3 · Moderate</text>
+    <text class="m-label" x="190" y="128">4 · Severe</text>
+    <text class="m-label" x="190" y="150">5 · Very severe</text>
     <circle class="m-marker" cx="160" cy="106" r="11"/>
     <text class="m-num" x="160" y="106">2</text>
   </g>

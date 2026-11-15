@@ -791,7 +791,7 @@
       "gcr_msv_per_day": 1.8,
       "gravity_g": 0.0,
       "id": "mars",
-      "name": "Mars mission",
+      "name": "Mars transit",
       "sep_exposure_factor": 1.0,
       "source_ref": "zeitlin2013"
     }

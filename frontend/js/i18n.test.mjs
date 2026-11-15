@@ -56,3 +56,16 @@ for (const f of files) {
 if (process.argv.includes('--list')) console.log([...missing].join('\n'));
 console.log(`i18n: unit tests passed; ${missing.size} data sentences without Turkish${missing.size ? ' (run with --list)' : ''}`);
 assert.equal(missing.size, 0, 'untranslated data text');
+
+// Page code must stay English; Turkish lives only in the i18n-tr*.js dictionaries.
+// Turkish source text shows up untranslated in English mode, so fail on any Turkish letter outside comments.
+const jsDir = new URL('./', import.meta.url);
+const turkish = [];
+const pages = fs.readdirSync(new URL('../', jsDir)).filter((n) => n.endsWith('.html')).map((n) => `../${n}`);
+for (const name of [...fs.readdirSync(jsDir), ...pages]) {
+  if (!/\.(js|html)$/.test(name) || name.startsWith('i18n')) continue;
+  fs.readFileSync(new URL(name, jsDir), 'utf8').split('\n').forEach((line, i) => {
+    if (!line.trim().startsWith('//') && /[ğĞıİşŞçÇöÖüÜ]/.test(line)) turkish.push(`${name}:${i + 1}`);
+  });
+}
+assert.deepEqual(turkish, [], 'Turkish text in page code');

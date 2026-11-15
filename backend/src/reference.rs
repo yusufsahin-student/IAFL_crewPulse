@@ -11,7 +11,15 @@ use crate::db::{self, first_row, lock, num, qint, query_rows, sval, text, AppSta
 use crate::errors::AppError;
 
 pub async fn health(State(st): State<AppState>) -> Json<Value> {
-    Json(json!({ "ok": true, "model": st.model, "db": st.db_path }))
+    // tools/seed.py records seed_today in meta: the crew history in this database is simulated.
+    let simulated = lock(&st)
+        .ok()
+        .and_then(|conn| {
+            first_row(&conn, "SELECT value FROM meta WHERE key = 'seed_today'", params![]).ok().flatten()
+        })
+        .is_some();
+    let data = if simulated { "simulated" } else { "recorded" };
+    Json(json!({ "ok": true, "model": st.model, "data": data })) // no file paths: the server may be public
 }
 
 fn environment_freshness(reading: Option<&Row>, max_age_h: f64, now_secs: i64) -> Value {

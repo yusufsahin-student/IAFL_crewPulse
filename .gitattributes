@@ -1,0 +1,2 @@
+# The container start script must keep Unix line endings, also when committed from Windows.
+*.sh text eol=lf

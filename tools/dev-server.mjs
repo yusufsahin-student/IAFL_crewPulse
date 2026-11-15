@@ -1,5 +1,5 @@
 // Frontend dev server with a mock API (docs/CONTRACT.md section 8).
-// Run from astro-health/:  node tools/dev-server.mjs   ->  http://127.0.0.1:5173
+// Run from the repository root:  node tools/dev-server.mjs   ->  http://127.0.0.1:5173
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';

@@ -4,7 +4,7 @@ The model learns each astronaut's own baseline and flags check-ins that drift fr
 
 Requires at least 7 earlier check-ins per astronaut. Earlier check-ins are scored `insufficient_history`.
 
-- Train and score everything (by hand, from `astro-health/`): `python ml/train.py [--db PATH]`
+- Train and score everything (by hand, from the repository root): `python ml/train.py [--db PATH]`
 - Score one check-in (the backend does this after each insert): `python ml/score.py --db PATH --checkin ID`
 - Score everything with the current model or fallback: `python ml/score.py --db PATH --all`
 - Setup: `pip install -r ml/requirements.txt` (TensorFlow and NumPy are needed only for training and the autoencoder; the fallback needs neither).

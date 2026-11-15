@@ -10,7 +10,7 @@ import os
 import sqlite3
 from datetime import datetime, timezone
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # astro-health/
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repository root
 DEFAULT_DB = os.path.join(ROOT, "db", "astro.db")
 MODEL_DIR = os.path.join(ROOT, "ml", "model")
 
@@ -18,7 +18,7 @@ MODEL_DIR = os.path.join(ROOT, "ml", "model")
 DEFAULT_PARAMS = {
     "ml.baseline_n": 20.0,
     "ml.min_history": 7.0,
-    "ml.sd_floor_frac": 0.02,
+    "ml.sd_floor_frac": 0.05,
     "ml.z_alert": 3.0,
 }
 MIN_BASELINE_VALUES = 3   # a feature needs this many baseline values (contract 4.2)
@@ -211,7 +211,7 @@ def _selftest():
     ok, zs = checkin_inputs(hist, 10, ["hr"], params)
     assert ok and abs(zs["hr"]["baseline_mean"] - 60.9) < 1e-9
     assert zs["hr"]["value"] == 90.0
-    assert abs(zs["hr"]["baseline_sd"] - 0.02 * 60.9) < 1e-9  # sd floor applies here
+    assert abs(zs["hr"]["baseline_sd"] - params["ml.sd_floor_frac"] * 60.9) < 1e-9  # sd floor applies here
     assert checkin_inputs(hist, 3, ["hr"], params)[0] is False  # only 3 earlier check-ins
     row = zscore_row(10, ok, zs, params)
     assert row["method"] == "zscore_fallback" and row["is_anomaly"] == 1

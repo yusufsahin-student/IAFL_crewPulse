@@ -1,6 +1,6 @@
 // Radiation page: storm status, habitat zone map, estimated crew dose, solar events.
 // Data: api.radiation (docs/CONTRACT.md section 5). Doses are estimates from a simplified model (section 4.4).
-import { initShell, el, showError, formatValue, formatDateTime, missionById, masterAlert, statusBadge } from './shell.js';
+import { initShell, el, showError, formatValue, formatDateTime, missionById, masterAlert, statusBadge, dateLocale } from './shell.js';
 import { api } from './api.js';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -72,7 +72,7 @@ function isStormDay(day, events) {
 }
 
 function shortDate(day) {
-  return new Date(`${day}T00:00:00Z`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  return new Date(`${day}T00:00:00Z`).toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', timeZone: 'UTC' });
 }
 
 // Tick values with round steps (1, 2, 2.5, 5 x 10^n).
@@ -143,7 +143,9 @@ function zoneDetails(z) {
     el('dl', { class: 'facts' },
       fact('Shielding', `${fmt(z.shielding_g_cm2, 1)} g/cm²`),
       fact('Background (estimated)', `${fmt(z.background_msv_per_day, 2)} mSv/day`),
-      fact('During a solar particle event (estimated)', `${fmt(z.event_msv_per_h, 2)} mSv/h`)),
+      // event_msv_per_h is the rate for the active event only, so it is 0 when no event is running.
+      fact('Solar particle dose rate now (estimated)', Number(z.event_msv_per_h) > 0
+        ? `${fmt(z.event_msv_per_h, 2)} mSv/h` : `${fmt(0, 2)} mSv/h · no active event`)),
     z.is_shelter ? el('p', { class: 'muted' }, 'Shelter: the most-shielded area. It is the recommended place during a solar particle event.') : null,
     el('details', { class: 'more' },
       el('summary', {}, 'Show description and typical hours'),

@@ -171,7 +171,7 @@ const DEFAULTS: &[(&str, f64)] = &[
     ("score.w_radiation", 0.15),
     ("ml.baseline_n", 20.0),
     ("ml.min_history", 7.0),
-    ("ml.sd_floor_frac", 0.02),
+    ("ml.sd_floor_frac", 0.05),
     ("ml.z_alert", 3.0),
     ("bone.exercise_window_days", 7.0),
     ("bone.exercise_max_reduction", 0.5),

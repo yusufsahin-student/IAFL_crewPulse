@@ -2,6 +2,7 @@ import { api } from './api.js';
 import { el, formatDate, formatValue, initShell, showError } from './shell.js';
 import { gravityPoints, seriesDomain, transitionPoints } from './gravity-chart.js';
 import { responsiveChartHeight } from './trend-data.js';
+import { gravityInsights } from './gravity-insights.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const root = document.getElementById('gravity-root');
@@ -11,58 +12,58 @@ let windowDays = 60;
 let seq = 0;
 
 const healthFields = [
-  ['heart_rate', 'Nabız'], ['spo2', 'Oksijen'], ['sleep_hours', 'Uyku'],
-  ['exercise_minutes', 'Aktivite'], ['grip_strength', 'Kavrama gücü'], ['balance_symptoms', 'Denge ve baş dönmesi'],
+  ['heart_rate', 'Pulse'], ['spo2', 'Oxygen'], ['sleep_hours', 'Sleep'],
+  ['exercise_minutes', 'Activity'], ['grip_strength', 'Grip strength'], ['balance_symptoms', 'Balance and dizziness'],
 ];
 
 function healthSection(status, history, bone) {
-  const section = el('section', { class: 'panel' }, el('div', { class: 'eyebrow' }, 'ASTRONOT SAĞLIĞI'), el('h2', {}, 'Yerçekimi bağlamında sağlık göstergeleri'));
-  if (!status) { section.append(el('p', { class: 'state' }, 'Sağlık verileri alınamadı. Daha sonra tekrar deneyin.')); return section; }
+  const section = el('section', { class: 'panel' }, el('div', { class: 'eyebrow' }, 'ASTRONAUT HEALTH'), el('h2', {}, 'Health indicators in gravity context'));
+  if (!status) { section.append(el('p', { class: 'state' }, 'Health data could not be loaded. Try again later.')); return section; }
   const matching = status.mission?.id === missionId;
   section.append(el('p', { class: 'muted' }, matching
-    ? 'Aşağıdaki ölçümler bu astronotun görevine aittir. Birlikte gösterilmeleri yerçekiminin ölçümlere neden olduğunu kanıtlamaz.'
-    : 'Seçilen yerçekimi profili astronotun kayıtlı görevinden farklıdır. Sağlık ölçümleri karşılaştırma amacıyla kendi görevinden gösterilir; seçilen profile aktarılmaz.'));
+    ? "The readings below belong to this astronaut's mission. Showing them together does not prove that gravity causes them."
+    : "The selected gravity profile differs from the astronaut's recorded mission. Health readings come from the astronaut's own mission for comparison; they are not transferred to the selected profile."));
   const freshness = status.freshness;
-  section.append(el('p', { class: 'gravity-health-freshness' }, freshness?.state === 'current' ? 'Sağlık kontrolü güncel.' : 'Sağlık kontrolü güncel değil; yeni ölçüm alın.', freshness?.age_hours != null ? ` Son kontrol ${formatValue(freshness.age_hours, 1)} saat önce.` : ''));
+  section.append(el('p', { class: 'gravity-health-freshness' }, freshness?.state === 'current' ? 'Health check-in is current.' : 'Health check-in is out of date; take a new reading.', freshness?.age_hours != null ? ` Last check-in ${formatValue(freshness.age_hours, 1)} h ago.` : ''));
   const cards = healthFields.map(([id, label]) => {
     const row = (status.indicators || []).find((item) => item.indicator_id === id);
     const samples = (history?.points || []).filter((point) => point.values?.[id] != null && Number.isFinite(Number(point.values[id]))).sort((a,b) => String(a.taken_at).localeCompare(String(b.taken_at)));
     const first = samples[0]; const last = samples.at(-1);
     const change = samples.length > 1 ? Number(last.values[id]) - Number(first.values[id]) : null;
-    const text = change === null ? 'Karşılaştırma için yeterli geçmiş yok' : `${samples.length} kayıt · ilk ${formatValue(first.values[id], 1)} → son ${formatValue(last.values[id], 1)} ${row?.unit || ''}`;
-    const states = {normal:'Normal',watch:'Dikkat',alert:'Uyarı',missing:'Veri yok'};
+    const text = change === null ? 'Not enough history for comparison' : `${samples.length} records · first ${formatValue(first.values[id], 1)} → last ${formatValue(last.values[id], 1)} ${row?.unit || ''}`;
+    const states = {normal:'Normal',watch:'Caution',alert:'Warning',missing:'No data'};
     return el('article', { class: 'gravity-health-card' }, el('span', { class: 'eyebrow' }, label),
       el('strong', {}, row?.value == null ? '—' : `${formatValue(row.value, row.decimals || 0)} ${row.unit || ''}`),
-      el('span', { class: 'gravity-health-state', 'data-status': row?.status || 'missing' }, states[row?.status] || 'Veri yok'), el('small', {}, text));
+      el('span', { class: 'gravity-health-state', 'data-status': row?.status || 'missing' }, states[row?.status] || 'No data'), el('small', {}, text));
   });
   section.append(el('div', { class: 'gravity-health-grid' }, cards));
-  const boneCard = el('article', { class: 'gravity-loss-card' }, el('div', { class: 'eyebrow' }, 'KEMİK KAYBI'), el('h3', {}, 'Bölgelere göre kemik tahmini'));
+  const boneCard = el('article', { class: 'gravity-loss-card' }, el('div', { class: 'eyebrow' }, 'BONE LOSS'), el('h3', {}, 'Bone projection by site'));
   const sites = matching && bone?.sites ? bone.sites.filter((site) => site.loss_pct != null && Number.isFinite(Number(site.loss_pct))) : [];
   if (sites.length) {
-    const names = {lumbar_spine:'Bel omurgası',femoral_neck:'Uyluk boynu',trochanter:'Kalça (trokanter)',pelvis:'Pelvis',calcaneus:'Topuk kemiği'};
-    boneCard.append(el('p', { class: 'muted' }, 'Görev süresince modellenen kayıp; kemik taraması veya doğrudan ölçüm değildir.'),
+    const names = {lumbar_spine:'Lumbar spine',femoral_neck:'Femoral neck',trochanter:'Hip (trochanter)',pelvis:'Pelvis',calcaneus:'Heel bone (calcaneus)'};
+    boneCard.append(el('p', { class: 'muted' }, 'Modeled loss over the mission; not a bone scan or a direct measurement.'),
       el('div', { class: 'gravity-loss-list' }, sites.map((site) => {
         const highest = Math.max(...sites.map((item) => Math.max(0, Number(item.loss_pct))), 0.01);
         const width = Math.max(0, Math.min(100, Number(site.loss_pct) / highest * 100));
         return el('div', { class: 'gravity-loss-item' }, el('div', { class: 'gravity-loss-row' },
-          el('span', {}, names[site.bone_site_id] || site.name), el('strong', {}, `%${formatValue(site.loss_pct, 1)}`)),
+          el('span', {}, names[site.bone_site_id] || site.name), el('strong', {}, `${formatValue(site.loss_pct, 1)}%`)),
           el('div', { class: 'gravity-loss-track', 'aria-hidden': 'true' }, el('span', { style: `width:${width}%` })));
       })));
-    boneCard.append(el('small', { class: 'muted' }, 'Çubuk uzunlukları bu listedeki en yüksek değere göre karşılaştırmalıdır.'));
-  } else boneCard.append(el('p', { class: 'state' }, matching ? 'Kemik tahmini şu anda bulunmuyor.' : 'Kemik tahmini astronotun kendi görev profilinde gösterilir.'));
+    boneCard.append(el('small', { class: 'muted' }, 'Bar lengths are relative to the highest value in this list.'));
+  } else boneCard.append(el('p', { class: 'state' }, matching ? 'No bone projection is available right now.' : "The bone projection is shown on the astronaut's own mission profile."));
   const grip = (status.indicators || []).find((item) => item.indicator_id === 'grip_strength');
-  const muscleCard = el('article', { class: 'gravity-loss-card' }, el('div', { class: 'eyebrow' }, 'KAS SAĞLIĞI'), el('h3', {}, 'Kas kaybı ve kuvvet takibi'),
-    el('p', { class: 'gravity-loss-unavailable' }, 'Kas kütlesi kaybı: ölçüm mevcut değil'),
-    el('p', { class: 'muted' }, 'Kavrama gücü kas kuvvetiyle ilgili bir göstergedir; kas kütlesi kaybı yüzdesi olarak yorumlanamaz.'));
+  const muscleCard = el('article', { class: 'gravity-loss-card' }, el('div', { class: 'eyebrow' }, 'MUSCLE HEALTH'), el('h3', {}, 'Muscle loss and strength tracking'),
+    el('p', { class: 'gravity-loss-unavailable' }, 'Muscle mass loss: no measurement available'),
+    el('p', { class: 'muted' }, 'Grip strength indicates muscle strength; it cannot be read as a muscle mass loss percentage.'));
   if (grip?.value != null && Number.isFinite(Number(grip.value))) {
-    muscleCard.append(el('p', {}, 'Son kavrama gücü: ', el('strong', {}, `${formatValue(grip.value, 1)} kg`)));
+    muscleCard.append(el('p', {}, 'Latest grip strength: ', el('strong', {}, `${formatValue(grip.value, 1)} kg`)));
     if (grip.baseline_mean != null && Number.isFinite(Number(grip.baseline_mean)) && Number(grip.baseline_mean) > 0) {
       const diff = (Number(grip.value) / Number(grip.baseline_mean) - 1) * 100;
-      muscleCard.append(el('p', {}, `Kişisel referans ortalaması ${formatValue(grip.baseline_mean, 1)} kg · kuvvet değişimi ${diff >= 0 ? '+' : '−'}%${formatValue(Math.abs(diff), 1)}`));
+      muscleCard.append(el('p', {}, `Personal reference mean ${formatValue(grip.baseline_mean, 1)} kg · strength change ${diff >= 0 ? '+' : '−'}${formatValue(Math.abs(diff), 1)}%`));
     }
-  } else muscleCard.append(el('p', { class: 'state' }, 'Kavrama gücü ölçümü bulunmuyor.'));
+  } else muscleCard.append(el('p', { class: 'state' }, 'No grip strength reading.'));
   section.append(el('div', { class: 'gravity-loss-grid' }, boneCard, muscleCard));
-  section.append(el('a', { class: 'btn', href: 'trends.html' }, 'Sağlık eğilimlerini ayrıntılı incele →'));
+  section.append(el('a', { class: 'btn', href: 'trends.html' }, 'Review health trends in detail →'));
   return section;
 }
 
@@ -116,7 +117,7 @@ function chart(readings, kind, label) {
     );
     wrap.replaceChildren(graph);
   };
-  if (!points.length) return el('p', { class: 'state' }, 'Bu zaman aralığında yerçekimi kaydı yok. Daha uzun bir aralık seçin.');
+  if (!points.length) return el('p', { class: 'state' }, 'No gravity record in this time window. Choose a longer window.');
   new ResizeObserver(draw).observe(wrap);
   requestAnimationFrame(draw);
   return wrap;
@@ -139,19 +140,26 @@ function render(data, status, history, bone) {
   const transitions = transitionPoints(gravityPoints(data.readings));
   const picker = el('select', { class: 'input', 'aria-label': 'Mission gravity profile', onchange: (event) => { missionId = event.target.value; load(); } },
     ctx.config.missions.map((mission) => el('option', { value: mission.id, selected: mission.id === missionId }, `${mission.name} · ${formatValue(mission.gravity_g, 3)} g`)));
-  const period = el('select', { class: 'input', 'aria-label': 'Gösterilecek zaman aralığı', onchange: (event) => { windowDays = Number(event.target.value); load(); } },
-    [7, 30, 60, 180].map((days) => el('option', { value: days, selected: days === windowDays }, `Son ${days} gün`)));
+  const period = el('select', { class: 'input', 'aria-label': 'Time window to show', onchange: (event) => { windowDays = Number(event.target.value); load(); } },
+    [7, 30, 60, 180].map((days) => el('option', { value: days, selected: days === windowDays }, `Last ${days} days`)));
   const sources = [...new Set((data.readings || []).map((reading) => reading.source).filter(Boolean))];
-  const sourceText = sources.length ? sources.map((source) => source.includes('sim') ? 'Simülasyon / görev profili' : source).join(', ') : 'Kayıt yok; görev profili kullanılıyor';
+  const sourceText = sources.length ? sources.map((source) => source.includes('sim') ? 'Simulation / mission profile' : source).join(', ') : 'No records; using the mission profile';
   const areas = (assessment.analysis_areas || []).map((area) => area.replaceAll('_', ' '));
   root.replaceChildren(el('div', { class: 'gravity-stack' },
     el('div', { class: 'page-head' }, el('h1', {}, 'Gravital Tracking'),
       el('p', {}, 'Follow local gravity, mechanical unloading and gravity-field transitions. Calculations are transparent decision support, not clinical probabilities.')),
-    el('section', { class: 'panel gravity-picker' }, el('div', { class: 'field' }, el('label', {}, 'Görev profili'), picker), el('div', { class: 'field' }, el('label', {}, 'Zaman aralığı'), period),
+    el('section', { class: 'panel gravity-picker' }, el('div', { class: 'field' }, el('label', {}, 'Mission profile'), picker), el('div', { class: 'field' }, el('label', {}, 'Time window'), period),
       el('p', { class: 'muted' }, assessment.interpretation)),
-    el('section', { class: 'panel gravity-overview' }, el('div', {}, el('span', { class: 'eyebrow' }, 'GÖREV BAĞLAMI'), el('h2', {}, `${formatValue(assessment.current_g, 3)} g`), el('p', {}, 'Yerel yerçekimi · Dünya = 1 g')), el('div', {}, el('span', { class: 'eyebrow' }, 'VERİ KAPSAMI'), el('h2', {}, `${data.readings.length} kayıt`), el('p', {}, `Kaynak: ${sourceText}`)), el('div', {}, el('span', { class: 'eyebrow' }, 'ANALİZE ETKİSİ'), el('p', {}, 'Kemik tahminine günlük yerçekimi geçmişi, aktivite önerilerine güncel görev bağlamı eklenir.'), el('a', { class: 'btn', href: 'activity.html' }, 'Aktiviteler ve öneriler →'))),
+    el('section', { class: 'panel gravity-overview' }, el('div', {}, el('span', { class: 'eyebrow' }, 'MISSION CONTEXT'), el('h2', {}, `${formatValue(assessment.current_g, 3)} g`), el('p', {}, 'Local gravity · Earth = 1 g')), el('div', {}, el('span', { class: 'eyebrow' }, 'DATA COVERAGE'), el('h2', {}, `${data.readings.length} ${data.readings.length === 1 ? 'record' : 'records'}`), el('p', {}, `Source: ${sourceText}`)), el('div', {}, el('span', { class: 'eyebrow' }, 'EFFECT ON ANALYSIS'), el('p', {}, 'Daily gravity history feeds the bone projection; the current mission context feeds the activity recommendations.'), el('a', { class: 'btn', href: 'activity.html' }, 'Activity and recommendations →'))),
     el('section', { class: 'panel' }, el('h2', {}, 'Current gravity context'), assessmentCards(assessment),
       el('p', { class: 'muted gravity-note' }, `Analysis areas: ${areas.join(', ') || 'none flagged'}. Evidence: ${assessment.evidence === 'limited_human_evidence' ? 'limited human evidence' : 'mission profile'}.`)),
+    ...gravityInsights({
+      g: assessment.current_g,
+      missionId,
+      missionName: ctx.config.missions.find((mission) => mission.id === missionId)?.name || missionId,
+      status,
+      ownMissionName: ctx.config.missions.find((mission) => mission.id === status?.mission?.id)?.name,
+    }),
     healthSection(status, history, bone),
     el('section', { class: 'panel' }, el('h2', {}, 'Local gravity over time'),
       el('p', { class: 'muted' }, 'A vertical dashed marker shows a change of at least 0.05 g.'),

@@ -4,7 +4,8 @@
 .stack > * { margin: 0; }
 
 .trend-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s-3) var(--s-4); }
-.trend-controls .field { flex: 1 1 260px; max-width: 420px; }
+.trend-controls .field { flex: 1 1 260px; max-width: 420px; min-width: 0; }
+.trend-controls select { width: 100%; min-width: 0; } /* long indicator names must not widen the page on phones */
 .trend-controls .btn { flex: none; }
 .trend-note { margin-top: var(--s-3); }
 

@@ -1,6 +1,6 @@
 # Backend (Rust)
 
-Axum server for the astronaut health monitor. Run it from the `astro-health/` folder after seeding the database.
+Axum server for the astronaut health monitor. Run it from the repository root after seeding the database.
 
 Build and run (stable Rust):
 
@@ -10,7 +10,9 @@ Build and run (stable Rust):
 Environment variables (all optional):
 
 - `ASTRO_DB`: SQLite file, default `db/astro.db`
-- `ASTRO_PORT`: port on 127.0.0.1, default `8080`
+- `ASTRO_HOST`: IP address to listen on, default `127.0.0.1` (the container uses `0.0.0.0`)
+- `ASTRO_PORT` (or `PORT`): port, default `8080`
+- `ASTRO_PUBLIC_HOST`: public host name(s), comma-separated; on Render read from `RENDER_EXTERNAL_HOSTNAME`. Other host names are refused.
 - `ASTRO_FRONTEND`: folder served at `/`, default `frontend`
 - `ASTRO_PYTHON`: interpreter for `ml/score.py`, default `python` (20 s timeout per check-in)
 

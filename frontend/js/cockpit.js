@@ -1,5 +1,5 @@
 import {api} from './api.js';
-import {initShell,el,statusBadge} from './shell.js';
+import {initShell,el,statusBadge,formatDateTime} from './shell.js';
 import {routineSummary,badgeMedalSvg} from './routine.js';
 let status, ctx;
 let mind = null;
@@ -12,11 +12,11 @@ try {
   api.environment(ctx.astronautId),
   api.history(ctx.astronautId, 90).catch(() => null),
  ]);
- document.getElementById('connection').textContent=health.model==='mock'?'DEMO MODE · SIMULATED DATA · RECORDS ARE PREVIEWS':'LOCAL HEALTH SERVER · CONNECTED';
+ document.getElementById('connection').textContent=health.model==='mock'?'DEMO MODE · SIMULATED DATA · RECORDS ARE PREVIEWS':health.data==='simulated'?'HEALTH SERVER · CONNECTED · SIMULATED CREW DATA':'HEALTH SERVER · CONNECTED';
  document.getElementById('crew-line').textContent=`${status.astronaut.name} · Mission day ${status.astronaut.mission_day} · ${status.mission.name}`;
  const taken=status.checkin?.taken_at;
  const stale=status.freshness?.state!=='current';
- document.getElementById('updated').textContent=taken?`${new Date(taken).toLocaleString()} · ${stale?'NEW MEASUREMENT REQUIRED':'LAST RECORD'}`:'NO MEASUREMENTS YET';
+ document.getElementById('updated').textContent=taken?`${formatDateTime(taken)} · ${stale?'NEW MEASUREMENT REQUIRED':'LAST RECORD'}`:'NO MEASUREMENTS YET';
  document.getElementById('metrics').replaceChildren(...['heart_rate','sleep_hours','mood','reaction_ms'].map(id=>{
   const i=status.indicators.find(x=>x.indicator_id===id);
   return el('article',{class:'metric-tile'},el('small',{},i?.name||id),el('strong',{},i?.value??'—'),el('small',{},i?.unit||''),el('div',{},statusBadge(stale?'missing':i?.status,stale?'Old measurement':undefined)));
@@ -34,9 +34,13 @@ try {
      el('p',{class:'trust-note'},'This is environmental context; it does not change the health score. A simulation value must not be interpreted as a measurement.'));
    document.getElementById('metrics').parentElement.after(card);
  }
+ // A solar particle event needs its own shelter instruction; it always raises triage, so show it first.
+ if(status.radiation?.active_event){
+   document.getElementById('urgent').append(el('p',{class:'orbit-notice orbit-notice--alert'},'Radiation: Solar particle event in progress. Go to the storm shelter now.'));
+ }
  if(stale || status.triage.level>0){
    const severity=!stale && status.triage.level>=2?'alert':'watch';
-   const cleanMessage=status.triage.headline.replace(/^(Watch|Warning|Caution|Dikkat|Uyarı|Tehlike):\s*/i,'');
+   const cleanMessage=status.triage.headline.replace(/^(Watch|Warning|Caution|Dikkat|Uyar\u0131|Tehlike):\s*/i,'');
    const noticeText=stale?'Caution: Take a new measurement for a current assessment. The values below are the last known record.':`${severity==='alert'?'Danger':'Caution'}: ${cleanMessage}`;
    document.getElementById('urgent').append(el('p',{class:`orbit-notice orbit-notice--${severity}`},noticeText));
  }
@@ -71,7 +75,7 @@ try {
  try { mind = JSON.parse(localStorage.getItem(`astro-mind-v1:${ctx.astronautId}`)||'[]').at(-1)||null; } catch {}
  if(mind){
    const recent=Date.now()-Date.parse(mind.at)<24*3600000;
-   const section=el('section',{class:'orbit-card orbit-section'},el('div',{class:'eyebrow'},'MIND LOG · LAST SESSION ON THIS DEVICE'),el('h2',{},mind.pvt?`${Math.round(mind.pvt.median_ms)} ms`:'Attention test skipped'),el('p',{},new Date(mind.at).toLocaleString()),el('p',{},recent?mind.assessment.message:'This mind check is old. Update it with a new session.'),el('a',{class:'btn',href:'mind.html'},'Open mind check →'));
+   const section=el('section',{class:'orbit-card orbit-section'},el('div',{class:'eyebrow'},'MIND LOG · LAST SESSION ON THIS DEVICE'),el('h2',{},mind.pvt?`${Math.round(mind.pvt.median_ms)} ms`:'Attention test skipped'),el('p',{},formatDateTime(mind.at)),el('p',{},recent?mind.assessment.message:'This mind check is old. Update it with a new session.'),el('a',{class:'btn',href:'mind.html'},'Open mind check →'));
    document.getElementById('metrics').parentElement.after(section);
    if(recent && ['watch','review'].includes(mind.assessment.state))steps.push(mind.assessment.message);
  }
@@ -85,8 +89,8 @@ try {
  }
  root.append(el('a',{class:'btn',href:'checkin.html'},'Re-measure and assess →'));
  document.getElementById('export').onclick=()=>{
-  const payload={created_at:new Date().toISOString(),kind:'crew-health-handoff',demo:health.model==='mock',status,mind_checkin:mind,completed_steps:done.map(i=>steps[i]),limitations:'Prototype; estimates are not measurements. No causal inference or diagnosis.'};
+  const payload={created_at:new Date().toISOString(),kind:'crew-health-handoff',demo:health.model==='mock'||health.data==='simulated',data_source:health.data||health.model,status,mind_checkin:mind,completed_steps:done.map(i=>steps[i]),limitations:'Prototype; estimates are not measurements. No causal inference or diagnosis.'};
   const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
-  const a=el('a',{href:url,download:'astro-health-handoff.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const a=el('a',{href:url,download:'crewpulse-handoff.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
 }catch(e){root.textContent=(e&&e.message)||'Cannot reach the health server. Check that it is running.';document.getElementById('connection').textContent='SERVER UNREACHABLE';document.getElementById('updated').textContent='SERVER UNREACHABLE';document.getElementById('export').disabled=true;}
